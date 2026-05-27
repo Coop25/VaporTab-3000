@@ -1,0 +1,639 @@
+// Shared state, DOM references, helpers, calculator, and browser API access
+const STORAGE_KEYS = {
+  tag: 'new-tab-active-tag',
+  expanded: 'new-tab-expanded',
+  tabsExpanded: 'new-tab-tabs-expanded',
+  statusSources: 'new-tab-status-sources',
+  theme: 'new-tab-theme',
+  clicks: 'new-tab-clicks',
+  tabActivity: 'new-tab-tab-activity',
+  collapsedShells: 'new-tab-collapsed-shells'
+};
+
+const FALLBACK_BOOKMARKS = [
+  { name: 'GitHub', url: 'https://github.com', folder: 'Quick' },
+  { name: 'MDN Web Docs', url: 'https://developer.mozilla.org', folder: 'Dev' },
+  { name: 'Stack Overflow', url: 'https://stackoverflow.com', folder: 'Dev' },
+  { name: 'YouTube', url: 'https://www.youtube.com', folder: 'Media' },
+  { name: 'Gmail', url: 'https://mail.google.com', folder: 'Quick' },
+  { name: 'Calendar', url: 'https://calendar.google.com', folder: 'Quick' }
+];
+
+const state = {
+  activeTag: localStorage.getItem(STORAGE_KEYS.tag) || 'all',
+  expanded: localStorage.getItem(STORAGE_KEYS.expanded) === '1',
+  tabsExpanded: localStorage.getItem(STORAGE_KEYS.tabsExpanded) === '1',
+  allBookmarks: [],
+  sourceLabel: 'Fallback bookmarks',
+  statusSources: [],
+  statusById: new Map(),
+  theme: localStorage.getItem(STORAGE_KEYS.theme) || 'synthwave',
+  clicks: loadClicks(),
+  tabActivity: loadTabActivity(),
+  bookmarkReloadTimer: null,
+  githubIncident: null
+};
+
+const VISIBLE_COLLAPSED = 16;
+const VISIBLE_TABS_COLLAPSED = 8;
+const STATUS_REFRESH_MS = 300000;
+const GITHUB_STATUS_URL = 'https://www.githubstatus.com';
+const GITHUB_STATUS_HISTORY_URL = 'https://www.githubstatus.com/history';
+const GITHUB_STATUS_API_URL = `${GITHUB_STATUS_URL}/api/v2/status.json`;
+const GITHUB_INCIDENTS_API_URL = `${GITHUB_STATUS_URL}/api/v2/incidents.json`;
+const DEFAULT_STATUS_SOURCES = [
+  { name: 'GitHub', url: GITHUB_STATUS_URL },
+  { name: 'Discord', url: 'https://discordstatus.com' },
+  { name: 'EVE Online', url: 'https://status.eveonline.com' }
+];
+
+const searchInput = document.getElementById('searchInput');
+const refreshBtn = document.getElementById('refreshBtn');
+const bookmarkGrid = document.getElementById('bookmarkGrid');
+const bookmarkCount = document.getElementById('bookmarkCount');
+const tagBar = document.getElementById('tagBar');
+const toggleBtn = document.getElementById('toggleBtn');
+const sourceText = document.getElementById('sourceText');
+const helperText = document.getElementById('helperText');
+const clockTime = document.getElementById('clockTime');
+const clockDate = document.getElementById('clockDate');
+const footerNote = document.getElementById('footerNote');
+const tabsList = document.getElementById('tabsList');
+const tabsSummary = document.getElementById('tabsSummary');
+const refreshTabsBtn = document.getElementById('refreshTabsBtn');
+const tabsToggleBtn = document.getElementById('tabsToggleBtn');
+const tabsHelperText = document.getElementById('tabsHelperText');
+const tabsCount = document.getElementById('tabsCount');
+const statusList = document.getElementById('statusList');
+const statusNameInput = document.getElementById('statusNameInput');
+const statusUrlInput = document.getElementById('statusUrlInput');
+const addStatusBtn = document.getElementById('addStatusBtn');
+const refreshStatusBtn = document.getElementById('refreshStatusBtn');
+const openStatusModalBtn = document.getElementById('openStatusModalBtn');
+const statusModal = document.getElementById('statusModal');
+const closeStatusModalBtn = document.getElementById('closeStatusModalBtn');
+const cancelStatusModalBtn = document.getElementById('cancelStatusModalBtn');
+const bookmarkMatchModal = document.getElementById('bookmarkMatchModal');
+const bookmarkMatchCopy = document.getElementById('bookmarkMatchCopy');
+const bookmarkMatchList = document.getElementById('bookmarkMatchList');
+const bookmarkMatchNewBtn = document.getElementById('bookmarkMatchNewBtn');
+const bookmarkMatchCancelBtn = document.getElementById('bookmarkMatchCancelBtn');
+const closeBookmarkMatchModalBtn = document.getElementById('closeBookmarkMatchModalBtn');
+const statusPulse = document.getElementById('statusPulse');
+const statusPulseText = document.getElementById('statusPulseText');
+const statusRefreshMeta = document.getElementById('statusRefreshMeta');
+const statusConsole = document.querySelector('.status-console');
+const themeSwitcher = document.getElementById('themeSwitcher');
+const githubIncidentDays = document.getElementById('githubIncidentDays');
+const githubIncidentBadge = document.getElementById('githubIncidentBadge');
+const githubIncidentRange = document.getElementById('githubIncidentRange');
+const githubIncidentSummary = document.getElementById('githubIncidentSummary');
+const githubIncidentHighScore = document.getElementById('githubIncidentHighScore');
+const githubIncidentMeta = document.getElementById('githubIncidentMeta');
+const githubIncidentLink = document.getElementById('githubIncidentLink');
+const calcModeBar = document.getElementById('calcModeBar');
+const calcDirectionBtn = document.getElementById('calcDirectionBtn');
+const calcRunBtn = document.getElementById('calcRunBtn');
+const calcSwapBtn = document.getElementById('calcSwapBtn');
+const calcCopyBtn = document.getElementById('calcCopyBtn');
+const calcInput = document.getElementById('calcInput');
+const calcOutput = document.getElementById('calcOutput');
+const calcHint = document.getElementById('calcHint');
+const calcQuickBar = document.getElementById('calcQuickBar');
+const calcLatency = document.getElementById('calcLatency');
+const calcChars = document.getElementById('calcChars');
+const calcLines = document.getElementById('calcLines');
+const calcBytes = document.getElementById('calcBytes');
+const monitorShells = Array.from(document.querySelectorAll('.monitor-shell[data-shell-id]'));
+
+state.statusIsRefreshing = false;
+state.statusNextRefreshAt = Date.now() + STATUS_REFRESH_MS;
+state.githubIncidentIsRefreshing = false;
+state.calcMode = 'base64';
+state.calcDirection = 'encode';
+state.calcToken = 0;
+state.bookmarkListenersAttached = false;
+state.tabs = [];
+state.tabsReloadTimer = null;
+state.tabListenersAttached = false;
+state.collapsedShells = loadCollapsedShells();
+state.bookmarkMatchResolver = null;
+state.bookmarkMatchPending = null;
+
+function applyTheme(themeName) {
+  const allowed = new Set(['synthwave', 'dark']);
+  const nextTheme = allowed.has(themeName) ? themeName : 'synthwave';
+  state.theme = nextTheme;
+  document.documentElement.setAttribute('data-theme', nextTheme);
+  document.body.setAttribute('data-theme', nextTheme);
+  localStorage.setItem(STORAGE_KEYS.theme, nextTheme);
+
+  const buttons = themeSwitcher ? themeSwitcher.querySelectorAll('.theme-btn') : [];
+  for (const button of buttons) {
+    button.classList.toggle('active', button.dataset.theme === nextTheme);
+  }
+}
+
+function updateClock() {
+  const now = new Date();
+  clockTime.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  clockDate.textContent = now.toLocaleDateString([], {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
+function setMonitorShellCollapsed(shell, collapsed) {
+  if (!(shell instanceof HTMLElement)) {
+    return;
+  }
+
+  const shellId = shell.dataset.shellId || '';
+  const header = shell.querySelector('.monitor-header');
+  if (!(header instanceof HTMLElement) || !shellId) {
+    return;
+  }
+
+  shell.classList.toggle('is-collapsed', collapsed);
+  header.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  header.setAttribute('title', collapsed ? 'Expand panel' : 'Collapse panel');
+  state.collapsedShells[shellId] = collapsed;
+  saveCollapsedShells();
+}
+
+function toggleMonitorShell(shell) {
+  if (!(shell instanceof HTMLElement)) {
+    return;
+  }
+
+  setMonitorShellCollapsed(shell, !shell.classList.contains('is-collapsed'));
+}
+
+function setupMonitorShells() {
+  for (const shell of monitorShells) {
+    const header = shell.querySelector('.monitor-header');
+    if (!(header instanceof HTMLElement)) {
+      continue;
+    }
+
+    const shellId = shell.dataset.shellId || '';
+    if (shellId) {
+      setMonitorShellCollapsed(shell, Boolean(state.collapsedShells[shellId]));
+    }
+
+    header.addEventListener('click', () => {
+      toggleMonitorShell(shell);
+    });
+
+    header.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+      }
+      event.preventDefault();
+      toggleMonitorShell(shell);
+    });
+  }
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function wait(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+function logStackTabDebug(stage, payload) {
+  try {
+    console.log(`[stack-debug] ${stage}`, payload);
+  } catch {
+    // Ignore logging failures.
+  }
+}
+
+function shortHost(url) {
+  try {
+    return new URL(url).host.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
+
+function normalizeComparableUrl(url) {
+  try {
+    const parsed = new URL(url);
+    const path = parsed.pathname.replace(/\/+$/, '') || '/';
+    return {
+      origin: parsed.origin.toLowerCase(),
+      hostname: parsed.hostname.toLowerCase(),
+      pathname: path.toLowerCase()
+    };
+  } catch {
+    return null;
+  }
+}
+
+function isSimilarBookmarkUrl(targetUrl, candidateUrl) {
+  const target = normalizeComparableUrl(targetUrl);
+  const candidate = normalizeComparableUrl(candidateUrl);
+  if (!target || !candidate) {
+    return false;
+  }
+  if (target.hostname !== candidate.hostname) {
+    return false;
+  }
+  if (target.origin !== candidate.origin) {
+    return false;
+  }
+  if (target.pathname === candidate.pathname) {
+    return true;
+  }
+  if (target.pathname === '/' || candidate.pathname === '/') {
+    return true;
+  }
+  return target.pathname.startsWith(candidate.pathname) || candidate.pathname.startsWith(target.pathname);
+}
+
+function isStackFolderTitle(title) {
+  return /^\s*\[stack\]\s*/i.test(String(title || ''));
+}
+
+function stripStackFolderPrefix(title) {
+  return String(title || '').replace(/^\s*\[stack\]\s*/i, '').trim() || 'Bookmark Stack';
+}
+
+function collectBookmarkUrls(nodes) {
+  const out = [];
+  if (!Array.isArray(nodes)) {
+    return out;
+  }
+
+  for (const node of nodes) {
+    if (node?.url) {
+      out.push({
+        name: node.title || shortHost(node.url),
+        url: node.url
+      });
+      continue;
+    }
+
+    if (Array.isArray(node?.children) && node.children.length) {
+      out.push(...collectBookmarkUrls(node.children));
+    }
+  }
+
+  return out;
+}
+
+function getFaviconUrls(url) {
+  const encoded = encodeURIComponent(url);
+
+  const urls = [];
+
+  if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
+    urls.push(`${location.origin}/_favicon/?pageUrl=${encoded}&size=32`);
+  }
+
+  urls.push(`https://www.google.com/s2/favicons?domain_url=${encoded}&sz=64`);
+  return urls;
+}
+
+function getMonogram(bookmark) {
+  const source = shortHost(bookmark.url || bookmark.name || '');
+  const chars = source.replace(/[^a-z0-9]/gi, '').slice(0, 2).toUpperCase();
+  return chars || '::';
+}
+
+function loadClicks() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.clicks) || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveClicks() {
+  localStorage.setItem(STORAGE_KEYS.clicks, JSON.stringify(state.clicks));
+}
+
+function loadTabActivity() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.tabActivity) || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveTabActivity() {
+  localStorage.setItem(STORAGE_KEYS.tabActivity, JSON.stringify(state.tabActivity));
+}
+
+function loadCollapsedShells() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.collapsedShells) || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveCollapsedShells() {
+  localStorage.setItem(STORAGE_KEYS.collapsedShells, JSON.stringify(state.collapsedShells));
+}
+
+function getTabActivityKey(tab) {
+  const id = Number(tab?.id ?? tab?.tabId) || 0;
+  return `${Number(tab?.windowId) || 0}:${id}`;
+}
+
+function noteTabActive(tabLike, timestamp = Date.now()) {
+  const key = getTabActivityKey(tabLike);
+  if (!key || key === '0:0') {
+    return;
+  }
+  state.tabActivity[key] = timestamp;
+}
+
+function pruneTabActivity(tabs) {
+  const keep = new Set((tabs || []).map((tab) => getTabActivityKey(tab)));
+  let changed = false;
+
+  for (const key of Object.keys(state.tabActivity)) {
+    if (!keep.has(key)) {
+      delete state.tabActivity[key];
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    saveTabActivity();
+  }
+}
+
+function getBookmarkClicks(url) {
+  return Number(state.clicks[url] || 0);
+}
+
+function getHeatTier(clicks, maxClicks) {
+  if (clicks <= 0) {
+    return 0;
+  }
+  if (maxClicks <= 1) {
+    return 1;
+  }
+
+  const ratio = clicks / maxClicks;
+  if (ratio >= 0.75 || clicks >= 25) return 4;
+  if (ratio >= 0.45 || clicks >= 12) return 3;
+  if (ratio >= 0.2 || clicks >= 5) return 2;
+  return 1;
+}
+
+function getHeatProgress(clicks, maxClicks) {
+  if (clicks <= 0 || maxClicks <= 0) {
+    return 0;
+  }
+  return Math.max(0, Math.min(100, Math.round((clicks / maxClicks) * 100)));
+}
+
+function utf8ToBase64(value) {
+  const bytes = new TextEncoder().encode(value);
+  let binary = '';
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+}
+
+function base64ToUtf8(value) {
+  const binary = atob(value.trim());
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
+async function sha256Hex(value) {
+  const encoded = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest('SHA-256', encoded);
+  const bytes = new Uint8Array(digest);
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+function unixConvert(value) {
+  const raw = String(value || '').trim();
+  const candidate = raw || String(Math.floor(Date.now() / 1000));
+
+  let date;
+  if (/^-?\d+(\.\d+)?$/.test(candidate)) {
+    const numeric = Number(candidate);
+    const ms = Math.abs(numeric) < 1e11 ? numeric * 1000 : numeric;
+    date = new Date(ms);
+  } else {
+    date = new Date(candidate);
+  }
+
+  if (Number.isNaN(date.getTime())) {
+    return 'Invalid date/time input';
+  }
+
+  const ms = date.getTime();
+  const sec = Math.floor(ms / 1000);
+  return [
+    `unix_s: ${sec}`,
+    `unix_ms: ${ms}`,
+    `iso: ${date.toISOString()}`,
+    `local: ${date.toString()}`
+  ].join('\n');
+}
+
+function updateCalcUi() {
+  if (!calcModeBar || !calcDirectionBtn || !calcHint) {
+    return;
+  }
+
+  const buttons = calcModeBar.querySelectorAll('.calc-mode-btn');
+  for (const button of buttons) {
+    button.classList.toggle('active', button.dataset.mode === state.calcMode);
+  }
+
+  const directional = state.calcMode === 'base64' || state.calcMode === 'url';
+  calcDirectionBtn.disabled = !directional;
+  calcDirectionBtn.style.opacity = directional ? '1' : '0.6';
+  calcDirectionBtn.textContent = directional
+    ? (state.calcDirection === 'encode' ? 'Encode' : 'Decode')
+    : 'N/A';
+
+  if (state.calcMode === 'base64') {
+    calcHint.textContent = 'Mode: Base64 (UTF-8)';
+  } else if (state.calcMode === 'url') {
+    calcHint.textContent = 'Mode: URL Component';
+  } else if (state.calcMode === 'sha256') {
+    calcHint.textContent = 'Mode: SHA-256 Hex Digest';
+  } else {
+    calcHint.textContent = 'Mode: Unix Time Converter';
+  }
+}
+
+function updateCalcStats(output, latencyMs) {
+  const text = String(output || '');
+  if (calcChars) {
+    calcChars.textContent = `Chars: ${text.length.toLocaleString()}`;
+  }
+  if (calcLines) {
+    const lines = text.length ? text.split(/\r?\n/).length : 0;
+    calcLines.textContent = `Lines: ${lines.toLocaleString()}`;
+  }
+  if (calcBytes) {
+    const bytes = new TextEncoder().encode(text).length;
+    calcBytes.textContent = `Bytes: ${bytes.toLocaleString()}`;
+  }
+  if (calcLatency) {
+    calcLatency.textContent = `Latency: ${Math.max(0, Math.round(latencyMs)).toLocaleString()} ms`;
+  }
+}
+
+async function runCalculator() {
+  if (!calcInput || !calcOutput) {
+    return;
+  }
+
+  const token = ++state.calcToken;
+  const input = calcInput.value;
+  const startedAt = performance.now();
+
+  try {
+    let output = '';
+    if (state.calcMode === 'base64') {
+      output = state.calcDirection === 'encode' ? utf8ToBase64(input) : base64ToUtf8(input);
+    } else if (state.calcMode === 'url') {
+      output = state.calcDirection === 'encode' ? encodeURIComponent(input) : decodeURIComponent(input);
+    } else if (state.calcMode === 'sha256') {
+      output = await sha256Hex(input);
+    } else {
+      output = unixConvert(input);
+    }
+
+    if (token === state.calcToken) {
+      calcOutput.value = output;
+      updateCalcStats(output, performance.now() - startedAt);
+    }
+  } catch (error) {
+    if (token === state.calcToken) {
+      const errorText = `Error: ${String(error && error.message ? error.message : error)}`;
+      calcOutput.value = errorText;
+      updateCalcStats(errorText, performance.now() - startedAt);
+    }
+  }
+}
+
+async function hasBookmarksPermission() {
+  if (typeof chrome !== 'undefined' && chrome.permissions && chrome.permissions.contains) {
+    return new Promise((resolve) => {
+      chrome.permissions.contains({ permissions: ['bookmarks'] }, (granted) => {
+        resolve(Boolean(granted));
+      });
+    });
+  }
+
+  if (typeof browser !== 'undefined' && browser.permissions && browser.permissions.contains) {
+    try {
+      return await browser.permissions.contains({ permissions: ['bookmarks'] });
+    } catch {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+async function hasTabsPermission() {
+  return typeof chrome !== 'undefined'
+    ? Boolean(chrome.tabs && chrome.tabs.query)
+    : Boolean(typeof browser !== 'undefined' && browser.tabs && browser.tabs.query);
+}
+
+function getTabsApi() {
+  if (typeof chrome !== 'undefined' && chrome.tabs) {
+    return chrome.tabs;
+  }
+  if (typeof browser !== 'undefined' && browser.tabs) {
+    return browser.tabs;
+  }
+  return null;
+}
+
+function getWindowsApi() {
+  if (typeof chrome !== 'undefined' && chrome.windows) {
+    return chrome.windows;
+  }
+  if (typeof browser !== 'undefined' && browser.windows) {
+    return browser.windows;
+  }
+  return null;
+}
+
+async function queryTabs(queryInfo) {
+  if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.query(queryInfo, (result) => {
+        if (chrome.runtime && chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+        } else {
+          resolve(result || []);
+        }
+      });
+    });
+  }
+
+  if (typeof browser !== 'undefined' && browser.tabs && browser.tabs.query) {
+    return browser.tabs.query(queryInfo);
+  }
+
+  return [];
+}
+
+async function getCurrentBrowserTab() {
+  const primary = await queryTabs({ active: true, currentWindow: true }).catch(() => []);
+  if (Array.isArray(primary) && primary.length) {
+    return primary[0];
+  }
+
+  const focused = await queryTabs({ active: true, lastFocusedWindow: true }).catch(() => []);
+  if (Array.isArray(focused) && focused.length) {
+    return focused[0];
+  }
+
+  const allTabs = await queryTabs({}).catch(() => []);
+  if (Array.isArray(allTabs) && allTabs.length) {
+    const exactUrl = String(location.href || '');
+    const matchedByUrl = allTabs.find((tab) => String(tab?.url || tab?.pendingUrl || '') === exactUrl);
+    if (matchedByUrl) {
+      return matchedByUrl;
+    }
+  }
+
+  return null;
+}
+
+async function getCurrentTabInfo() {
+  const tab = await getCurrentBrowserTab().catch(() => null);
+  if (!tab) {
+    return null;
+  }
+
+  return {
+    tabId: Number(tab.id) || 0,
+    windowId: Number(tab.windowId) || 0,
+    index: Number.isInteger(tab.index) ? tab.index : 0
+  };
+}
+
