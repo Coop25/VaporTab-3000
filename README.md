@@ -37,7 +37,6 @@ A custom Chromium new-tab page with a retro terminal look, live bookmarks, cross
   - `bookmarks`
   - `tabs`
   - `favicon`
-  - host access to `"<all_urls>"`
 
 ## Install / Load
 
