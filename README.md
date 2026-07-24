@@ -89,7 +89,7 @@ Current behavior:
 
 - [new-tab.html](new-tab.html): main markup
 - [styles.css](styles.css): all styling and responsive layout
-- [privacy/index.html](privacy/index.html): standalone privacy policy for GitHub Pages
+- [index.html](index.html): standalone privacy policy for GitHub Pages
 - `icons/`: shared browser and store icons in 16, 32, 48, and 128 pixel sizes
 - [js/app-core.js](js/app-core.js): shared state, DOM references, helpers, calculator, permissions, and browser API access
 - [js/app-status.js](js/app-status.js): status feed logic, GitHub watch card, and bookmark match modal logic
