@@ -2,7 +2,13 @@
   "manifest_version": 3,
   "name": "VaporTab-3000",
   "description": "A responsive and low-noise new tab page that shows your real bookmarks.",
-  "version": "0.1.0",
+  "version": "0.2.0",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
   "permissions": [
     "bookmarks",
     "favicon",
@@ -11,6 +17,16 @@
   "host_permissions": [
     "<all_urls>"
   ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "vaportab-3000@local",
+      "data_collection_permissions": {
+        "required": [
+          "bookmarksInfo"
+        ]
+      }
+    }
+  },
   "chrome_url_overrides": {
     "newtab": "new-tab.html"
   }

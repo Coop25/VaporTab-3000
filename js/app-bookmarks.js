@@ -29,6 +29,8 @@ function flattenBookmarkTree(nodes, folderTrail = []) {
     if (node.url) {
       out.push({
         type: 'bookmark',
+        id: node.id || '',
+        parentId: node.parentId || '',
         name: node.title || shortHost(node.url),
         url: node.url,
         folder: folderTrail[folderTrail.length - 1] || 'root',
@@ -79,10 +81,12 @@ async function loadBookmarks() {
   try {
     const result = await fetchBrowserBookmarks();
     state.allBookmarks = dedupeBookmarks(result.items);
+    syncBookmarkOrder();
     state.sourceLabel = `Live bookmarks via ${result.source}`;
     setBookmarkNoticeMode('ok');
   } catch {
     state.allBookmarks = FALLBACK_BOOKMARKS.slice();
+    syncBookmarkOrder();
     state.sourceLabel = 'Fallback sample bookmarks';
     const hasPermission = await hasBookmarksPermission();
     setBookmarkNoticeMode(hasPermission ? 'fallback-with-permission' : 'permission-needed');
@@ -159,6 +163,318 @@ function getBookmarkMetricKey(bookmark) {
   return bookmark?.metricKey || bookmark?.url || '';
 }
 
+function syncBookmarkOrder() {
+  const availableKeys = state.allBookmarks.map(getBookmarkMetricKey).filter(Boolean);
+  const availableSet = new Set(availableKeys);
+  const nextOrder = state.bookmarkOrder.filter((key) => availableSet.has(key));
+  const knownKeys = new Set(nextOrder);
+
+  for (const key of availableKeys) {
+    if (!knownKeys.has(key)) {
+      nextOrder.push(key);
+      knownKeys.add(key);
+    }
+  }
+
+  if (
+    nextOrder.length !== state.bookmarkOrder.length ||
+    nextOrder.some((key, index) => key !== state.bookmarkOrder[index])
+  ) {
+    state.bookmarkOrder = nextOrder;
+    saveBookmarkOrder();
+  }
+}
+
+function moveBookmarkInSavedOrder(draggedKey, targetKey, placeAfter) {
+  if (!state.bookmarkOrderLocked || !draggedKey || !targetKey || draggedKey === targetKey) {
+    return;
+  }
+
+  syncBookmarkOrder();
+  const nextOrder = state.bookmarkOrder.filter((key) => key !== draggedKey);
+  const targetIndex = nextOrder.indexOf(targetKey);
+  if (targetIndex < 0) {
+    return;
+  }
+
+  nextOrder.splice(targetIndex + (placeAfter ? 1 : 0), 0, draggedKey);
+  state.bookmarkOrder = nextOrder;
+  saveBookmarkOrder();
+  renderBookmarks();
+}
+
+function clearBookmarkDropMarkers() {
+  for (const card of bookmarkGrid.querySelectorAll('.bookmark.is-dragging, .bookmark.drop-before, .bookmark.drop-after')) {
+    card.classList.remove('is-dragging', 'drop-before', 'drop-after');
+  }
+}
+
+function getStackCandidateBookmarks() {
+  return state.allBookmarks
+    .filter((bookmark) => bookmark.type !== 'stack' && bookmark.url)
+    .sort((a, b) => {
+      const folderDiff = String(a.trail || a.folder || '').localeCompare(String(b.trail || b.folder || ''));
+      return folderDiff || a.name.localeCompare(b.name);
+    });
+}
+
+function getStackDraftBookmarks() {
+  const byKey = new Map(
+    getStackCandidateBookmarks().map((bookmark) => [getBookmarkMetricKey(bookmark), bookmark])
+  );
+  return Array.from(state.stackDraft)
+    .map((key) => byKey.get(key))
+    .filter(Boolean);
+}
+
+function makeStackPickerCopy(bookmark) {
+  const copy = document.createElement('span');
+  copy.className = 'stack-picker-copy';
+
+  const title = document.createElement('strong');
+  title.textContent = bookmark.name;
+
+  const meta = document.createElement('span');
+  meta.textContent = `${bookmark.trail || bookmark.folder || 'root'} • ${shortHost(bookmark.url)}`;
+
+  copy.appendChild(title);
+  copy.appendChild(meta);
+  return copy;
+}
+
+function renderStackModal() {
+  if (!availableBookmarkList || !selectedBookmarkList || !createStackBtn) {
+    return;
+  }
+
+  const candidates = getStackCandidateBookmarks();
+  const selected = getStackDraftBookmarks();
+  const selectedKeys = new Set(selected.map(getBookmarkMetricKey));
+  const query = String(stackBookmarkSearch?.value || '').trim().toLowerCase();
+  const available = candidates.filter((bookmark) => {
+    if (!query) {
+      return true;
+    }
+    return [bookmark.name, bookmark.url, bookmark.trail, bookmark.folder]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+      .includes(query);
+  });
+
+  availableBookmarkList.innerHTML = '';
+  selectedBookmarkList.innerHTML = '';
+
+  if (availableBookmarkCount) {
+    availableBookmarkCount.textContent = `${available.length} shown`;
+  }
+  if (selectedBookmarkCount) {
+    selectedBookmarkCount.textContent = `${selected.length} selected`;
+  }
+
+  if (!available.length) {
+    const empty = document.createElement('p');
+    empty.className = 'stack-picker-empty';
+    empty.textContent = 'No bookmarks match this search.';
+    availableBookmarkList.appendChild(empty);
+  }
+
+  for (const bookmark of available) {
+    const key = getBookmarkMetricKey(bookmark);
+    const isSelected = selectedKeys.has(key);
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'stack-picker-item stack-available-item';
+    item.classList.toggle('is-selected', isSelected);
+    item.disabled = isSelected;
+    item.setAttribute('aria-label', isSelected ? `${bookmark.name} already added` : `Add ${bookmark.name} to stack`);
+    item.appendChild(makeStackPickerCopy(bookmark));
+
+    const action = document.createElement('span');
+    action.className = 'stack-picker-action';
+    action.textContent = isSelected ? 'ADDED' : 'ADD →';
+    item.appendChild(action);
+    item.addEventListener('click', () => {
+      state.stackDraft.add(key);
+      renderStackModal();
+    });
+    availableBookmarkList.appendChild(item);
+  }
+
+  if (!selected.length) {
+    const empty = document.createElement('div');
+    empty.className = 'stack-picker-empty stack-picker-empty-large';
+    empty.innerHTML = '<strong>No bookmarks selected</strong><span>Add bookmarks from the left panel in launch order.</span>';
+    selectedBookmarkList.appendChild(empty);
+  }
+
+  selected.forEach((bookmark, index) => {
+    const key = getBookmarkMetricKey(bookmark);
+    const item = document.createElement('div');
+    item.className = 'stack-picker-item stack-selected-item';
+
+    const order = document.createElement('span');
+    order.className = 'stack-order';
+    order.textContent = String(index + 1).padStart(2, '0');
+
+    const copy = makeStackPickerCopy(bookmark);
+    const controls = document.createElement('span');
+    controls.className = 'stack-item-controls';
+
+    const upBtn = document.createElement('button');
+    upBtn.type = 'button';
+    upBtn.className = 'stack-order-btn';
+    upBtn.textContent = '↑';
+    upBtn.disabled = index === 0;
+    upBtn.setAttribute('aria-label', `Move ${bookmark.name} earlier`);
+    upBtn.addEventListener('click', () => moveStackDraft(key, -1));
+
+    const downBtn = document.createElement('button');
+    downBtn.type = 'button';
+    downBtn.className = 'stack-order-btn';
+    downBtn.textContent = '↓';
+    downBtn.disabled = index === selected.length - 1;
+    downBtn.setAttribute('aria-label', `Move ${bookmark.name} later`);
+    downBtn.addEventListener('click', () => moveStackDraft(key, 1));
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'stack-remove-btn';
+    removeBtn.textContent = 'REMOVE';
+    removeBtn.setAttribute('aria-label', `Remove ${bookmark.name} from stack`);
+    removeBtn.addEventListener('click', () => {
+      state.stackDraft.delete(key);
+      renderStackModal();
+    });
+
+    controls.appendChild(upBtn);
+    controls.appendChild(downBtn);
+    controls.appendChild(removeBtn);
+    item.appendChild(order);
+    item.appendChild(copy);
+    item.appendChild(controls);
+    selectedBookmarkList.appendChild(item);
+  });
+
+  const hasName = Boolean(String(stackNameInput?.value || '').trim());
+  createStackBtn.disabled = selected.length < 2 || !hasName || state.stackIsSaving;
+  createStackBtn.textContent = state.stackIsSaving ? 'Creating...' : 'Create Stack';
+
+  if (stackModalMessage && !state.stackIsSaving) {
+    const destination = selected[0]?.trail || selected[0]?.folder;
+    stackModalMessage.textContent = selected.length < 2
+      ? 'Add at least two bookmarks. The final item opens in front.'
+      : `Ready to create in ${destination || 'your bookmarks'}. Original bookmarks will remain in place.`;
+  }
+}
+
+function moveStackDraft(key, direction) {
+  const keys = Array.from(state.stackDraft);
+  const index = keys.indexOf(key);
+  const nextIndex = index + direction;
+  if (index < 0 || nextIndex < 0 || nextIndex >= keys.length) {
+    return;
+  }
+  [keys[index], keys[nextIndex]] = [keys[nextIndex], keys[index]];
+  state.stackDraft = new Set(keys);
+  renderStackModal();
+}
+
+function openStackModal() {
+  if (!stackModal) {
+    return;
+  }
+  state.stackDraft.clear();
+  state.stackIsSaving = false;
+  stackNameInput.value = '';
+  stackBookmarkSearch.value = '';
+  stackModal.hidden = false;
+  renderStackModal();
+  stackNameInput.focus();
+}
+
+function closeStackModal() {
+  if (!stackModal) {
+    return;
+  }
+  stackModal.hidden = true;
+  state.stackDraft.clear();
+  state.stackIsSaving = false;
+}
+
+async function createBrowserBookmark(details) {
+  if (typeof chrome !== 'undefined' && chrome.bookmarks && chrome.bookmarks.create) {
+    return new Promise((resolve, reject) => {
+      chrome.bookmarks.create(details, (result) => {
+        if (chrome.runtime && chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  if (typeof browser !== 'undefined' && browser.bookmarks && browser.bookmarks.create) {
+    return browser.bookmarks.create(details);
+  }
+
+  throw new Error('Bookmark creation is unavailable in this context.');
+}
+
+async function createStackFromDraft() {
+  if (state.stackIsSaving || state.stackDraft.size < 2) {
+    return;
+  }
+
+  const selected = getStackDraftBookmarks();
+
+  if (selected.length < 2) {
+    renderStackModal();
+    return;
+  }
+
+  const rawName = stackNameInput ? stackNameInput.value.trim() : '';
+  const cleanName = rawName.replace(/^\s*\[stack\]\s*/i, '').trim();
+  if (!cleanName) {
+    stackModalMessage.textContent = 'Enter a name for this stack.';
+    stackNameInput.focus();
+    return;
+  }
+  const folderDetails = { title: `[stack] ${cleanName}` };
+  if (selected[0].parentId) {
+    folderDetails.parentId = selected[0].parentId;
+  }
+
+  state.stackIsSaving = true;
+  if (stackModalMessage) {
+    stackModalMessage.textContent = `Creating "${cleanName}"...`;
+  }
+  renderStackModal();
+
+  try {
+    const folder = await createBrowserBookmark(folderDetails);
+    for (const bookmark of selected) {
+      await createBrowserBookmark({
+        parentId: folder.id,
+        title: bookmark.name,
+        url: bookmark.url
+      });
+    }
+
+    const destination = selected[0].trail || selected[0].folder || 'bookmarks';
+    state.stackDraft.clear();
+    state.stackIsSaving = false;
+    stackModal.hidden = true;
+    await loadBookmarks();
+    helperText.textContent = `Created "${cleanName}" with ${selected.length} bookmarks in ${destination}.`;
+  } catch (error) {
+    state.stackIsSaving = false;
+    renderStackModal();
+    stackModalMessage.textContent = `Could not create stack: ${String(error?.message || 'bookmark API unavailable')}`;
+  }
+}
+
 function getTags() {
   const tags = new Set(['all']);
   for (const bookmark of state.allBookmarks) {
@@ -188,8 +504,7 @@ function renderTags() {
 
 function filteredBookmarks() {
   const query = searchInput.value.trim().toLowerCase();
-
-  return state.allBookmarks
+  const filtered = state.allBookmarks
     .filter((bookmark) => {
       const folder = (bookmark.folder || 'root').toLowerCase();
       return state.activeTag === 'all' || folder === state.activeTag;
@@ -205,17 +520,36 @@ function filteredBookmarks() {
         .toLowerCase();
 
       return haystack.includes(query);
-    })
-    .sort((a, b) => {
-      const clickDiff = getBookmarkClicks(getBookmarkMetricKey(b)) - getBookmarkClicks(getBookmarkMetricKey(a));
-      if (clickDiff !== 0) {
-        return clickDiff;
-      }
-      return a.name.localeCompare(b.name);
     });
+
+  if (state.bookmarkOrderLocked) {
+    const orderByKey = new Map(state.bookmarkOrder.map((key, index) => [key, index]));
+    return filtered.sort((a, b) => {
+      const aIndex = orderByKey.get(getBookmarkMetricKey(a)) ?? Number.MAX_SAFE_INTEGER;
+      const bIndex = orderByKey.get(getBookmarkMetricKey(b)) ?? Number.MAX_SAFE_INTEGER;
+      return aIndex - bIndex;
+    });
+  }
+
+  return filtered.sort((a, b) => {
+    const clickDiff = getBookmarkClicks(getBookmarkMetricKey(b)) - getBookmarkClicks(getBookmarkMetricKey(a));
+    if (clickDiff !== 0) {
+      return clickDiff;
+    }
+    return a.name.localeCompare(b.name);
+  });
 }
 
 function renderBookmarks() {
+  if (bookmarkOrderLock) {
+    bookmarkOrderLock.checked = state.bookmarkOrderLocked;
+  }
+  if (bookmarkOrderHint) {
+    bookmarkOrderHint.textContent = state.bookmarkOrderLocked
+      ? 'Drag to arrange'
+      : 'Most used first';
+  }
+
   const items = filteredBookmarks();
   const visibleItems = state.expanded ? items : items.slice(0, VISIBLE_COLLAPSED);
   const maxClicks = items.reduce((max, bookmark) => {
@@ -242,37 +576,24 @@ function renderBookmarks() {
     link.className = 'bookmark';
     link.href = bookmark.url;
     link.rel = 'noreferrer';
+    link.draggable = state.bookmarkOrderLocked;
     if (bookmark.type === 'stack') {
       link.classList.add('bookmark-stack');
       link.title = `Open ${bookmark.stackCount} bookmarks`;
     }
+    const metricKey = getBookmarkMetricKey(bookmark);
+    link.dataset.bookmarkKey = metricKey;
 
     const head = document.createElement('div');
     head.className = 'bookmark-head';
 
     const favicon = document.createElement('img');
     favicon.className = 'bookmark-favicon';
-    const faviconUrls = getFaviconUrls(bookmark.url);
-    let faviconIndex = 0;
-    favicon.src = faviconUrls[faviconIndex];
-    favicon.alt = '';
-    favicon.loading = 'lazy';
-    favicon.decoding = 'async';
-    favicon.referrerPolicy = 'no-referrer';
 
     const fallback = document.createElement('span');
     fallback.className = 'bookmark-fallback';
     fallback.textContent = getMonogram(bookmark);
-
-    favicon.addEventListener('error', () => {
-      faviconIndex += 1;
-      if (faviconIndex < faviconUrls.length) {
-        favicon.src = faviconUrls[faviconIndex];
-        return;
-      }
-      favicon.style.display = 'none';
-      fallback.classList.add('show');
-    });
+    setupCachedIcon(favicon, fallback, getFaviconUrls(bookmark.url));
 
     const title = document.createElement('p');
     title.className = 'bookmark-title';
@@ -339,7 +660,9 @@ function renderBookmarks() {
 
     link.addEventListener('click', async (event) => {
       event.preventDefault();
-      const metricKey = getBookmarkMetricKey(bookmark);
+      if (Date.now() < state.suppressBookmarkClickUntil) {
+        return;
+      }
       state.clicks[metricKey] = getBookmarkClicks(metricKey) + 1;
       saveClicks();
       renderBookmarks();
@@ -350,6 +673,54 @@ function renderBookmarks() {
       await openBookmarkTarget(bookmark.url);
     });
 
+    link.addEventListener('dragstart', (event) => {
+      if (!state.bookmarkOrderLocked || !event.dataTransfer) {
+        event.preventDefault();
+        return;
+      }
+      state.draggedBookmarkKey = metricKey;
+      link.classList.add('is-dragging');
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', metricKey);
+    });
+
+    link.addEventListener('dragover', (event) => {
+      if (!state.bookmarkOrderLocked || !state.draggedBookmarkKey || state.draggedBookmarkKey === metricKey) {
+        return;
+      }
+      event.preventDefault();
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'move';
+      }
+      const rect = link.getBoundingClientRect();
+      const placeAfter = event.clientX >= rect.left + rect.width / 2;
+      link.classList.toggle('drop-before', !placeAfter);
+      link.classList.toggle('drop-after', placeAfter);
+    });
+
+    link.addEventListener('dragleave', () => {
+      link.classList.remove('drop-before', 'drop-after');
+    });
+
+    link.addEventListener('drop', (event) => {
+      if (!state.bookmarkOrderLocked) {
+        return;
+      }
+      event.preventDefault();
+      const draggedKey = state.draggedBookmarkKey || event.dataTransfer?.getData('text/plain') || '';
+      const rect = link.getBoundingClientRect();
+      const placeAfter = event.clientX >= rect.left + rect.width / 2;
+      state.suppressBookmarkClickUntil = Date.now() + 250;
+      state.draggedBookmarkKey = '';
+      clearBookmarkDropMarkers();
+      moveBookmarkInSavedOrder(draggedKey, metricKey, placeAfter);
+    });
+
+    link.addEventListener('dragend', () => {
+      state.suppressBookmarkClickUntil = Date.now() + 250;
+      state.draggedBookmarkKey = '';
+      clearBookmarkDropMarkers();
+    });
     bookmarkGrid.appendChild(link);
   }
 

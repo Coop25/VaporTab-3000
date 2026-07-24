@@ -6,6 +6,8 @@ const STORAGE_KEYS = {
   statusSources: 'new-tab-status-sources',
   theme: 'new-tab-theme',
   clicks: 'new-tab-clicks',
+  bookmarkOrder: 'new-tab-bookmark-order',
+  bookmarkOrderLocked: 'new-tab-bookmark-order-locked',
   tabActivity: 'new-tab-tab-activity',
   collapsedShells: 'new-tab-collapsed-shells'
 };
@@ -27,8 +29,10 @@ const state = {
   sourceLabel: 'Fallback bookmarks',
   statusSources: [],
   statusById: new Map(),
-  theme: localStorage.getItem(STORAGE_KEYS.theme) || 'synthwave',
+  theme: localStorage.getItem(STORAGE_KEYS.theme) || 'lcars',
   clicks: loadClicks(),
+  bookmarkOrder: loadBookmarkOrder(),
+  bookmarkOrderLocked: localStorage.getItem(STORAGE_KEYS.bookmarkOrderLocked) !== '0',
   tabActivity: loadTabActivity(),
   bookmarkReloadTimer: null,
   githubIncident: null
@@ -53,6 +57,20 @@ const bookmarkGrid = document.getElementById('bookmarkGrid');
 const bookmarkCount = document.getElementById('bookmarkCount');
 const tagBar = document.getElementById('tagBar');
 const toggleBtn = document.getElementById('toggleBtn');
+const bookmarkOrderLock = document.getElementById('bookmarkOrderLock');
+const bookmarkOrderHint = document.getElementById('bookmarkOrderHint');
+const openStackModalBtn = document.getElementById('openStackModalBtn');
+const stackModal = document.getElementById('stackModal');
+const closeStackModalBtn = document.getElementById('closeStackModalBtn');
+const stackNameInput = document.getElementById('stackNameInput');
+const stackBookmarkSearch = document.getElementById('stackBookmarkSearch');
+const availableBookmarkList = document.getElementById('availableBookmarkList');
+const selectedBookmarkList = document.getElementById('selectedBookmarkList');
+const availableBookmarkCount = document.getElementById('availableBookmarkCount');
+const selectedBookmarkCount = document.getElementById('selectedBookmarkCount');
+const stackModalMessage = document.getElementById('stackModalMessage');
+const cancelStackBtn = document.getElementById('cancelStackBtn');
+const createStackBtn = document.getElementById('createStackBtn');
 const sourceText = document.getElementById('sourceText');
 const helperText = document.getElementById('helperText');
 const clockTime = document.getElementById('clockTime');
@@ -119,14 +137,69 @@ state.tabListenersAttached = false;
 state.collapsedShells = loadCollapsedShells();
 state.bookmarkMatchResolver = null;
 state.bookmarkMatchPending = null;
+state.stackDraft = new Set();
+state.stackIsSaving = false;
+state.draggedBookmarkKey = '';
+state.suppressBookmarkClickUntil = 0;
+
+const THEME_COPY = {
+  lcars: {
+    mastheadEyebrow: 'LCARS // PERSONAL OPERATIONS',
+    mastheadTitle: 'FEDERATION ACCESS TERMINAL',
+    systemId: 'SYS 47-A',
+    nodeLabel: 'LCARS NODE',
+    nodeModel: 'OPS 47-A',
+    bookmarksChannel: 'LCARS 01-BOOKMARKS',
+    tabsChannel: 'LCARS 02-TABS',
+    toolsChannel: 'LCARS 03-TOOLS',
+    stackKicker: 'LCARS // BOOKMARK ASSEMBLY',
+    footerNotice: 'LCARS NOTICE // Live bookmark access requires extension new-tab context with bookmarks permission.'
+  },
+  synthwave: {
+    mastheadEyebrow: 'VAPORTAB // NIGHT DRIVE',
+    mastheadTitle: 'VaporTab-3000',
+    systemId: 'VAPOR OS',
+    nodeLabel: 'VAPORTAB NODE',
+    nodeModel: 'VT-3000',
+    bookmarksChannel: 'BOOKMARK WAVE',
+    tabsChannel: 'TAB MATRIX',
+    toolsChannel: 'DEV TOOLS',
+    stackKicker: 'VAPORTAB // BOOKMARK ASSEMBLY',
+    footerNotice: 'VAPORTAB NOTICE // Live bookmark access requires extension new-tab context with bookmarks permission.'
+  },
+  dark: {
+    mastheadEyebrow: 'PERSONAL DASHBOARD',
+    mastheadTitle: 'VaporTab-3000',
+    systemId: 'LOCAL',
+    nodeLabel: 'LOCAL NODE',
+    nodeModel: 'VT-3000',
+    bookmarksChannel: 'BOOKMARKS',
+    tabsChannel: 'TABS',
+    toolsChannel: 'TOOLS',
+    stackKicker: 'BOOKMARK ASSEMBLY',
+    footerNotice: 'Live bookmark access requires extension new-tab context with bookmarks permission.'
+  }
+};
+
+function applyThemeCopy(themeName) {
+  const copy = THEME_COPY[themeName] || THEME_COPY.dark;
+  document.title = 'VaporTab-3000';
+  for (const element of document.querySelectorAll('[data-theme-copy]')) {
+    const key = element.dataset.themeCopy || '';
+    if (copy[key]) {
+      element.textContent = copy[key];
+    }
+  }
+}
 
 function applyTheme(themeName) {
-  const allowed = new Set(['synthwave', 'dark']);
-  const nextTheme = allowed.has(themeName) ? themeName : 'synthwave';
+  const allowed = new Set(['lcars', 'synthwave', 'dark']);
+  const nextTheme = allowed.has(themeName) ? themeName : 'lcars';
   state.theme = nextTheme;
   document.documentElement.setAttribute('data-theme', nextTheme);
   document.body.setAttribute('data-theme', nextTheme);
   localStorage.setItem(STORAGE_KEYS.theme, nextTheme);
+  applyThemeCopy(nextTheme);
 
   const buttons = themeSwitcher ? themeSwitcher.querySelectorAll('.theme-btn') : [];
   for (const button of buttons) {
@@ -294,16 +367,60 @@ function collectBookmarkUrls(nodes) {
 }
 
 function getFaviconUrls(url) {
-  const encoded = encodeURIComponent(url);
-
-  const urls = [];
-
-  if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
-    urls.push(`${location.origin}/_favicon/?pageUrl=${encoded}&size=32`);
+  if (!url) {
+    return [];
   }
 
-  urls.push(`https://www.google.com/s2/favicons?domain_url=${encoded}&sz=64`);
+  const urls = [];
+  if (
+    typeof chrome !== 'undefined' &&
+    chrome.runtime &&
+    typeof chrome.runtime.getURL === 'function'
+  ) {
+    const faviconUrl = new URL(chrome.runtime.getURL('/_favicon/'));
+    faviconUrl.searchParams.set('pageUrl', url);
+    faviconUrl.searchParams.set('size', '32');
+    urls.push(faviconUrl.toString());
+  }
+
+  urls.push(
+    `https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(url)}&size=64`
+  );
   return urls;
+}
+
+function setupCachedIcon(image, fallback, iconUrls) {
+  const candidates = Array.from(new Set(
+    (Array.isArray(iconUrls) ? iconUrls : [iconUrls]).filter(Boolean)
+  ));
+  fallback.classList.add('show');
+  if (!candidates.length) {
+    image.remove();
+    return;
+  }
+
+  image.alt = '';
+  image.decoding = 'async';
+  image.loading = 'eager';
+  image.referrerPolicy = 'no-referrer';
+  image.addEventListener('load', () => {
+    image.classList.add('show');
+    fallback.classList.remove('show');
+  }, { once: true });
+
+  let candidateIndex = 0;
+  const loadNextCandidate = () => {
+    if (candidateIndex >= candidates.length) {
+      image.remove();
+      fallback.classList.add('show');
+      return;
+    }
+    image.src = candidates[candidateIndex];
+    candidateIndex += 1;
+  };
+
+  image.addEventListener('error', loadNextCandidate);
+  loadNextCandidate();
 }
 
 function getMonogram(bookmark) {
@@ -323,6 +440,19 @@ function loadClicks() {
 
 function saveClicks() {
   localStorage.setItem(STORAGE_KEYS.clicks, JSON.stringify(state.clicks));
+}
+
+function loadBookmarkOrder() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.bookmarkOrder) || '[]');
+    return Array.isArray(parsed) ? parsed.filter((key) => typeof key === 'string' && key) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveBookmarkOrder() {
+  localStorage.setItem(STORAGE_KEYS.bookmarkOrder, JSON.stringify(state.bookmarkOrder));
 }
 
 function loadTabActivity() {

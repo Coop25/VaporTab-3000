@@ -1,0 +1,60 @@
+name: Build release packages
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: Package Chrome and Firefox
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out the released version
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Install Task
+        uses: go-task/setup-task@v2
+        with:
+          version: 3.x
+
+      - name: Build browser packages
+        run: task package:force
+
+      - name: Verify and attach packages to the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          $packages = @(
+            Get-ChildItem `
+              -LiteralPath web-ext-artifacts `
+              -Filter 'vaportab-3000-*.zip' `
+              -File
+          )
+
+          if ($packages.Count -ne 2) {
+            throw "Expected exactly two browser packages, found $($packages.Count)."
+          }
+
+          $chromePackage = @($packages | Where-Object Name -Like '*-chrome.zip')
+          $firefoxPackage = @($packages | Where-Object Name -Like '*-firefox.zip')
+
+          if ($chromePackage.Count -ne 1 -or $firefoxPackage.Count -ne 1) {
+            throw 'The Chrome or Firefox release package is missing.'
+          }
+
+          foreach ($package in $packages) {
+            gh release upload $env:RELEASE_TAG $package.FullName --clobber
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to upload $($package.Name) to release $env:RELEASE_TAG."
+            }
+          }
+

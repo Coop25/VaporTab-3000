@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>New Tab</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>VaporTab-3000</title>
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
+  <link rel="shortcut icon" type="image/png" href="icons/icon-32.png" />
+  <link rel="stylesheet" href="styles.css?v=20260723.5" />
 </head>
 <body>
   <div class="scene" aria-hidden="true">
@@ -15,10 +18,22 @@
   </div>
 
   <main class="rig">
+    <header class="lcars-masthead">
+      <div class="lcars-cap" aria-hidden="true"></div>
+      <div class="lcars-title">
+        <p data-theme-copy="mastheadEyebrow">VAPORTAB // PERSONAL OPERATIONS</p>
+        <h1 data-theme-copy="mastheadTitle">VaporTab-3000</h1>
+      </div>
+      <div class="lcars-stardate">
+        <span data-theme-copy="systemId">LOCAL</span>
+        <strong>ONLINE</strong>
+      </div>
+    </header>
+
     <aside class="tower">
       <div class="tower-head">
-        <p class="tower-kicker">Neon BIOS</p>
-        <p class="tower-model">VX-8086</p>
+        <p class="tower-kicker" data-theme-copy="nodeLabel">VAPORTAB NODE</p>
+        <p class="tower-model" data-theme-copy="nodeModel">VT-3000</p>
       </div>
 
       <section class="tower-block clock-block" aria-live="polite">
@@ -34,6 +49,7 @@
       <section class="tower-block">
         <h2>Theme</h2>
         <div id="themeSwitcher" class="theme-switcher">
+          <button type="button" class="mini-btn theme-btn" data-theme="lcars">LCARS</button>
           <button type="button" class="mini-btn theme-btn" data-theme="synthwave">Synthwave</button>
           <button type="button" class="mini-btn theme-btn" data-theme="dark">Dark Mode</button>
         </div>
@@ -76,6 +92,10 @@
           <button id="refreshStatusBtn" class="mini-btn" type="button">Refresh</button>
           <button id="openStatusModalBtn" class="mini-btn status-add-btn" type="button">Add</button>
         </div>
+        <div id="statusPulse" class="status-pulse warn" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="statusPulseText">NET STATUS: SYNCING</span>
+        </div>
         <div id="statusList" class="status-list compact-status-list" aria-live="polite"></div>
       </section>
 
@@ -84,8 +104,8 @@
     <section class="monitor-stack">
       <section class="monitor-shell bookmark-terminal" data-shell-id="bookmarks">
         <div class="monitor-header" role="button" tabindex="0" aria-expanded="true" title="Collapse panel">
-          <p class="brand">Bookmark Wave Terminal</p>
-          <p class="channel">CH-84</p>
+          <p class="brand">Library Access</p>
+          <p class="channel" data-theme-copy="bookmarksChannel">BOOKMARKS</p>
           <div class="leds" aria-hidden="true">
             <span></span>
             <span></span>
@@ -108,9 +128,19 @@
             <div class="input-row">
               <input id="searchInput" class="search" type="text" placeholder="Type bookmark, URL, or web query..." autocomplete="off" />
               <button id="refreshBtn" class="btn" type="button">Reload</button>
+              <button id="openStackModalBtn" class="btn stack-open-btn" type="button">Create Stack</button>
             </div>
 
-            <div id="tagBar" class="channel-strip" aria-label="Bookmark folders"></div>
+            <div class="bookmark-filter-row">
+              <div id="tagBar" class="channel-strip" aria-label="Bookmark folders"></div>
+              <div class="bookmark-order-controls">
+                <label class="bookmark-order-toggle" for="bookmarkOrderLock" title="Keep bookmark cards in a custom order">
+                  <input id="bookmarkOrderLock" type="checkbox" checked />
+                  <span>Fixed order</span>
+                </label>
+                <p id="bookmarkOrderHint" class="bookmark-order-hint">Drag to arrange</p>
+              </div>
+            </div>
             <div id="bookmarkGrid" class="rack" aria-live="polite"></div>
 
             <div class="toggle-wrap">
@@ -127,8 +157,8 @@
 
       <section class="monitor-shell tabs-terminal" data-shell-id="tabs">
         <div class="monitor-header" role="button" tabindex="0" aria-expanded="true" title="Collapse panel">
-          <p class="brand">Tab Matrix Terminal</p>
-          <p class="channel">TM-42</p>
+          <p class="brand">Active Workspaces</p>
+          <p class="channel" data-theme-copy="tabsChannel">TABS</p>
           <div class="leds" aria-hidden="true">
             <span></span>
             <span></span>
@@ -161,8 +191,8 @@
 
       <section class="monitor-shell devtools-terminal" data-shell-id="devtools">
         <div class="monitor-header" role="button" tabindex="0" aria-expanded="true" title="Collapse panel">
-          <p class="brand">Dev Tool Terminal</p>
-          <p class="channel">DX-91</p>
+          <p class="brand">Engineering Utility</p>
+          <p class="channel" data-theme-copy="toolsChannel">TOOLS</p>
           <div class="leds" aria-hidden="true">
             <span></span>
             <span></span>
@@ -251,12 +281,59 @@
     </div>
   </div>
 
-  <p id="footerNote" class="footer-note">Live bookmark access requires extension new-tab context with bookmarks permission.</p>
+  <div id="stackModal" class="status-modal-backdrop" hidden>
+    <div class="status-modal stack-editor-modal" role="dialog" aria-modal="true" aria-labelledby="stackModalTitle">
+      <div class="status-modal-head">
+        <div>
+          <p class="stack-modal-kicker" data-theme-copy="stackKicker">VAPORTAB // BOOKMARK ASSEMBLY</p>
+          <h2 id="stackModalTitle">Create Tab Stack</h2>
+        </div>
+        <button id="closeStackModalBtn" class="status-modal-close" type="button" aria-label="Close">X</button>
+      </div>
+      <div class="status-modal-body stack-modal-body">
+        <label class="stack-field">
+          <span>Stack name</span>
+          <input id="stackNameInput" class="status-input stack-name-input" type="text" placeholder="Morning Ops" maxlength="64" />
+        </label>
+        <label class="stack-field">
+          <span>Find bookmarks</span>
+          <input id="stackBookmarkSearch" class="status-input" type="search" placeholder="Search name, URL, or folder..." autocomplete="off" />
+        </label>
+        <div class="stack-picker">
+          <section class="stack-picker-panel" aria-labelledby="availableBookmarksTitle">
+            <div class="stack-picker-head">
+              <h3 id="availableBookmarksTitle">All Bookmarks</h3>
+              <span id="availableBookmarkCount">0 available</span>
+            </div>
+            <div id="availableBookmarkList" class="stack-picker-list" aria-live="polite"></div>
+          </section>
+          <div class="stack-picker-transfer" aria-hidden="true">
+            <span>ADD →</span>
+            <span>← REMOVE</span>
+          </div>
+          <section class="stack-picker-panel selected-stack-panel" aria-labelledby="selectedBookmarksTitle">
+            <div class="stack-picker-head">
+              <h3 id="selectedBookmarksTitle">Current Stack</h3>
+              <span id="selectedBookmarkCount">0 selected</span>
+            </div>
+            <div id="selectedBookmarkList" class="stack-picker-list selected-bookmark-list" aria-live="polite"></div>
+          </section>
+        </div>
+        <p id="stackModalMessage" class="stack-modal-message">Add at least two bookmarks. The final item opens in front.</p>
+      </div>
+      <div class="status-modal-actions stack-modal-actions">
+        <button id="cancelStackBtn" class="mini-btn" type="button">Cancel</button>
+        <button id="createStackBtn" class="mini-btn stack-create-btn" type="button" disabled>Create Stack</button>
+      </div>
+    </div>
+  </div>
 
-  <script src="js/app-core.js"></script>
-  <script src="js/app-status.js"></script>
-  <script src="js/app-tabs.js"></script>
-  <script src="js/app-bookmarks.js"></script>
-  <script src="js/app-init.js"></script>
+  <p id="footerNote" class="footer-note" data-theme-copy="footerNotice">Live bookmark access requires extension new-tab context with bookmarks permission.</p>
+
+  <script src="js/app-core.js?v=20260723.14"></script>
+  <script src="js/app-status.js?v=20260723.1"></script>
+  <script src="js/app-tabs.js?v=20260723.10"></script>
+  <script src="js/app-bookmarks.js?v=20260723.11"></script>
+  <script src="js/app-init.js?v=20260723.8"></script>
 </body>
 </html>

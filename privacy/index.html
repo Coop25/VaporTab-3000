@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Privacy Policy for the VaporTab 3000 browser extension.">
+  <meta name="color-scheme" content="dark light">
+  <title>Privacy Policy | VaporTab 3000</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --background: #111217;
+      --surface: #191b22;
+      --surface-raised: #20232c;
+      --border: #343845;
+      --text: #f2f3f7;
+      --muted: #b6bac6;
+      --accent: #ff9b7a;
+      --accent-soft: rgba(255, 155, 122, 0.12);
+      --link: #ffc964;
+      --content-width: 760px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    a {
+      color: var(--link);
+      text-underline-offset: 0.18em;
+    }
+
+    a:hover {
+      text-decoration-thickness: 2px;
+    }
+
+    .site-header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(17, 18, 23, 0.92);
+    }
+
+    .header-inner,
+    main,
+    footer {
+      width: min(calc(100% - 2rem), var(--content-width));
+      margin-inline: auto;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 64px;
+      gap: 1rem;
+    }
+
+    .brand {
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+
+    .document-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    main {
+      padding-block: clamp(3rem, 8vw, 6rem);
+    }
+
+    .eyebrow {
+      margin: 0 0 0.75rem;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 750;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2 {
+      line-height: 1.2;
+      text-wrap: balance;
+    }
+
+    h1 {
+      max-width: 12ch;
+      margin: 0;
+      font-size: clamp(2.4rem, 8vw, 4.6rem);
+      letter-spacing: -0.045em;
+    }
+
+    h2 {
+      margin: 0 0 0.8rem;
+      font-size: clamp(1.25rem, 3vw, 1.55rem);
+      letter-spacing: -0.015em;
+    }
+
+    p,
+    ul {
+      margin-top: 0;
+    }
+
+    .updated {
+      margin: 1rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .summary {
+      margin: 2.5rem 0 1rem;
+      padding: 1.35rem 1.5rem;
+      border: 1px solid rgba(255, 155, 122, 0.4);
+      border-radius: 12px;
+      background: var(--accent-soft);
+      font-size: 1.08rem;
+    }
+
+    .summary strong {
+      color: var(--accent);
+    }
+
+    .policy-section {
+      padding-block: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .policy-section:last-of-type {
+      border-bottom: 0;
+    }
+
+    ul {
+      padding-left: 1.3rem;
+    }
+
+    li + li {
+      margin-top: 0.35rem;
+    }
+
+    .service-list {
+      display: grid;
+      gap: 0.75rem;
+      padding: 0;
+      list-style: none;
+    }
+
+    .service-list li {
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+    }
+
+    .service-list strong {
+      display: block;
+      margin-bottom: 0.15rem;
+      color: var(--text);
+    }
+
+    .closing {
+      margin-top: 2rem;
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px;
+      background: var(--surface-raised);
+    }
+
+    footer {
+      padding-block: 1.5rem 2.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    @media (max-width: 520px) {
+      .header-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: center;
+        padding-block: 0.8rem;
+      }
+
+      .summary,
+      .closing {
+        padding: 1.1rem;
+      }
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        color-scheme: light;
+        --background: #f7f7f8;
+        --surface: #ffffff;
+        --surface-raised: #eceef2;
+        --border: #d8dae0;
+        --text: #17181c;
+        --muted: #5c606b;
+        --accent: #a33f23;
+        --accent-soft: rgba(196, 75, 42, 0.08);
+        --link: #875500;
+      }
+
+      .site-header {
+        background: rgba(247, 247, 248, 0.92);
+      }
+    }
+
+    @media print {
+      :root {
+        color-scheme: light;
+        --background: #ffffff;
+        --surface: #ffffff;
+        --surface-raised: #f3f3f3;
+        --border: #cccccc;
+        --text: #000000;
+        --muted: #444444;
+        --accent: #000000;
+        --accent-soft: #f3f3f3;
+        --link: #000000;
+      }
+
+      .site-header {
+        display: none;
+      }
+
+      main {
+        padding-block: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="VaporTab 3000 privacy policy">VaporTab 3000</a>
+      <span class="document-label">Privacy Policy</span>
+    </div>
+  </header>
+
+  <main>
+    <p class="eyebrow">Privacy Policy</p>
+    <h1>Your data stays yours.</h1>
+    <p class="updated">Last updated: <time datetime="2026-07-24">July 24, 2026</time></p>
+
+    <p class="summary">
+      VaporTab 3000 does not operate user accounts, collect analytics, serve advertisements,
+      sell personal information, or send telemetry to its developer. Your settings stay in
+      your browser.
+    </p>
+
+    <section class="policy-section" aria-labelledby="information">
+      <h2 id="information">Information We Collect</h2>
+      <p><strong>VaporTab 3000 does not collect or sell personal information.</strong></p>
+      <p>The extension does not:</p>
+      <ul>
+        <li>Operate a developer-controlled database of user information</li>
+        <li>Collect browsing or search history for the developer</li>
+        <li>Collect analytics or usage statistics</li>
+        <li>Track activity across websites</li>
+        <li>Display advertisements</li>
+        <li>Upload bookmarks, open-tab lists, or preferences to the developer</li>
+      </ul>
+    </section>
+
+    <section class="policy-section" aria-labelledby="local-storage">
+      <h2 id="local-storage">Local Storage</h2>
+      <p>
+        VaporTab 3000 stores preferences locally in your browser. Depending on the features
+        you use, locally stored information may include:
+      </p>
+      <ul>
+        <li>Theme selection</li>
+        <li>Bookmark click counts, layout, ordering, and fixed-order preference</li>
+        <li>Panel visibility and interface preferences</li>
+        <li>Recent tab activity used to label open tabs</li>
+        <li>Status services that you add to the Net Ops panel</li>
+      </ul>
+      <p>
+        This information remains in your browser profile. VaporTab 3000 does not transmit
+        these settings to the developer.
+      </p>
+    </section>
+
+    <section class="policy-section" aria-labelledby="permissions">
+      <h2 id="permissions">Browser Permissions</h2>
+      <p>VaporTab 3000 requests permissions only to provide its visible features:</p>
+      <ul>
+        <li><strong>Bookmarks</strong> — Displays, organizes, reorders, and creates bookmark stacks.</li>
+        <li><strong>Tabs</strong> — Displays and manages currently open tabs.</li>
+        <li><strong>Favicon</strong> — Reads browser-cached site icons for bookmark and tab cards.</li>
+        <li><strong>Host access</strong> — Allows the status panel and favicon fallback to contact their public services.</li>
+        <li><strong>New Tab Override</strong> — Replaces the browser's default new-tab page with VaporTab 3000.</li>
+      </ul>
+      <p>These permissions are not used to build a user profile or send browser data to the developer.</p>
+    </section>
+
+    <section class="policy-section" aria-labelledby="connectivity">
+      <h2 id="connectivity">Internet Connectivity</h2>
+      <p>
+        Most VaporTab 3000 features run locally. Some visible features make limited requests
+        directly from your browser:
+      </p>
+      <ul class="service-list">
+        <li>
+          <strong>Public status services</strong>
+          The Net Ops panel requests operational status from GitHub Status and any additional
+          status pages you choose to add.
+        </li>
+        <li>
+          <strong>Google favicon service</strong>
+          When a browser-cached icon is unavailable, the extension may send the relevant
+          bookmark or tab URL to Google's favicon service to retrieve an icon.
+        </li>
+        <li>
+          <strong>User-requested navigation</strong>
+          Opening a bookmark, switching to a website, or submitting a web search connects to
+          the destination you selected in the normal way.
+        </li>
+      </ul>
+      <p>
+        These requests are made to provide the feature you see. VaporTab 3000 has no
+        developer-operated server and does not receive a copy of these requests.
+      </p>
+    </section>
+
+    <section class="policy-section" aria-labelledby="third-parties">
+      <h2 id="third-parties">Third-Party Services</h2>
+      <p>
+        VaporTab 3000 does not include third-party advertising, analytics, tracking, or crash
+        reporting tools. Public status providers, Google, search providers, and websites you
+        open may process normal connection information under their own privacy policies.
+      </p>
+    </section>
+
+    <section class="policy-section" aria-labelledby="children">
+      <h2 id="children">Children's Privacy</h2>
+      <p>
+        VaporTab 3000 does not knowingly collect personal information from anyone, including
+        children under the age of 13.
+      </p>
+    </section>
+
+    <section class="policy-section" aria-labelledby="changes">
+      <h2 id="changes">Changes to This Privacy Policy</h2>
+      <p>
+        If VaporTab 3000 gains features that change its privacy practices, this page will be
+        updated and the “Last updated” date will be revised.
+      </p>
+    </section>
+
+    <section class="policy-section" aria-labelledby="contact">
+      <h2 id="contact">Contact</h2>
+      <p>
+        Questions about this policy or VaporTab 3000 can be submitted through the support
+        information on the extension's store listing or through the project's GitHub repository.
+      </p>
+    </section>
+
+    <p class="closing">
+      <strong>In summary:</strong> VaporTab 3000 keeps your settings in your browser and does
+      not track you. Limited network requests support status checks, missing favicons, searches,
+      and destinations you choose to open.
+    </p>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 VaporTab 3000</p>
+  </footer>
+</body>
+</html>

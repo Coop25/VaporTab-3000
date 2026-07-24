@@ -118,6 +118,12 @@ function getIncidentAnchor(url) {
   }
 }
 
+function getFreshApiUrl(url, requestTime) {
+  const parsed = new URL(url);
+  parsed.searchParams.set('_lcars', String(requestTime));
+  return parsed.toString();
+}
+
 async function fetchStatus(source) {
   const endpoint = getStatusApiUrl(source.url);
   const startedAt = Date.now();
@@ -358,9 +364,13 @@ async function refreshGitHubIncidentCard() {
   const startedAt = Date.now();
 
   try {
+    const requestOptions = {
+      cache: 'no-store',
+      credentials: 'omit'
+    };
     const [statusRes, incidentsRes] = await Promise.all([
-      fetch(GITHUB_STATUS_API_URL, { cache: 'no-store' }),
-      fetch(GITHUB_INCIDENTS_API_URL, { cache: 'no-store' })
+      fetch(getFreshApiUrl(GITHUB_STATUS_API_URL, startedAt), requestOptions),
+      fetch(getFreshApiUrl(GITHUB_INCIDENTS_API_URL, startedAt), requestOptions)
     ]);
 
     if (!statusRes.ok) {
@@ -379,8 +389,13 @@ async function refreshGitHubIncidentCard() {
       : [];
 
     const latestIncident = incidents[0] || null;
-    const latestEnd = latestIncident?.resolved_at || latestIncident?.created_at || null;
-    const currentStreakDays = latestEnd ? fullDaysBetween(latestEnd, Date.now()) : 0;
+    const latestResolvedAt = latestIncident?.resolved_at || null;
+    const latestStartedAt = latestIncident?.started_at || latestIncident?.created_at || null;
+    const latestEnd = latestResolvedAt || latestStartedAt;
+    const incidentIsResolved = Boolean(latestResolvedAt);
+    const currentStreakDays = incidentIsResolved && latestEnd
+      ? fullDaysBetween(latestEnd, startedAt)
+      : 0;
     const statusDescription = statusData?.status?.description || 'Unknown';
     const indicator = statusData?.status?.indicator || 'unknown';
     const tone = getStatusTone(indicator);
@@ -391,8 +406,8 @@ async function refreshGitHubIncidentCard() {
     for (let index = 0; index < incidents.length - 1; index += 1) {
       const newer = incidents[index];
       const older = incidents[index + 1];
-      const newerStart = newer?.created_at;
-      const olderEnd = older?.resolved_at || older?.created_at;
+      const newerStart = newer?.started_at || newer?.created_at;
+      const olderEnd = older?.resolved_at || older?.started_at || older?.created_at;
 
       if (!newerStart || !olderEnd) {
         continue;
@@ -407,15 +422,16 @@ async function refreshGitHubIncidentCard() {
     }
 
     const lastIncidentName = latestIncident?.name || 'No recent incidents found';
-    const lastIncidentWhen = latestIncident?.created_at ? formatDateTime(latestIncident.created_at) : 'Unknown';
+    const lastIncidentWhen = latestEnd ? formatDateTime(latestEnd) : 'Unknown';
     const incidentLink = getIncidentAnchor(latestIncident?.shortlink || GITHUB_STATUS_HISTORY_URL);
+    const incidentTimeLabel = incidentIsResolved ? 'resolved' : 'started';
 
     state.githubIncident = {
       tone,
       badgeText: tone === 'ok' ? 'LIVE' : tone === 'down' ? 'ALERT' : 'WARN',
       currentStreakDays,
       rangeLabel: latestIncident
-        ? `Last incident started ${lastIncidentWhen}`
+        ? `Last incident ${incidentTimeLabel} ${lastIncidentWhen}`
         : 'No GitHub incidents found in feed',
       summary: `${statusDescription}. Last incident: ${lastIncidentName}.`,
       highScoreLabel: `High score this year: ${highScore} day${highScore === 1 ? '' : 's'}`,

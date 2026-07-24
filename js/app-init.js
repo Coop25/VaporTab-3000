@@ -23,6 +23,46 @@ toggleBtn.addEventListener('click', () => {
   localStorage.setItem(STORAGE_KEYS.expanded, state.expanded ? '1' : '0');
   renderBookmarks();
 });
+if (bookmarkOrderLock) {
+  bookmarkOrderLock.checked = state.bookmarkOrderLocked;
+  bookmarkOrderLock.addEventListener('change', () => {
+    state.bookmarkOrderLocked = bookmarkOrderLock.checked;
+    localStorage.setItem(STORAGE_KEYS.bookmarkOrderLocked, state.bookmarkOrderLocked ? '1' : '0');
+    state.draggedBookmarkKey = '';
+    clearBookmarkDropMarkers();
+    renderBookmarks();
+  });
+}
+if (openStackModalBtn) {
+  openStackModalBtn.addEventListener('click', openStackModal);
+}
+if (closeStackModalBtn) {
+  closeStackModalBtn.addEventListener('click', closeStackModal);
+}
+if (cancelStackBtn) {
+  cancelStackBtn.addEventListener('click', closeStackModal);
+}
+if (createStackBtn) {
+  createStackBtn.addEventListener('click', createStackFromDraft);
+}
+if (stackNameInput) {
+  stackNameInput.addEventListener('input', renderStackModal);
+  stackNameInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !createStackBtn.disabled) {
+      createStackFromDraft();
+    }
+  });
+}
+if (stackBookmarkSearch) {
+  stackBookmarkSearch.addEventListener('input', renderStackModal);
+}
+if (stackModal) {
+  stackModal.addEventListener('click', (event) => {
+    if (event.target === stackModal) {
+      closeStackModal();
+    }
+  });
+}
 
 addStatusBtn.addEventListener('click', addStatusSourceFromInputs);
 statusUrlInput.addEventListener('keydown', (event) => {
@@ -159,6 +199,10 @@ if (calcInput) {
   });
 }
 document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && stackModal && !stackModal.hidden) {
+    closeStackModal();
+    return;
+  }
   if (event.key === 'Escape' && statusModal && !statusModal.hidden) {
     closeStatusModal();
     return;

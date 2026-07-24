@@ -1,0 +1,27 @@
+version: "3"
+
+tasks:
+  default:
+    desc: Package VaporTab 3000 for Chrome and Firefox
+    cmds:
+      - task: package
+
+  package:
+    desc: Build minimal Chrome and Firefox extension ZIP files
+    cmds:
+      - powershell -NoProfile -ExecutionPolicy Bypass -File ./package-extensions.ps1
+    sources:
+      - manifest.json
+      - new-tab.html
+      - styles.css
+      - js/*.js
+      - icons/*.png
+      - package-extensions.ps1
+    generates:
+      - web-ext-artifacts/vaportab-3000-*-chrome.zip
+      - web-ext-artifacts/vaportab-3000-*-firefox.zip
+
+  package:force:
+    desc: Rebuild both extension ZIP files even when sources are unchanged
+    cmds:
+      - powershell -NoProfile -ExecutionPolicy Bypass -File ./package-extensions.ps1

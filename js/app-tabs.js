@@ -17,6 +17,7 @@ function normalizeTabEntry(tab) {
     pinned: Boolean(tab?.pinned),
     title,
     url,
+    favIconUrl: String(tab?.favIconUrl || ''),
     host: shortHost(url || 'chrome://newtab'),
     lastActiveAt
   };
@@ -330,27 +331,14 @@ function renderTabsList() {
 
     const favicon = document.createElement('img');
     favicon.className = 'tab-favicon';
-    const faviconUrls = getFaviconUrls(tab.url || 'chrome://newtab');
-    let faviconIndex = 0;
-    favicon.src = faviconUrls[faviconIndex];
-    favicon.alt = '';
-    favicon.loading = 'lazy';
-    favicon.decoding = 'async';
-    favicon.referrerPolicy = 'no-referrer';
 
     const fallback = document.createElement('span');
     fallback.className = 'tab-fallback';
     fallback.textContent = getMonogram({ url: tab.url, name: tab.title });
-
-    favicon.addEventListener('error', () => {
-      faviconIndex += 1;
-      if (faviconIndex < faviconUrls.length) {
-        favicon.src = faviconUrls[faviconIndex];
-        return;
-      }
-      favicon.style.display = 'none';
-      fallback.classList.add('show');
-    });
+    setupCachedIcon(favicon, fallback, [
+      tab.favIconUrl,
+      ...getFaviconUrls(tab.url)
+    ]);
 
     const name = document.createElement('p');
     name.className = 'tab-title';
