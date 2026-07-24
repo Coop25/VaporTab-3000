@@ -110,7 +110,8 @@ sources unchanged.
 
 The task creates Chrome and Firefox ZIP files in `web-ext-artifacts/`. Packaging
 uses an explicit runtime-file allowlist, so documentation, repository settings,
-the privacy page, and existing build artifacts are not included.
+the privacy page, and existing build artifacts are not included. The output
+folder is ignored by Git and is never used as release source material.
 
 When a GitHub Release is published, the `Build release packages` workflow checks
 out that release tag, runs `task package:force`, and attaches both ZIP files to

@@ -4,6 +4,12 @@ on:
   release:
     types:
       - published
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing GitHub Release tag to rebuild
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -17,7 +23,7 @@ jobs:
       - name: Check out the released version
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ github.event.release.tag_name || inputs.release_tag }}
 
       - name: Install Task
         uses: go-task/setup-task@v2
@@ -31,30 +37,29 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
         run: |
+          $manifest = Get-Content -Raw -LiteralPath manifest.json | ConvertFrom-Json
+          $version = [string]$manifest.version
+
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            throw 'manifest.json does not contain a version.'
+          }
+
           $packages = @(
-            Get-ChildItem `
-              -LiteralPath web-ext-artifacts `
-              -Filter 'vaportab-3000-*.zip' `
-              -File
+            Join-Path web-ext-artifacts "vaportab-3000-$version-chrome.zip"
+            Join-Path web-ext-artifacts "vaportab-3000-$version-firefox.zip"
           )
 
-          if ($packages.Count -ne 2) {
-            throw "Expected exactly two browser packages, found $($packages.Count)."
-          }
-
-          $chromePackage = @($packages | Where-Object Name -Like '*-chrome.zip')
-          $firefoxPackage = @($packages | Where-Object Name -Like '*-firefox.zip')
-
-          if ($chromePackage.Count -ne 1 -or $firefoxPackage.Count -ne 1) {
-            throw 'The Chrome or Firefox release package is missing.'
-          }
-
           foreach ($package in $packages) {
-            gh release upload $env:RELEASE_TAG $package.FullName --clobber
-            if ($LASTEXITCODE -ne 0) {
-              throw "Failed to upload $($package.Name) to release $env:RELEASE_TAG."
+            if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
+              throw "Expected release package was not generated: $package"
             }
           }
 
+          foreach ($package in $packages) {
+            gh release upload $env:RELEASE_TAG $package --clobber
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to upload $package to release $env:RELEASE_TAG."
+            }
+          }
