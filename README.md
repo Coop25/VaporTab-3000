@@ -46,10 +46,10 @@ There is no build step.
 1. Open the browser extensions page.
 2. Enable developer mode.
 3. Choose `Load unpacked`.
-4. Select this folder: `F:\GitHub\New-Tab-Page`
+4. Select the repository folder containing `manifest.json`.
 5. Open a new tab.
 
-Firefox, Chrome, Chromium, and Vivaldi all use the same [manifest.json](/f:/GitHub/New-Tab-Page/manifest.json:1) and [new-tab.html](/f:/GitHub/New-Tab-Page/new-tab.html:1). There are no browser-specific page copies.
+Firefox, Chrome, Chromium, and Vivaldi all use the same [manifest.json](manifest.json) and [new-tab.html](new-tab.html). There are no browser-specific page copies.
 
 ## Stacked Bookmarks
 
@@ -87,16 +87,15 @@ Current behavior:
 
 ## Project Layout
 
-- [new-tab.html](/f:/GitHub/New-Tab-Page/new-tab.html:1): main markup
-- [styles.css](/f:/GitHub/New-Tab-Page/styles.css:1): all styling and responsive layout
-- [privacy/index.html](/f:/GitHub/New-Tab-Page/privacy/index.html:1): standalone privacy policy for GitHub Pages
+- [new-tab.html](new-tab.html): main markup
+- [styles.css](styles.css): all styling and responsive layout
+- [privacy/index.html](privacy/index.html): standalone privacy policy for GitHub Pages
 - `icons/`: shared browser and store icons in 16, 32, 48, and 128 pixel sizes
-- [js/app-core.js](/f:/GitHub/New-Tab-Page/js/app-core.js:1): shared state, DOM references, helpers, calculator, permissions, and browser API access
-- [js/app-status.js](/f:/GitHub/New-Tab-Page/js/app-status.js:1): status feed logic, GitHub watch card, and bookmark match modal logic
-- [js/app-tabs.js](/f:/GitHub/New-Tab-Page/js/app-tabs.js:1): tab rendering, focusing, closing, and move helpers
-- [js/app-bookmarks.js](/f:/GitHub/New-Tab-Page/js/app-bookmarks.js:1): bookmark loading, filtering, stacked bookmark launch logic, and address handling
-- [js/app-init.js](/f:/GitHub/New-Tab-Page/js/app-init.js:1): event listeners and bootstrapping
-- [app.js](/f:/GitHub/New-Tab-Page/app.js:1): legacy placeholder noting the split into `js/`
+- [js/app-core.js](js/app-core.js): shared state, DOM references, helpers, calculator, permissions, and browser API access
+- [js/app-status.js](js/app-status.js): status feed logic, GitHub watch card, and bookmark match modal logic
+- [js/app-tabs.js](js/app-tabs.js): tab rendering, focusing, closing, and move helpers
+- [js/app-bookmarks.js](js/app-bookmarks.js): bookmark loading, filtering, stacked bookmark launch logic, and address handling
+- [js/app-init.js](js/app-init.js): event listeners and bootstrapping
 
 ## Development Notes
 
