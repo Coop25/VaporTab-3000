@@ -514,6 +514,25 @@ body[data-theme='dark'] .tower::-webkit-scrollbar-thumb:hover {
   color: var(--cyan);
 }
 
+.support-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.66rem;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
+  opacity: 0.78;
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.support-link:hover,
+.support-link:focus-visible {
+  color: var(--cyan);
+  opacity: 1;
+}
+
 .sidebar-section-head {
   display: grid;
   gap: 3px;

@@ -32,11 +32,11 @@ A custom Chromium new-tab page with a retro terminal look, live bookmarks, cross
 
 ## Requirements
 
-- A Chromium browser that supports Manifest V3 extensions
+- A Chromium browser or Firefox version that supports Manifest V3 extensions
 - Permissions used by this extension:
   - `bookmarks`
   - `tabs`
-  - `favicon`
+  - `favicon` (Chrome package only; Firefox does not support this permission)
 
 ## Install / Load
 
@@ -48,7 +48,10 @@ There is no build step.
 4. Select the repository folder containing `manifest.json`.
 5. Open a new tab.
 
-Firefox, Chrome, Chromium, and Vivaldi all use the same [manifest.json](manifest.json) and [new-tab.html](new-tab.html). There are no browser-specific page copies.
+Firefox, Chrome, Chromium, and Vivaldi use the same [new-tab.html](new-tab.html)
+and runtime code. The packaging script makes a browser-specific manifest:
+Chrome keeps its `favicon` permission, while Firefox omits that unsupported
+permission and uses the existing remote-icon/monogram fallback.
 
 ## Stacked Bookmarks
 
@@ -111,7 +114,9 @@ sources unchanged.
 The task creates Chrome and Firefox ZIP files in `web-ext-artifacts/`. Packaging
 uses an explicit runtime-file allowlist, so documentation, repository settings,
 the privacy page, and existing build artifacts are not included. The output
-folder is ignored by Git and is never used as release source material.
+folder is ignored by Git and is never used as release source material. Upload
+the ZIP whose filename matches the target store; the two manifests are not
+interchangeable.
 
 When a GitHub Release is published, the `Build release packages` workflow checks
 out that release tag, runs `task package:force`, and attaches both ZIP files to
@@ -133,4 +138,4 @@ The sidebar status cards rely on public status endpoints. Temporary fetch failur
 
 ## Version
 
-Current manifest version: `0.2.0`
+Current manifest version: `0.2.2`

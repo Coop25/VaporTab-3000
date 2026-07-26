@@ -55,6 +55,21 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $targets = @('chrome', 'firefox')
 $results = foreach ($target in $targets) {
+  # Chrome exposes its cached favicon service through the Chromium-only
+  # "favicon" permission. Firefox rejects that permission, so each store
+  # package receives a small browser-specific manifest while sharing all
+  # runtime files.
+  $targetManifest = Get-Content -Raw -LiteralPath $manifestPath | ConvertFrom-Json
+  if ($target -eq 'firefox') {
+    $targetManifest.permissions = @(
+      $targetManifest.permissions | Where-Object { $_ -ne 'favicon' }
+    )
+  }
+  else {
+    $targetManifest.PSObject.Properties.Remove('browser_specific_settings')
+  }
+  $targetManifestJson = $targetManifest | ConvertTo-Json -Depth 20
+
   $archiveName = "vaportab-3000-$version-$target.zip"
   $archivePath = Join-Path $artifactDirectory $archiveName
   $fileStream = [IO.File]::Open($archivePath, [IO.FileMode]::Create)
@@ -68,6 +83,32 @@ $results = foreach ($target in $targets) {
 
     try {
       foreach ($relativePath in $packageFiles) {
+        if ($relativePath -eq 'manifest.json') {
+          $manifestEntry = $archive.CreateEntry(
+            'manifest.json',
+            [IO.Compression.CompressionLevel]::Optimal
+          )
+          $manifestStream = $manifestEntry.Open()
+          try {
+            $manifestWriter = [IO.StreamWriter]::new(
+              $manifestStream,
+              [Text.UTF8Encoding]::new($false),
+              1024,
+              $true
+            )
+            try {
+              $manifestWriter.Write($targetManifestJson)
+            }
+            finally {
+              $manifestWriter.Dispose()
+            }
+          }
+          finally {
+            $manifestStream.Dispose()
+          }
+          continue
+        }
+
         $sourcePath = Join-Path $projectRoot ($relativePath -replace '/', [IO.Path]::DirectorySeparatorChar)
         [IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
           $archive,
@@ -108,4 +149,3 @@ $results = foreach ($target in $targets) {
 }
 
 $results | Format-Table -AutoSize
-
