@@ -290,7 +290,7 @@ function finishPageTour() {
   }
 
   tourActive = false;
-  localStorage.setItem(STORAGE_KEYS.tourCompleted, '1');
+  writePersistentStorage(STORAGE_KEYS.tourCompleted, '1');
   cancelAnimationFrame(tourPositionFrame);
   restoreTourShells();
   setTourStackDemoMode('');
@@ -357,7 +357,7 @@ function initializePageTour() {
   document.addEventListener('scroll', queueTourPosition, true);
   document.addEventListener('keydown', handleTourKeydown);
 
-  if (localStorage.getItem(STORAGE_KEYS.tourCompleted) !== '1') {
+  if (readPersistentStorage(STORAGE_KEYS.tourCompleted) !== '1') {
     setTimeout(startPageTour, 700);
   }
 }

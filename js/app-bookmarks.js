@@ -724,7 +724,7 @@ function renderTags() {
     btn.textContent = tag;
     btn.addEventListener('click', () => {
       state.activeTag = tag;
-      localStorage.setItem(STORAGE_KEYS.tag, tag);
+      writePersistentStorage(STORAGE_KEYS.tag, tag);
       renderBookmarks();
       renderTags();
     });

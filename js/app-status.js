@@ -22,7 +22,7 @@ function setBookmarkNoticeMode(mode) {
 
 function readStatusSources() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.statusSources) || '[]');
+    const parsed = JSON.parse(readPersistentStorage(STORAGE_KEYS.statusSources) || '[]');
     if (!Array.isArray(parsed) || !parsed.length) {
       return DEFAULT_STATUS_SOURCES
         .map((item) => normalizeStatusSource(item.name, item.url))
@@ -40,7 +40,7 @@ function readStatusSources() {
 }
 
 function saveStatusSources() {
-  localStorage.setItem(STORAGE_KEYS.statusSources, JSON.stringify(state.statusSources));
+  writePersistentStorage(STORAGE_KEYS.statusSources, JSON.stringify(state.statusSources));
 }
 
 function getWatchSource() {
@@ -61,9 +61,9 @@ function ensureWatchSourceSelection() {
 
   state.watchSourceId = source?.id || '';
   if (state.watchSourceId) {
-    localStorage.setItem(STORAGE_KEYS.watchSource, state.watchSourceId);
+    writePersistentStorage(STORAGE_KEYS.watchSource, state.watchSourceId);
   } else {
-    localStorage.removeItem(STORAGE_KEYS.watchSource);
+    removePersistentStorage(STORAGE_KEYS.watchSource);
   }
   return source;
 }
@@ -90,7 +90,7 @@ function setWatchSource(sourceId) {
   }
 
   state.watchSourceId = sourceId;
-  localStorage.setItem(STORAGE_KEYS.watchSource, sourceId);
+  writePersistentStorage(STORAGE_KEYS.watchSource, sourceId);
   state.githubIncident = null;
   state.githubIncidentRefreshToken += 1;
   state.githubIncidentIsRefreshing = false;
@@ -767,7 +767,7 @@ function addStatusSourceFromInputs() {
     if (editedWatchSource) {
       watchSourceChanged = true;
       state.watchSourceId = source.id;
-      localStorage.setItem(STORAGE_KEYS.watchSource, source.id);
+      writePersistentStorage(STORAGE_KEYS.watchSource, source.id);
       state.githubIncident = null;
       state.githubIncidentRefreshToken += 1;
       state.githubIncidentIsRefreshing = false;

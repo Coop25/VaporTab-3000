@@ -37,6 +37,7 @@ A custom Chromium new-tab page with a retro terminal look, live bookmarks, cross
 - Permissions used by this extension:
   - `bookmarks`
   - `tabs`
+  - `storage`
   - `favicon` (Chrome package only; Firefox does not support this permission)
 
 ## Install / Load
@@ -99,12 +100,14 @@ Current behavior:
 - [js/app-status.js](js/app-status.js): status feed logic, configurable incident Watch card, and bookmark match modal logic
 - [js/app-tabs.js](js/app-tabs.js): tab rendering, focusing, closing, and move helpers
 - [js/app-bookmarks.js](js/app-bookmarks.js): bookmark loading, filtering, stacked bookmark launch logic, and address handling
+- [js/app-tour.js](js/app-tour.js): first-run and replayable guided tour
 - [js/app-init.js](js/app-init.js): event listeners and bootstrapping
 
 ## Development Notes
 
 - The app is plain HTML/CSS/JavaScript with no bundler.
 - Script loading order matters because the files share global state/functions.
+- On the first updated launch, legacy `localStorage` preferences are copied once into extension `storage.local`. Existing extension-storage values are never overwritten, and the legacy copy is retained as a rollback safeguard.
 - If bookmark or tab behavior changes, reload the unpacked extension before testing again.
 
 ## Packaging

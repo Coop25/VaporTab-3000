@@ -14,6 +14,147 @@ const STORAGE_KEYS = {
   tourCompleted: 'new-tab-tour-completed'
 };
 
+const STORAGE_MIGRATION_KEY = 'new-tab-extension-storage-migration-v1';
+const persistentStorageCache = new Map();
+let persistentStorageInitialized = false;
+let persistentStorageArea = null;
+
+function getExtensionStorageArea() {
+  if (typeof browser !== 'undefined' && browser.storage?.local) {
+    return browser.storage.local;
+  }
+  if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+    return chrome.storage.local;
+  }
+  return null;
+}
+
+function extensionStorageGet(area, keys) {
+  if (typeof browser !== 'undefined' && area === browser.storage?.local) {
+    return browser.storage.local.get(keys);
+  }
+
+  return new Promise((resolve, reject) => {
+    area.get(keys, (values) => {
+      const error = typeof chrome !== 'undefined' ? chrome.runtime?.lastError : null;
+      if (error) {
+        reject(new Error(error.message));
+        return;
+      }
+      resolve(values || {});
+    });
+  });
+}
+
+function extensionStorageSet(area, values) {
+  if (typeof browser !== 'undefined' && area === browser.storage?.local) {
+    return browser.storage.local.set(values);
+  }
+
+  return new Promise((resolve, reject) => {
+    area.set(values, () => {
+      const error = typeof chrome !== 'undefined' ? chrome.runtime?.lastError : null;
+      if (error) {
+        reject(new Error(error.message));
+        return;
+      }
+      resolve();
+    });
+  });
+}
+
+function extensionStorageRemove(area, key) {
+  if (typeof browser !== 'undefined' && area === browser.storage?.local) {
+    return browser.storage.local.remove(key);
+  }
+
+  return new Promise((resolve, reject) => {
+    area.remove(key, () => {
+      const error = typeof chrome !== 'undefined' ? chrome.runtime?.lastError : null;
+      if (error) {
+        reject(new Error(error.message));
+        return;
+      }
+      resolve();
+    });
+  });
+}
+
+function readPersistentStorage(key) {
+  if (persistentStorageCache.has(key)) {
+    return persistentStorageCache.get(key);
+  }
+  return persistentStorageInitialized ? null : localStorage.getItem(key);
+}
+
+function writePersistentStorage(key, value) {
+  const normalizedValue = String(value);
+  persistentStorageCache.set(key, normalizedValue);
+
+  if (!persistentStorageArea) {
+    localStorage.setItem(key, normalizedValue);
+    return;
+  }
+
+  extensionStorageSet(persistentStorageArea, { [key]: normalizedValue }).catch((error) => {
+    console.error(`Unable to save ${key} to extension storage`, error);
+  });
+}
+
+function removePersistentStorage(key) {
+  persistentStorageCache.delete(key);
+
+  if (!persistentStorageArea) {
+    localStorage.removeItem(key);
+    return;
+  }
+
+  extensionStorageRemove(persistentStorageArea, key).catch((error) => {
+    console.error(`Unable to remove ${key} from extension storage`, error);
+  });
+}
+
+async function initializePersistentStorage() {
+  persistentStorageArea = getExtensionStorageArea();
+  if (!persistentStorageArea) {
+    return;
+  }
+
+  const applicationKeys = Object.values(STORAGE_KEYS);
+
+  try {
+    const storedValues = await extensionStorageGet(
+      persistentStorageArea,
+      [...applicationKeys, STORAGE_MIGRATION_KEY]
+    );
+
+    if (storedValues[STORAGE_MIGRATION_KEY] !== 1) {
+      const migrationValues = { [STORAGE_MIGRATION_KEY]: 1 };
+      for (const key of applicationKeys) {
+        if (storedValues[key] !== undefined) {
+          continue;
+        }
+        const legacyValue = localStorage.getItem(key);
+        if (legacyValue !== null) {
+          migrationValues[key] = legacyValue;
+        }
+      }
+      await extensionStorageSet(persistentStorageArea, migrationValues);
+      Object.assign(storedValues, migrationValues);
+    }
+
+    for (const key of applicationKeys) {
+      if (storedValues[key] !== undefined) {
+        persistentStorageCache.set(key, storedValues[key]);
+      }
+    }
+    persistentStorageInitialized = true;
+  } catch (error) {
+    console.error('Unable to initialize extension storage; using legacy localStorage', error);
+    persistentStorageArea = null;
+  }
+}
+
 const FALLBACK_BOOKMARKS = [
   { name: 'GitHub', url: 'https://github.com', folder: 'Quick' },
   { name: 'MDN Web Docs', url: 'https://developer.mozilla.org', folder: 'Dev' },
@@ -24,22 +165,34 @@ const FALLBACK_BOOKMARKS = [
 ];
 
 const state = {
-  activeTag: localStorage.getItem(STORAGE_KEYS.tag) || 'all',
-  expanded: localStorage.getItem(STORAGE_KEYS.expanded) === '1',
-  tabsExpanded: localStorage.getItem(STORAGE_KEYS.tabsExpanded) === '1',
+  activeTag: readPersistentStorage(STORAGE_KEYS.tag) || 'all',
+  expanded: readPersistentStorage(STORAGE_KEYS.expanded) === '1',
+  tabsExpanded: readPersistentStorage(STORAGE_KEYS.tabsExpanded) === '1',
   allBookmarks: [],
   sourceLabel: 'Fallback bookmarks',
   statusSources: [],
   statusById: new Map(),
-  theme: localStorage.getItem(STORAGE_KEYS.theme) || 'lcars',
+  theme: readPersistentStorage(STORAGE_KEYS.theme) || 'lcars',
   clicks: loadClicks(),
   bookmarkOrder: loadBookmarkOrder(),
-  bookmarkOrderLocked: localStorage.getItem(STORAGE_KEYS.bookmarkOrderLocked) !== '0',
+  bookmarkOrderLocked: readPersistentStorage(STORAGE_KEYS.bookmarkOrderLocked) !== '0',
   tabActivity: loadTabActivity(),
   bookmarkReloadTimer: null,
   githubIncident: null,
-  watchSourceId: localStorage.getItem(STORAGE_KEYS.watchSource) || ''
+  watchSourceId: readPersistentStorage(STORAGE_KEYS.watchSource) || ''
 };
+
+function hydrateStateFromPersistentStorage() {
+  state.activeTag = readPersistentStorage(STORAGE_KEYS.tag) || 'all';
+  state.expanded = readPersistentStorage(STORAGE_KEYS.expanded) === '1';
+  state.tabsExpanded = readPersistentStorage(STORAGE_KEYS.tabsExpanded) === '1';
+  state.theme = readPersistentStorage(STORAGE_KEYS.theme) || 'lcars';
+  state.clicks = loadClicks();
+  state.bookmarkOrder = loadBookmarkOrder();
+  state.bookmarkOrderLocked = readPersistentStorage(STORAGE_KEYS.bookmarkOrderLocked) !== '0';
+  state.tabActivity = loadTabActivity();
+  state.watchSourceId = readPersistentStorage(STORAGE_KEYS.watchSource) || '';
+}
 
 const VISIBLE_COLLAPSED = 16;
 const VISIBLE_TABS_COLLAPSED = 8;
@@ -214,7 +367,7 @@ function applyTheme(themeName) {
   state.theme = nextTheme;
   document.documentElement.setAttribute('data-theme', nextTheme);
   document.body.setAttribute('data-theme', nextTheme);
-  localStorage.setItem(STORAGE_KEYS.theme, nextTheme);
+  writePersistentStorage(STORAGE_KEYS.theme, nextTheme);
   applyThemeCopy(nextTheme);
 
   if (themeSwitcher instanceof HTMLSelectElement) {
@@ -448,7 +601,7 @@ function getMonogram(bookmark) {
 
 function loadClicks() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.clicks) || '{}');
+    const parsed = JSON.parse(readPersistentStorage(STORAGE_KEYS.clicks) || '{}');
     return parsed && typeof parsed === 'object' ? parsed : {};
   } catch {
     return {};
@@ -456,12 +609,12 @@ function loadClicks() {
 }
 
 function saveClicks() {
-  localStorage.setItem(STORAGE_KEYS.clicks, JSON.stringify(state.clicks));
+  writePersistentStorage(STORAGE_KEYS.clicks, JSON.stringify(state.clicks));
 }
 
 function loadBookmarkOrder() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.bookmarkOrder) || '[]');
+    const parsed = JSON.parse(readPersistentStorage(STORAGE_KEYS.bookmarkOrder) || '[]');
     return Array.isArray(parsed) ? parsed.filter((key) => typeof key === 'string' && key) : [];
   } catch {
     return [];
@@ -469,12 +622,12 @@ function loadBookmarkOrder() {
 }
 
 function saveBookmarkOrder() {
-  localStorage.setItem(STORAGE_KEYS.bookmarkOrder, JSON.stringify(state.bookmarkOrder));
+  writePersistentStorage(STORAGE_KEYS.bookmarkOrder, JSON.stringify(state.bookmarkOrder));
 }
 
 function loadTabActivity() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.tabActivity) || '{}');
+    const parsed = JSON.parse(readPersistentStorage(STORAGE_KEYS.tabActivity) || '{}');
     return parsed && typeof parsed === 'object' ? parsed : {};
   } catch {
     return {};
@@ -482,12 +635,12 @@ function loadTabActivity() {
 }
 
 function saveTabActivity() {
-  localStorage.setItem(STORAGE_KEYS.tabActivity, JSON.stringify(state.tabActivity));
+  writePersistentStorage(STORAGE_KEYS.tabActivity, JSON.stringify(state.tabActivity));
 }
 
 function loadCollapsedShells() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.collapsedShells) || '{}');
+    const parsed = JSON.parse(readPersistentStorage(STORAGE_KEYS.collapsedShells) || '{}');
     return parsed && typeof parsed === 'object' ? parsed : {};
   } catch {
     return {};
@@ -495,7 +648,7 @@ function loadCollapsedShells() {
 }
 
 function saveCollapsedShells() {
-  localStorage.setItem(STORAGE_KEYS.collapsedShells, JSON.stringify(state.collapsedShells));
+  writePersistentStorage(STORAGE_KEYS.collapsedShells, JSON.stringify(state.collapsedShells));
 }
 
 function getTabActivityKey(tab) {

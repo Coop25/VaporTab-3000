@@ -13,21 +13,21 @@ if (refreshTabsBtn) {
 if (tabsToggleBtn) {
   tabsToggleBtn.addEventListener('click', () => {
     state.tabsExpanded = !state.tabsExpanded;
-    localStorage.setItem(STORAGE_KEYS.tabsExpanded, state.tabsExpanded ? '1' : '0');
+    writePersistentStorage(STORAGE_KEYS.tabsExpanded, state.tabsExpanded ? '1' : '0');
     renderTabsList();
   });
 }
 
 toggleBtn.addEventListener('click', () => {
   state.expanded = !state.expanded;
-  localStorage.setItem(STORAGE_KEYS.expanded, state.expanded ? '1' : '0');
+  writePersistentStorage(STORAGE_KEYS.expanded, state.expanded ? '1' : '0');
   renderBookmarks();
 });
 if (bookmarkOrderLock) {
   bookmarkOrderLock.checked = state.bookmarkOrderLocked;
   bookmarkOrderLock.addEventListener('change', () => {
     state.bookmarkOrderLocked = bookmarkOrderLock.checked;
-    localStorage.setItem(STORAGE_KEYS.bookmarkOrderLocked, state.bookmarkOrderLocked ? '1' : '0');
+    writePersistentStorage(STORAGE_KEYS.bookmarkOrderLocked, state.bookmarkOrderLocked ? '1' : '0');
     state.draggedBookmarkKey = '';
     clearBookmarkDropMarkers();
     renderBookmarks();
@@ -225,29 +225,36 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-updateClock();
-setInterval(updateClock, 1000);
-applyTheme(state.theme);
-setupMonitorShells();
-setupBookmarkListeners();
-updateCalcUi();
-runCalculator();
-state.statusSources = readStatusSources();
-ensureWatchSourceSelection();
-updateStatusRefreshMeta();
-updateGitHubIncidentMeta();
-setInterval(updateStatusRefreshMeta, 1000);
-setInterval(updateGitHubIncidentMeta, 1000);
-renderGitHubIncidentCard();
-renderStatusList();
-refreshOperationsSidebar();
-setInterval(refreshOperationsSidebar, STATUS_REFRESH_MS);
-setupTabListeners();
-loadTabs();
-setInterval(() => {
-  if (state.tabs.length) {
-    renderTabsList();
-  }
-}, 30000);
-loadBookmarks();
-initializePageTour();
+async function initializeApplication() {
+  await initializePersistentStorage();
+  hydrateStateFromPersistentStorage();
+
+  updateClock();
+  setInterval(updateClock, 1000);
+  applyTheme(state.theme);
+  setupMonitorShells();
+  setupBookmarkListeners();
+  updateCalcUi();
+  runCalculator();
+  state.statusSources = readStatusSources();
+  ensureWatchSourceSelection();
+  updateStatusRefreshMeta();
+  updateGitHubIncidentMeta();
+  setInterval(updateStatusRefreshMeta, 1000);
+  setInterval(updateGitHubIncidentMeta, 1000);
+  renderGitHubIncidentCard();
+  renderStatusList();
+  refreshOperationsSidebar();
+  setInterval(refreshOperationsSidebar, STATUS_REFRESH_MS);
+  setupTabListeners();
+  loadTabs();
+  setInterval(() => {
+    if (state.tabs.length) {
+      renderTabsList();
+    }
+  }, 30000);
+  loadBookmarks();
+  initializePageTour();
+}
+
+initializeApplication();
