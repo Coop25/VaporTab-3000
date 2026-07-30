@@ -13,6 +13,8 @@ function flattenBookmarkTree(nodes, folderTrail = []) {
         const cleanName = stripStackFolderPrefix(node.title);
         out.push({
           type: 'stack',
+          folderId: node.id || '',
+          parentId: node.parentId || '',
           name: cleanName,
           url: launchItems[launchItems.length - 1].url,
           folder: folderTrail[folderTrail.length - 1] || 'root',
@@ -210,8 +212,15 @@ function clearBookmarkDropMarkers() {
 }
 
 function getStackCandidateBookmarks() {
-  return state.allBookmarks
-    .filter((bookmark) => bookmark.type !== 'stack' && bookmark.url)
+  const candidatesByKey = new Map();
+  for (const bookmark of state.allBookmarks.concat(state.stackEditSourceItems)) {
+    if (bookmark.type === 'stack' || !bookmark.url) {
+      continue;
+    }
+    candidatesByKey.set(getBookmarkMetricKey(bookmark), bookmark);
+  }
+
+  return Array.from(candidatesByKey.values())
     .sort((a, b) => {
       const folderDiff = String(a.trail || a.folder || '').localeCompare(String(b.trail || b.folder || ''));
       return folderDiff || a.name.localeCompare(b.name);
@@ -222,6 +231,9 @@ function getStackDraftBookmarks() {
   const byKey = new Map(
     getStackCandidateBookmarks().map((bookmark) => [getBookmarkMetricKey(bookmark), bookmark])
   );
+  for (const bookmark of state.stackEditSourceItems) {
+    byKey.set(getBookmarkMetricKey(bookmark), bookmark);
+  }
   return Array.from(state.stackDraft)
     .map((key) => byKey.get(key))
     .filter(Boolean);
@@ -269,7 +281,7 @@ function renderStackModal() {
     availableBookmarkCount.textContent = `${available.length} shown`;
   }
   if (selectedBookmarkCount) {
-    selectedBookmarkCount.textContent = `${selected.length} selected`;
+    selectedBookmarkCount.textContent = `${selected.length} selected · last is front`;
   }
 
   if (!available.length) {
@@ -310,32 +322,68 @@ function renderStackModal() {
 
   selected.forEach((bookmark, index) => {
     const key = getBookmarkMetricKey(bookmark);
+    const isFrontDestination = index === selected.length - 1;
     const item = document.createElement('div');
     item.className = 'stack-picker-item stack-selected-item';
+    item.classList.toggle('is-stack-front', isFrontDestination);
+    item.draggable = true;
+    item.tabIndex = 0;
+    item.dataset.stackKey = key;
+    item.title = isFrontDestination
+      ? 'Front destination: replaces this new tab. Drag to reorder.'
+      : 'Supporting tab. Drag to reorder.';
+    item.setAttribute(
+      'aria-label',
+      `${bookmark.name}. ${isFrontDestination ? 'Front destination; replaces this new tab.' : 'Supporting tab.'} Drag to reorder, or use the arrow keys.`
+    );
+
+    const dragIndicator = document.createElement('span');
+    dragIndicator.className = 'stack-drag-indicator';
+    dragIndicator.setAttribute('aria-hidden', 'true');
 
     const order = document.createElement('span');
     order.className = 'stack-order';
     order.textContent = String(index + 1).padStart(2, '0');
 
     const copy = makeStackPickerCopy(bookmark);
+    if (isFrontDestination) {
+      const frontBadge = document.createElement('span');
+      frontBadge.className = 'stack-front-badge';
+      frontBadge.textContent = 'Front · Replaces this tab';
+      copy.insertBefore(frontBadge, copy.lastElementChild);
+    }
     const controls = document.createElement('span');
     controls.className = 'stack-item-controls';
 
-    const upBtn = document.createElement('button');
-    upBtn.type = 'button';
-    upBtn.className = 'stack-order-btn';
-    upBtn.textContent = '↑';
-    upBtn.disabled = index === 0;
-    upBtn.setAttribute('aria-label', `Move ${bookmark.name} earlier`);
-    upBtn.addEventListener('click', () => moveStackDraft(key, -1));
-
-    const downBtn = document.createElement('button');
-    downBtn.type = 'button';
-    downBtn.className = 'stack-order-btn';
-    downBtn.textContent = '↓';
-    downBtn.disabled = index === selected.length - 1;
-    downBtn.setAttribute('aria-label', `Move ${bookmark.name} later`);
-    downBtn.addEventListener('click', () => moveStackDraft(key, 1));
+    item.addEventListener('keydown', (event) => {
+      if (event.target !== item) {
+        return;
+      }
+      if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
+        return;
+      }
+      event.preventDefault();
+      moveStackDraft(key, event.key === 'ArrowUp' ? -1 : 1);
+      requestAnimationFrame(() => {
+        const nextItem = Array.from(selectedBookmarkList.querySelectorAll('.stack-selected-item'))
+          .find((candidate) => candidate.dataset.stackKey === key);
+        nextItem?.focus();
+      });
+    });
+    item.addEventListener('dragstart', (event) => {
+      if (!event.dataTransfer) {
+        event.preventDefault();
+        return;
+      }
+      state.draggedStackKey = key;
+      item.classList.add('is-dragging');
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', key);
+    });
+    item.addEventListener('dragend', () => {
+      state.draggedStackKey = '';
+      clearStackDraftDropMarkers();
+    });
 
     const removeBtn = document.createElement('button');
     removeBtn.type = 'button';
@@ -347,24 +395,54 @@ function renderStackModal() {
       renderStackModal();
     });
 
-    controls.appendChild(upBtn);
-    controls.appendChild(downBtn);
     controls.appendChild(removeBtn);
+    item.appendChild(dragIndicator);
     item.appendChild(order);
     item.appendChild(copy);
     item.appendChild(controls);
+
+    item.addEventListener('dragover', (event) => {
+      if (!state.draggedStackKey || state.draggedStackKey === key) {
+        return;
+      }
+      event.preventDefault();
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'move';
+      }
+      const rect = item.getBoundingClientRect();
+      const placeAfter = event.clientY >= rect.top + rect.height / 2;
+      item.classList.toggle('drop-before', !placeAfter);
+      item.classList.toggle('drop-after', placeAfter);
+    });
+    item.addEventListener('dragleave', () => {
+      item.classList.remove('drop-before', 'drop-after');
+    });
+    item.addEventListener('drop', (event) => {
+      event.preventDefault();
+      const draggedKey = state.draggedStackKey || event.dataTransfer?.getData('text/plain') || '';
+      const rect = item.getBoundingClientRect();
+      const placeAfter = event.clientY >= rect.top + rect.height / 2;
+      state.draggedStackKey = '';
+      clearStackDraftDropMarkers();
+      moveStackDraftBeside(draggedKey, key, placeAfter);
+    });
     selectedBookmarkList.appendChild(item);
   });
 
   const hasName = Boolean(String(stackNameInput?.value || '').trim());
   createStackBtn.disabled = selected.length < 2 || !hasName || state.stackIsSaving;
-  createStackBtn.textContent = state.stackIsSaving ? 'Creating...' : 'Create Stack';
+  const isEditing = Boolean(state.editingStack);
+  createStackBtn.textContent = state.stackIsSaving
+    ? (isEditing ? 'Saving...' : 'Creating...')
+    : (isEditing ? 'Save Stack' : 'Create Stack');
 
   if (stackModalMessage && !state.stackIsSaving) {
     const destination = selected[0]?.trail || selected[0]?.folder;
     stackModalMessage.textContent = selected.length < 2
-      ? 'Add at least two bookmarks. The final item opens in front.'
-      : `Ready to create in ${destination || 'your bookmarks'}. Original bookmarks will remain in place.`;
+      ? 'Add at least two bookmarks. The highlighted Front item replaces this tab.'
+      : isEditing
+        ? 'Ready to save. The highlighted Front item replaces this tab; the others open behind it.'
+        : `Ready to create in ${destination || 'your bookmarks'}. The highlighted Front item replaces this tab.`;
   }
 }
 
@@ -380,14 +458,53 @@ function moveStackDraft(key, direction) {
   renderStackModal();
 }
 
-function openStackModal() {
+function moveStackDraftBeside(draggedKey, targetKey, placeAfter) {
+  if (!draggedKey || !targetKey || draggedKey === targetKey) {
+    return;
+  }
+
+  const keys = Array.from(state.stackDraft).filter((key) => key !== draggedKey);
+  const targetIndex = keys.indexOf(targetKey);
+  if (targetIndex < 0) {
+    return;
+  }
+
+  keys.splice(targetIndex + (placeAfter ? 1 : 0), 0, draggedKey);
+  state.stackDraft = new Set(keys);
+  renderStackModal();
+}
+
+function clearStackDraftDropMarkers() {
+  for (const item of selectedBookmarkList.querySelectorAll('.stack-selected-item.is-dragging, .stack-selected-item.drop-before, .stack-selected-item.drop-after')) {
+    item.classList.remove('is-dragging', 'drop-before', 'drop-after');
+  }
+}
+
+function openStackModal(stack = null) {
   if (!stackModal) {
     return;
   }
-  state.stackDraft.clear();
+
+  state.editingStack = stack?.type === 'stack' ? stack : null;
+  state.stackEditSourceItems = state.editingStack
+    ? state.editingStack.launchItems.map((item) => ({
+        type: 'bookmark',
+        id: item.id || '',
+        stackChildId: item.id || '',
+        parentId: item.parentId || state.editingStack.folderId,
+        name: item.name,
+        url: item.url,
+        folder: state.editingStack.name,
+        trail: `${state.editingStack.trail || state.editingStack.folder || 'root'} / ${state.editingStack.name}`,
+        metricKey: item.url
+      }))
+    : [];
+  state.stackDraft = new Set(state.stackEditSourceItems.map(getBookmarkMetricKey));
   state.stackIsSaving = false;
-  stackNameInput.value = '';
+  state.draggedStackKey = '';
+  stackNameInput.value = state.editingStack?.name || '';
   stackBookmarkSearch.value = '';
+  stackModalTitle.textContent = state.editingStack ? 'Edit Tab Stack' : 'Create Tab Stack';
   stackModal.hidden = false;
   renderStackModal();
   stackNameInput.focus();
@@ -400,6 +517,9 @@ function closeStackModal() {
   stackModal.hidden = true;
   state.stackDraft.clear();
   state.stackIsSaving = false;
+  state.draggedStackKey = '';
+  state.editingStack = null;
+  state.stackEditSourceItems = [];
 }
 
 async function createBrowserBookmark(details) {
@@ -422,6 +542,105 @@ async function createBrowserBookmark(details) {
   throw new Error('Bookmark creation is unavailable in this context.');
 }
 
+async function updateBrowserBookmark(id, changes) {
+  if (typeof chrome !== 'undefined' && chrome.bookmarks && chrome.bookmarks.update) {
+    return new Promise((resolve, reject) => {
+      chrome.bookmarks.update(id, changes, (result) => {
+        if (chrome.runtime && chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  if (typeof browser !== 'undefined' && browser.bookmarks && browser.bookmarks.update) {
+    return browser.bookmarks.update(id, changes);
+  }
+
+  throw new Error('Bookmark editing is unavailable in this context.');
+}
+
+async function moveBrowserBookmark(id, destination) {
+  if (typeof chrome !== 'undefined' && chrome.bookmarks && chrome.bookmarks.move) {
+    return new Promise((resolve, reject) => {
+      chrome.bookmarks.move(id, destination, (result) => {
+        if (chrome.runtime && chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  if (typeof browser !== 'undefined' && browser.bookmarks && browser.bookmarks.move) {
+    return browser.bookmarks.move(id, destination);
+  }
+
+  throw new Error('Bookmark reordering is unavailable in this context.');
+}
+
+async function removeBrowserBookmark(id) {
+  if (typeof chrome !== 'undefined' && chrome.bookmarks && chrome.bookmarks.remove) {
+    return new Promise((resolve, reject) => {
+      chrome.bookmarks.remove(id, () => {
+        if (chrome.runtime && chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  if (typeof browser !== 'undefined' && browser.bookmarks && browser.bookmarks.remove) {
+    return browser.bookmarks.remove(id);
+  }
+
+  throw new Error('Bookmark removal is unavailable in this context.');
+}
+
+async function updateStackFromDraft(cleanName, selected) {
+  const stack = state.editingStack;
+  if (!stack?.folderId) {
+    throw new Error('The original stack folder could not be found.');
+  }
+
+  await updateBrowserBookmark(stack.folderId, { title: `[stack] ${cleanName}` });
+
+  const retainedIds = new Set(
+    selected.map((bookmark) => bookmark.stackChildId).filter(Boolean)
+  );
+  for (const item of stack.launchItems) {
+    if (item.id && !retainedIds.has(item.id)) {
+      await removeBrowserBookmark(item.id);
+    }
+  }
+
+  for (let index = 0; index < selected.length; index += 1) {
+    const bookmark = selected[index];
+    if (bookmark.stackChildId) {
+      await updateBrowserBookmark(bookmark.stackChildId, {
+        title: bookmark.name,
+        url: bookmark.url
+      });
+      await moveBrowserBookmark(bookmark.stackChildId, {
+        parentId: stack.folderId,
+        index
+      });
+    } else {
+      await createBrowserBookmark({
+        parentId: stack.folderId,
+        index,
+        title: bookmark.name,
+        url: bookmark.url
+      });
+    }
+  }
+}
+
 async function createStackFromDraft() {
   if (state.stackIsSaving || state.stackDraft.size < 2) {
     return;
@@ -441,37 +660,48 @@ async function createStackFromDraft() {
     stackNameInput.focus();
     return;
   }
-  const folderDetails = { title: `[stack] ${cleanName}` };
-  if (selected[0].parentId) {
-    folderDetails.parentId = selected[0].parentId;
-  }
-
   state.stackIsSaving = true;
   if (stackModalMessage) {
-    stackModalMessage.textContent = `Creating "${cleanName}"...`;
+    stackModalMessage.textContent = state.editingStack
+      ? `Saving "${cleanName}"...`
+      : `Creating "${cleanName}"...`;
   }
   renderStackModal();
 
   try {
-    const folder = await createBrowserBookmark(folderDetails);
-    for (const bookmark of selected) {
-      await createBrowserBookmark({
-        parentId: folder.id,
-        title: bookmark.name,
-        url: bookmark.url
-      });
+    if (state.editingStack) {
+      await updateStackFromDraft(cleanName, selected);
+    } else {
+      const folderDetails = { title: `[stack] ${cleanName}` };
+      if (selected[0].parentId) {
+        folderDetails.parentId = selected[0].parentId;
+      }
+
+      const folder = await createBrowserBookmark(folderDetails);
+      for (const bookmark of selected) {
+        await createBrowserBookmark({
+          parentId: folder.id,
+          title: bookmark.name,
+          url: bookmark.url
+        });
+      }
     }
 
     const destination = selected[0].trail || selected[0].folder || 'bookmarks';
+    const wasEditing = Boolean(state.editingStack);
     state.stackDraft.clear();
     state.stackIsSaving = false;
+    state.editingStack = null;
+    state.stackEditSourceItems = [];
     stackModal.hidden = true;
     await loadBookmarks();
-    helperText.textContent = `Created "${cleanName}" with ${selected.length} bookmarks in ${destination}.`;
+    helperText.textContent = wasEditing
+      ? `Updated "${cleanName}" with ${selected.length} bookmarks.`
+      : `Created "${cleanName}" with ${selected.length} bookmarks in ${destination}.`;
   } catch (error) {
     state.stackIsSaving = false;
     renderStackModal();
-    stackModalMessage.textContent = `Could not create stack: ${String(error?.message || 'bookmark API unavailable')}`;
+    stackModalMessage.textContent = `Could not ${state.editingStack ? 'update' : 'create'} stack: ${String(error?.message || 'bookmark API unavailable')}`;
   }
 }
 
@@ -499,6 +729,74 @@ function renderTags() {
       renderTags();
     });
     tagBar.appendChild(btn);
+  }
+}
+
+function getEditableStacks() {
+  return state.allBookmarks
+    .filter((bookmark) => bookmark.type === 'stack' && bookmark.folderId)
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function closeStackEditMenu() {
+  if (!stackEditMenu || !openStackEditMenuBtn) {
+    return;
+  }
+  stackEditMenu.hidden = true;
+  openStackEditMenuBtn.setAttribute('aria-expanded', 'false');
+}
+
+function renderStackEditMenu() {
+  if (!stackEditMenu || !openStackEditMenuBtn) {
+    return;
+  }
+
+  const stacks = getEditableStacks();
+  openStackEditMenuBtn.disabled = stacks.length === 0;
+  openStackEditMenuBtn.title = stacks.length
+    ? 'Choose a stack to edit'
+    : 'No stacks available to edit';
+  stackEditMenu.innerHTML = '';
+
+  if (!stacks.length) {
+    closeStackEditMenu();
+    return;
+  }
+
+  for (const stack of stacks) {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'stack-edit-menu-item';
+    item.setAttribute('role', 'menuitem');
+
+    const name = document.createElement('strong');
+    name.textContent = stack.name;
+    const count = document.createElement('span');
+    count.textContent = `${stack.stackCount} bookmark${stack.stackCount === 1 ? '' : 's'}`;
+
+    item.appendChild(name);
+    item.appendChild(count);
+    item.addEventListener('click', () => {
+      closeStackEditMenu();
+      openStackModal(stack);
+    });
+    stackEditMenu.appendChild(item);
+  }
+}
+
+function toggleStackEditMenu() {
+  if (!stackEditMenu || !openStackEditMenuBtn || openStackEditMenuBtn.disabled) {
+    return;
+  }
+
+  const willOpen = stackEditMenu.hidden;
+  if (willOpen) {
+    renderStackEditMenu();
+  }
+  stackEditMenu.hidden = !willOpen;
+  openStackEditMenuBtn.setAttribute('aria-expanded', String(willOpen));
+  if (willOpen) {
+    stackEditMenu.querySelector('.stack-edit-menu-item')?.focus();
   }
 }
 
@@ -541,6 +839,7 @@ function filteredBookmarks() {
 }
 
 function renderBookmarks() {
+  renderStackEditMenu();
   if (bookmarkOrderLock) {
     bookmarkOrderLock.checked = state.bookmarkOrderLocked;
   }
@@ -572,6 +871,9 @@ function renderBookmarks() {
   }
 
   for (const bookmark of visibleItems) {
+    const card = document.createElement('div');
+    card.className = 'bookmark-card';
+
     const link = document.createElement('a');
     link.className = 'bookmark';
     link.href = bookmark.url;
@@ -721,7 +1023,8 @@ function renderBookmarks() {
       state.draggedBookmarkKey = '';
       clearBookmarkDropMarkers();
     });
-    bookmarkGrid.appendChild(link);
+    card.appendChild(link);
+    bookmarkGrid.appendChild(card);
   }
 
   if (items.length > VISIBLE_COLLAPSED) {
