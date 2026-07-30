@@ -34,7 +34,10 @@ if (bookmarkOrderLock) {
   });
 }
 if (openStackModalBtn) {
-  openStackModalBtn.addEventListener('click', openStackModal);
+  openStackModalBtn.addEventListener('click', () => openStackModal());
+}
+if (openStackEditMenuBtn) {
+  openStackEditMenuBtn.addEventListener('click', toggleStackEditMenu);
 }
 if (closeStackModalBtn) {
   closeStackModalBtn.addEventListener('click', closeStackModal);
@@ -63,6 +66,15 @@ if (stackModal) {
     }
   });
 }
+document.addEventListener('click', (event) => {
+  if (
+    stackEditControl &&
+    event.target instanceof Node &&
+    !stackEditControl.contains(event.target)
+  ) {
+    closeStackEditMenu();
+  }
+});
 
 addStatusBtn.addEventListener('click', addStatusSourceFromInputs);
 statusUrlInput.addEventListener('keydown', (event) => {
@@ -72,7 +84,10 @@ statusUrlInput.addEventListener('keydown', (event) => {
 });
 refreshStatusBtn.addEventListener('click', refreshOperationsSidebar);
 if (openStatusModalBtn) {
-  openStatusModalBtn.addEventListener('click', openStatusModal);
+  openStatusModalBtn.addEventListener('click', () => openStatusModal());
+}
+if (editStatusBtn) {
+  editStatusBtn.addEventListener('click', toggleStatusEditMode);
 }
 if (closeStatusModalBtn) {
   closeStatusModalBtn.addEventListener('click', closeStatusModal);
@@ -106,15 +121,8 @@ if (bookmarkMatchModal) {
   });
 }
 if (themeSwitcher) {
-  themeSwitcher.addEventListener('click', (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) {
-      return;
-    }
-    if (!target.classList.contains('theme-btn')) {
-      return;
-    }
-    applyTheme(target.dataset.theme || 'synthwave');
+  themeSwitcher.addEventListener('change', () => {
+    applyTheme(themeSwitcher.value || 'lcars');
   });
 }
 if (calcModeBar) {
@@ -199,6 +207,11 @@ if (calcInput) {
   });
 }
 document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && stackEditMenu && !stackEditMenu.hidden) {
+    closeStackEditMenu();
+    openStackEditMenuBtn.focus();
+    return;
+  }
   if (event.key === 'Escape' && stackModal && !stackModal.hidden) {
     closeStackModal();
     return;
@@ -220,6 +233,7 @@ setupBookmarkListeners();
 updateCalcUi();
 runCalculator();
 state.statusSources = readStatusSources();
+ensureWatchSourceSelection();
 updateStatusRefreshMeta();
 updateGitHubIncidentMeta();
 setInterval(updateStatusRefreshMeta, 1000);
@@ -236,3 +250,4 @@ setInterval(() => {
   }
 }, 30000);
 loadBookmarks();
+initializePageTour();

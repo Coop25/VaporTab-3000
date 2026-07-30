@@ -4,12 +4,14 @@ const STORAGE_KEYS = {
   expanded: 'new-tab-expanded',
   tabsExpanded: 'new-tab-tabs-expanded',
   statusSources: 'new-tab-status-sources',
+  watchSource: 'new-tab-watch-source',
   theme: 'new-tab-theme',
   clicks: 'new-tab-clicks',
   bookmarkOrder: 'new-tab-bookmark-order',
   bookmarkOrderLocked: 'new-tab-bookmark-order-locked',
   tabActivity: 'new-tab-tab-activity',
-  collapsedShells: 'new-tab-collapsed-shells'
+  collapsedShells: 'new-tab-collapsed-shells',
+  tourCompleted: 'new-tab-tour-completed'
 };
 
 const FALLBACK_BOOKMARKS = [
@@ -35,7 +37,8 @@ const state = {
   bookmarkOrderLocked: localStorage.getItem(STORAGE_KEYS.bookmarkOrderLocked) !== '0',
   tabActivity: loadTabActivity(),
   bookmarkReloadTimer: null,
-  githubIncident: null
+  githubIncident: null,
+  watchSourceId: localStorage.getItem(STORAGE_KEYS.watchSource) || ''
 };
 
 const VISIBLE_COLLAPSED = 16;
@@ -43,8 +46,6 @@ const VISIBLE_TABS_COLLAPSED = 8;
 const STATUS_REFRESH_MS = 300000;
 const GITHUB_STATUS_URL = 'https://www.githubstatus.com';
 const GITHUB_STATUS_HISTORY_URL = 'https://www.githubstatus.com/history';
-const GITHUB_STATUS_API_URL = `${GITHUB_STATUS_URL}/api/v2/status.json`;
-const GITHUB_INCIDENTS_API_URL = `${GITHUB_STATUS_URL}/api/v2/incidents.json`;
 const DEFAULT_STATUS_SOURCES = [
   { name: 'GitHub', url: GITHUB_STATUS_URL },
   { name: 'Discord', url: 'https://discordstatus.com' },
@@ -60,8 +61,12 @@ const toggleBtn = document.getElementById('toggleBtn');
 const bookmarkOrderLock = document.getElementById('bookmarkOrderLock');
 const bookmarkOrderHint = document.getElementById('bookmarkOrderHint');
 const openStackModalBtn = document.getElementById('openStackModalBtn');
+const stackEditControl = document.getElementById('stackEditControl');
+const openStackEditMenuBtn = document.getElementById('openStackEditMenuBtn');
+const stackEditMenu = document.getElementById('stackEditMenu');
 const stackModal = document.getElementById('stackModal');
 const closeStackModalBtn = document.getElementById('closeStackModalBtn');
+const stackModalTitle = document.getElementById('stackModalTitle');
 const stackNameInput = document.getElementById('stackNameInput');
 const stackBookmarkSearch = document.getElementById('stackBookmarkSearch');
 const availableBookmarkList = document.getElementById('availableBookmarkList');
@@ -88,7 +93,10 @@ const statusUrlInput = document.getElementById('statusUrlInput');
 const addStatusBtn = document.getElementById('addStatusBtn');
 const refreshStatusBtn = document.getElementById('refreshStatusBtn');
 const openStatusModalBtn = document.getElementById('openStatusModalBtn');
+const editStatusBtn = document.getElementById('editStatusBtn');
+const statusEditHint = document.getElementById('statusEditHint');
 const statusModal = document.getElementById('statusModal');
+const statusModalTitle = document.getElementById('statusModalTitle');
 const closeStatusModalBtn = document.getElementById('closeStatusModalBtn');
 const cancelStatusModalBtn = document.getElementById('cancelStatusModalBtn');
 const bookmarkMatchModal = document.getElementById('bookmarkMatchModal');
@@ -102,6 +110,7 @@ const statusPulseText = document.getElementById('statusPulseText');
 const statusRefreshMeta = document.getElementById('statusRefreshMeta');
 const statusConsole = document.querySelector('.status-console');
 const themeSwitcher = document.getElementById('themeSwitcher');
+const githubIncidentTitle = document.getElementById('githubIncidentTitle');
 const githubIncidentDays = document.getElementById('githubIncidentDays');
 const githubIncidentBadge = document.getElementById('githubIncidentBadge');
 const githubIncidentRange = document.getElementById('githubIncidentRange');
@@ -126,7 +135,11 @@ const monitorShells = Array.from(document.querySelectorAll('.monitor-shell[data-
 
 state.statusIsRefreshing = false;
 state.statusNextRefreshAt = Date.now() + STATUS_REFRESH_MS;
+state.statusEditMode = false;
+state.editingStatusId = '';
+state.draggedStatusId = '';
 state.githubIncidentIsRefreshing = false;
+state.githubIncidentRefreshToken = 0;
 state.calcMode = 'base64';
 state.calcDirection = 'encode';
 state.calcToken = 0;
@@ -139,6 +152,9 @@ state.bookmarkMatchResolver = null;
 state.bookmarkMatchPending = null;
 state.stackDraft = new Set();
 state.stackIsSaving = false;
+state.editingStack = null;
+state.stackEditSourceItems = [];
+state.draggedStackKey = '';
 state.draggedBookmarkKey = '';
 state.suppressBookmarkClickUntil = 0;
 
@@ -201,9 +217,8 @@ function applyTheme(themeName) {
   localStorage.setItem(STORAGE_KEYS.theme, nextTheme);
   applyThemeCopy(nextTheme);
 
-  const buttons = themeSwitcher ? themeSwitcher.querySelectorAll('.theme-btn') : [];
-  for (const button of buttons) {
-    button.classList.toggle('active', button.dataset.theme === nextTheme);
+  if (themeSwitcher instanceof HTMLSelectElement) {
+    themeSwitcher.value = nextTheme;
   }
 }
 
@@ -352,6 +367,8 @@ function collectBookmarkUrls(nodes) {
   for (const node of nodes) {
     if (node?.url) {
       out.push({
+        id: node.id || '',
+        parentId: node.parentId || '',
         name: node.title || shortHost(node.url),
         url: node.url
       });

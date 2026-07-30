@@ -7,7 +7,7 @@
   <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
   <link rel="shortcut icon" type="image/png" href="icons/icon-32.png" />
-  <link rel="stylesheet" href="styles.css?v=20260726.1" />
+  <link rel="stylesheet" href="styles.css?v=20260730.17" />
 </head>
 <body>
   <div class="scene" aria-hidden="true">
@@ -56,16 +56,20 @@
 
       <section class="tower-block">
         <h2>Theme</h2>
-        <div id="themeSwitcher" class="theme-switcher">
-          <button type="button" class="mini-btn theme-btn" data-theme="lcars">LCARS</button>
-          <button type="button" class="mini-btn theme-btn" data-theme="synthwave">Synthwave</button>
-          <button type="button" class="mini-btn theme-btn" data-theme="dark">Dark Mode</button>
+        <div class="theme-switcher">
+          <div class="theme-select-control">
+            <select id="themeSwitcher" class="theme-select" aria-label="Choose page theme">
+              <option value="lcars">LCARS</option>
+              <option value="synthwave">Synthwave</option>
+              <option value="dark">Dark Mode</option>
+            </select>
+          </div>
         </div>
       </section>
 
       <section class="tower-block github-incident-block" aria-live="polite">
         <div class="sidebar-section-head">
-          <h2>GitHub Watch</h2>
+          <h2 id="githubIncidentTitle">Service Watch</h2>
           <p id="githubIncidentMeta" class="status-refresh-meta">Checking incident feed...</p>
         </div>
         <div class="github-incident-hero">
@@ -75,8 +79,8 @@
           </div>
           <span id="githubIncidentBadge" class="status-badge warn">SYNC</span>
         </div>
-        <p id="githubIncidentRange" class="github-incident-range">Days without a GitHub incident</p>
-        <p id="githubIncidentSummary" class="github-incident-summary">Loading GitHub status and incident history...</p>
+        <p id="githubIncidentRange" class="github-incident-range">Days without an incident</p>
+        <p id="githubIncidentSummary" class="github-incident-summary">Loading status and incident history...</p>
         <div class="github-incident-footer">
           <p id="githubIncidentHighScore" class="github-incident-high-score">High score this year: --</p>
           <a
@@ -99,7 +103,9 @@
         <div class="sidebar-status-actions">
           <button id="refreshStatusBtn" class="mini-btn" type="button">Refresh</button>
           <button id="openStatusModalBtn" class="mini-btn status-add-btn" type="button">Add</button>
+          <button id="editStatusBtn" class="mini-btn" type="button" aria-pressed="false">Edit</button>
         </div>
+        <p id="statusEditHint" class="status-edit-hint" hidden>Drag a dotted source card to arrange it. Watch chooses which service appears above.</p>
         <div id="statusPulse" class="status-pulse warn" aria-live="polite">
           <span class="status-dot" aria-hidden="true"></span>
           <span id="statusPulseText">NET STATUS: SYNCING</span>
@@ -137,6 +143,19 @@
               <input id="searchInput" class="search" type="text" placeholder="Type bookmark, URL, or web query..." autocomplete="off" />
               <button id="refreshBtn" class="btn" type="button">Reload</button>
               <button id="openStackModalBtn" class="btn stack-open-btn" type="button">Create Stack</button>
+              <div id="stackEditControl" class="stack-edit-control">
+                <button
+                  id="openStackEditMenuBtn"
+                  class="btn stack-edit-menu-btn"
+                  type="button"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  disabled
+                >
+                  Edit Stack
+                </button>
+                <div id="stackEditMenu" class="stack-edit-menu" role="menu" hidden></div>
+              </div>
             </div>
 
             <div class="bookmark-filter-row">
@@ -255,6 +274,121 @@
     </section>
   </main>
 
+  <button id="tourLauncher" class="tour-launcher" type="button" aria-label="Start guided page tour">
+    <span aria-hidden="true">?</span>
+    Tour
+  </button>
+
+  <div id="tourLayer" class="tour-layer" hidden>
+    <div class="tour-backdrop" aria-hidden="true"></div>
+    <div id="tourSpotlight" class="tour-spotlight" aria-hidden="true"></div>
+    <section
+      id="tourCard"
+      class="tour-card"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tourTitle"
+      aria-describedby="tourCopy"
+    >
+      <div class="tour-card-head">
+        <p id="tourProgress" class="tour-progress">1 / 1</p>
+        <button id="tourCloseBtn" class="tour-close" type="button" aria-label="Close guided tour">Skip</button>
+      </div>
+      <h2 id="tourTitle">Welcome</h2>
+      <p id="tourCopy"></p>
+      <div class="tour-actions">
+        <button id="tourBackBtn" class="mini-btn" type="button">Back</button>
+        <button id="tourNextBtn" class="mini-btn" type="button">Next</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="tourStackDemo" class="status-modal-backdrop tour-stack-demo-backdrop" hidden aria-hidden="true">
+    <div class="status-modal stack-editor-modal tour-stack-demo">
+      <div class="status-modal-head">
+        <div>
+          <p id="tourStackDemoKicker" class="stack-modal-kicker">TOUR PREVIEW // NO CHANGES WILL BE SAVED</p>
+          <h2 id="tourStackDemoTitle">Create Tab Stack</h2>
+        </div>
+        <span class="status-modal-close" aria-hidden="true">X</span>
+      </div>
+      <div class="status-modal-body stack-modal-body">
+        <label class="stack-field">
+          <span>Stack name</span>
+          <input id="tourStackDemoName" class="status-input stack-name-input" type="text" value="Morning Ops" readonly tabindex="-1" />
+        </label>
+        <label class="stack-field">
+          <span>Find bookmarks</span>
+          <input class="status-input" type="text" value="status" readonly tabindex="-1" />
+        </label>
+        <div id="tourStackDemoPicker" class="stack-picker">
+          <section class="stack-picker-panel">
+            <div class="stack-picker-head">
+              <h3>All Bookmarks</h3>
+              <span>3 shown</span>
+            </div>
+            <div class="stack-picker-list">
+              <div class="stack-picker-item">
+                <span class="stack-picker-copy"><strong>GitHub Status</strong><span>Ops / githubstatus.com</span></span>
+                <span class="stack-picker-action">ADD →</span>
+              </div>
+              <div class="stack-picker-item">
+                <span class="stack-picker-copy"><strong>Cloudflare Status</strong><span>Ops / cloudflarestatus.com</span></span>
+                <span class="stack-picker-action">ADD →</span>
+              </div>
+              <div class="stack-picker-item">
+                <span class="stack-picker-copy"><strong>Service Dashboard</strong><span>Work / dashboard.example</span></span>
+                <span class="stack-picker-action">ADD →</span>
+              </div>
+            </div>
+          </section>
+          <div class="stack-picker-transfer" aria-hidden="true">
+            <span>ADD →</span>
+            <span>← REMOVE</span>
+          </div>
+          <section id="tourStackDemoSelected" class="stack-picker-panel selected-stack-panel">
+            <div class="stack-picker-head">
+              <h3>Current Stack</h3>
+              <span>3 selected · last is front</span>
+            </div>
+            <div class="stack-picker-list selected-bookmark-list">
+              <div class="stack-picker-item stack-selected-item">
+                <span class="stack-drag-indicator"></span>
+                <span class="stack-order">01</span>
+                <span class="stack-picker-copy"><strong>GitHub Status</strong><span>githubstatus.com</span></span>
+                <span class="stack-item-controls"><span class="stack-remove-btn">REMOVE</span></span>
+              </div>
+              <div class="stack-picker-item stack-selected-item">
+                <span class="stack-drag-indicator"></span>
+                <span class="stack-order">02</span>
+                <span class="stack-picker-copy"><strong>Cloudflare Status</strong><span>cloudflarestatus.com</span></span>
+                <span class="stack-item-controls"><span class="stack-remove-btn">REMOVE</span></span>
+              </div>
+              <div class="stack-picker-item stack-selected-item is-stack-front">
+                <span class="stack-drag-indicator"></span>
+                <span class="stack-order">03</span>
+                <span class="stack-picker-copy"><strong>Service Dashboard</strong><span class="stack-front-badge">Front · Replaces this tab</span><span>dashboard.example</span></span>
+                <span class="stack-item-controls"><span class="stack-remove-btn">REMOVE</span></span>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div id="tourStackBrowserModel" class="tour-stack-browser-model">
+          <strong>Saved in browser bookmarks</strong>
+          <span>📁 [stack] Morning Ops</span>
+          <span>├─ 01 GitHub Status</span>
+          <span>├─ 02 Cloudflare Status</span>
+          <span>└─ 03 Service Dashboard</span>
+        </div>
+        <p id="tourStackDemoMessage" class="stack-modal-message">Preview only. Your bookmarks are not being changed.</p>
+      </div>
+      <div class="status-modal-actions stack-modal-actions">
+        <span class="mini-btn" aria-hidden="true">Cancel</span>
+        <span id="tourStackDemoSave" class="mini-btn stack-create-btn" aria-hidden="true">Create Stack</span>
+      </div>
+    </div>
+  </div>
+
   <div id="statusModal" class="status-modal-backdrop" hidden>
     <div class="status-modal" role="dialog" aria-modal="true" aria-labelledby="statusModalTitle">
       <div class="status-modal-head">
@@ -327,7 +461,7 @@
             <div id="selectedBookmarkList" class="stack-picker-list selected-bookmark-list" aria-live="polite"></div>
           </section>
         </div>
-        <p id="stackModalMessage" class="stack-modal-message">Add at least two bookmarks. The final item opens in front.</p>
+        <p id="stackModalMessage" class="stack-modal-message">Add at least two bookmarks. The highlighted Front item replaces this tab.</p>
       </div>
       <div class="status-modal-actions stack-modal-actions">
         <button id="cancelStackBtn" class="mini-btn" type="button">Cancel</button>
@@ -338,10 +472,11 @@
 
   <p id="footerNote" class="footer-note" data-theme-copy="footerNotice">Live bookmark access requires extension new-tab context with bookmarks permission.</p>
 
-  <script src="js/app-core.js?v=20260723.14"></script>
-  <script src="js/app-status.js?v=20260723.1"></script>
+  <script src="js/app-core.js?v=20260730.8"></script>
+  <script src="js/app-status.js?v=20260730.4"></script>
   <script src="js/app-tabs.js?v=20260723.10"></script>
-  <script src="js/app-bookmarks.js?v=20260723.11"></script>
-  <script src="js/app-init.js?v=20260723.8"></script>
+  <script src="js/app-bookmarks.js?v=20260730.5"></script>
+  <script src="js/app-tour.js?v=20260730.13"></script>
+  <script src="js/app-init.js?v=20260730.6"></script>
 </body>
 </html>

@@ -12,9 +12,10 @@ A custom Chromium new-tab page with a retro terminal look, live bookmarks, cross
 - Uses browser-provided icons first and Google favicon lookup as a fallback when the browser cache is unavailable
 - Supports stacked bookmarks for launch groups
 - Shows open tabs across browser windows and lets you jump to or close them
-- Includes a GitHub incident/watch card plus a configurable status-source sidebar
+- Includes a configurable incident Watch card driven by sources in the Net Ops sidebar
 - Includes a small utility panel for Base64, URL encode/decode, SHA-256, and Unix timestamp conversion
 - Supports theme switching between `LCARS`, `Synthwave`, and `Dark Mode`
+- Includes a first-run guided tour that can be replayed at any time
 
 ## Screenshots
 
@@ -66,9 +67,10 @@ How it works:
 
 - Click `Create Stack` beside the bookmark search field.
 - Name the stack and search or browse all bookmarks in the left panel.
-- Add at least two bookmarks to the right panel, then use the arrow controls to arrange their launch order.
+- Add at least two bookmarks to the right panel, then drag the entries marked with dots to arrange the launch order.
 - Click `Create Stack`. The final item in the right panel becomes the foreground destination.
 - The page creates a `[stack]` folder beside the first selected bookmark and copies the selected bookmarks into it. Original bookmarks remain in place.
+- Use `Edit Stack` beside `Create Stack`, then choose a saved stack to rename it or change and reorder its bookmarks.
 
 You can still build one manually by creating a bookmark folder whose name starts with `[stack]` and placing its bookmarks in launch order.
 
@@ -94,7 +96,7 @@ Current behavior:
 - [index.html](index.html): standalone privacy policy for GitHub Pages
 - `icons/`: shared browser and store icons in 16, 32, 48, and 128 pixel sizes
 - [js/app-core.js](js/app-core.js): shared state, DOM references, helpers, calculator, permissions, and browser API access
-- [js/app-status.js](js/app-status.js): status feed logic, GitHub watch card, and bookmark match modal logic
+- [js/app-status.js](js/app-status.js): status feed logic, configurable incident Watch card, and bookmark match modal logic
 - [js/app-tabs.js](js/app-tabs.js): tab rendering, focusing, closing, and move helpers
 - [js/app-bookmarks.js](js/app-bookmarks.js): bookmark loading, filtering, stacked bookmark launch logic, and address handling
 - [js/app-init.js](js/app-init.js): event listeners and bootstrapping

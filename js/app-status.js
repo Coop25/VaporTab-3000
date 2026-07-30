@@ -1,4 +1,4 @@
-// Status sources, GitHub watch, and status-related modals
+// Status sources, configurable incident watch, and status-related modals
 function setBookmarkNoticeMode(mode) {
   if (!footerNote) {
     return;
@@ -24,19 +24,100 @@ function readStatusSources() {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEYS.statusSources) || '[]');
     if (!Array.isArray(parsed) || !parsed.length) {
-      return DEFAULT_STATUS_SOURCES.slice();
+      return DEFAULT_STATUS_SOURCES
+        .map((item) => normalizeStatusSource(item.name, item.url))
+        .filter(Boolean);
     }
 
     return parsed
       .map((item) => normalizeStatusSource(item.name, item.url))
       .filter(Boolean);
   } catch {
-    return DEFAULT_STATUS_SOURCES.slice();
+    return DEFAULT_STATUS_SOURCES
+      .map((item) => normalizeStatusSource(item.name, item.url))
+      .filter(Boolean);
   }
 }
 
 function saveStatusSources() {
   localStorage.setItem(STORAGE_KEYS.statusSources, JSON.stringify(state.statusSources));
+}
+
+function getWatchSource() {
+  return state.statusSources.find((source) => source.id === state.watchSourceId) || null;
+}
+
+function ensureWatchSourceSelection() {
+  let source = getWatchSource();
+  if (!source) {
+    source = state.statusSources.find((item) => {
+      try {
+        return new URL(item.url).hostname.toLowerCase().includes('githubstatus.com');
+      } catch {
+        return false;
+      }
+    }) || state.statusSources[0] || null;
+  }
+
+  state.watchSourceId = source?.id || '';
+  if (state.watchSourceId) {
+    localStorage.setItem(STORAGE_KEYS.watchSource, state.watchSourceId);
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.watchSource);
+  }
+  return source;
+}
+
+function getStatusSiblingUrl(url, filename) {
+  const parsed = new URL(url);
+  parsed.pathname = `/api/v2/${filename}`;
+  parsed.search = '';
+  parsed.hash = '';
+  return parsed.toString();
+}
+
+function getStatusHistoryUrl(url) {
+  const parsed = new URL(url);
+  parsed.pathname = '/history';
+  parsed.search = '';
+  parsed.hash = '';
+  return parsed.toString();
+}
+
+function setWatchSource(sourceId) {
+  if (!state.statusSources.some((source) => source.id === sourceId)) {
+    return;
+  }
+
+  state.watchSourceId = sourceId;
+  localStorage.setItem(STORAGE_KEYS.watchSource, sourceId);
+  state.githubIncident = null;
+  state.githubIncidentRefreshToken += 1;
+  state.githubIncidentIsRefreshing = false;
+  renderStatusList();
+  renderGitHubIncidentCard();
+  updateGitHubIncidentMeta();
+  refreshGitHubIncidentCard();
+}
+
+function moveStatusSource(sourceId, targetIndex) {
+  const currentIndex = state.statusSources.findIndex((item) => item.id === sourceId);
+  if (currentIndex < 0 || targetIndex < 0 || targetIndex >= state.statusSources.length || currentIndex === targetIndex) {
+    return;
+  }
+
+  const nextSources = state.statusSources.slice();
+  const [source] = nextSources.splice(currentIndex, 1);
+  nextSources.splice(targetIndex, 0, source);
+  state.statusSources = nextSources;
+  saveStatusSources();
+  renderStatusList();
+}
+
+function clearStatusDropMarkers() {
+  for (const row of statusList.querySelectorAll('.status-item.is-dragging, .status-item.drop-before, .status-item.drop-after')) {
+    row.classList.remove('is-dragging', 'drop-before', 'drop-after');
+  }
 }
 
 function normalizeStatusSource(nameInput, urlInput) {
@@ -110,11 +191,11 @@ function formatDateTime(value) {
   });
 }
 
-function getIncidentAnchor(url) {
+function getIncidentAnchor(url, fallbackUrl) {
   try {
     return new URL(url).toString();
   } catch {
-    return GITHUB_STATUS_HISTORY_URL;
+    return fallbackUrl;
   }
 }
 
@@ -158,17 +239,28 @@ function renderGitHubIncidentCard() {
     return;
   }
 
-  const info = state.githubIncident;
+  const source = getWatchSource();
+  const sourceName = source?.name || 'Service';
+  const historyUrl = source ? getStatusHistoryUrl(source.url) : GITHUB_STATUS_HISTORY_URL;
+  const info = state.githubIncident?.sourceId === source?.id ? state.githubIncident : null;
+
+  if (githubIncidentTitle) {
+    githubIncidentTitle.textContent = `${sourceName} Watch`;
+  }
 
   if (!info) {
     githubIncidentDays.textContent = '--';
     githubIncidentBadge.className = 'status-badge warn';
-    githubIncidentBadge.textContent = 'SYNC';
-    githubIncidentRange.textContent = 'Days without a GitHub incident';
-    githubIncidentSummary.textContent = 'Loading GitHub status and incident history...';
+    githubIncidentBadge.textContent = source ? 'SYNC' : 'N/A';
+    githubIncidentRange.textContent = source
+      ? `Days without a ${sourceName} incident`
+      : 'Choose a NET OPS source to watch';
+    githubIncidentSummary.textContent = source
+      ? `Loading ${sourceName} status and incident history...`
+      : 'Add a NET OPS source, then select Watch in edit mode.';
     githubIncidentHighScore.textContent = 'High score this year: --';
     if (githubIncidentLink) {
-      githubIncidentLink.href = GITHUB_STATUS_HISTORY_URL;
+      githubIncidentLink.href = historyUrl;
     }
     return;
   }
@@ -176,12 +268,12 @@ function renderGitHubIncidentCard() {
   githubIncidentDays.textContent = String(info.currentStreakDays ?? '--');
   githubIncidentBadge.className = `status-badge ${info.tone || 'warn'}`;
   githubIncidentBadge.textContent = info.badgeText || 'SYNC';
-  githubIncidentRange.textContent = info.rangeLabel || 'Days without a GitHub incident';
-  githubIncidentSummary.textContent = info.summary || 'GitHub status unavailable.';
+  githubIncidentRange.textContent = info.rangeLabel || `Days without a ${sourceName} incident`;
+  githubIncidentSummary.textContent = info.summary || `${sourceName} status unavailable.`;
   githubIncidentHighScore.textContent = info.highScoreLabel || 'High score this year: --';
 
   if (githubIncidentLink) {
-    githubIncidentLink.href = info.link || GITHUB_STATUS_HISTORY_URL;
+    githubIncidentLink.href = info.link || historyUrl;
   }
 }
 
@@ -197,11 +289,24 @@ function renderStatusList() {
     return;
   }
 
-  for (const source of state.statusSources) {
+  state.statusSources.forEach((source, sourceIndex) => {
     const status = state.statusById.get(source.id);
 
     const row = document.createElement('div');
     row.className = 'status-item';
+    row.dataset.statusId = source.id;
+    row.classList.toggle('is-watch-source', source.id === state.watchSourceId);
+    if (state.statusEditMode) {
+      row.classList.add('is-editable');
+      row.draggable = true;
+      row.tabIndex = 0;
+      row.title = 'Drag to reorder';
+      row.setAttribute('aria-label', `${source.name}. Drag to reorder, or use the arrow keys.`);
+    }
+
+    const dragIndicator = document.createElement('span');
+    dragIndicator.className = 'status-drag-indicator';
+    dragIndicator.setAttribute('aria-hidden', 'true');
 
     const top = document.createElement('div');
     top.className = 'status-top';
@@ -227,25 +332,127 @@ function renderStatusList() {
     const host = document.createElement('span');
     host.textContent = shortHost(source.url);
 
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'status-remove';
-    removeBtn.textContent = 'Remove';
-    removeBtn.addEventListener('click', () => {
-      state.statusById.delete(source.id);
-      state.statusSources = state.statusSources.filter((item) => item.id !== source.id);
-      saveStatusSources();
-      renderStatusList();
-    });
-
     meta.appendChild(host);
-    meta.appendChild(removeBtn);
 
+    let controls = null;
+    if (state.statusEditMode) {
+      controls = document.createElement('div');
+      controls.className = 'status-item-controls';
+
+      row.addEventListener('keydown', (event) => {
+        if (event.target !== row) {
+          return;
+        }
+        if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
+          return;
+        }
+        event.preventDefault();
+        moveStatusSource(source.id, sourceIndex + (event.key === 'ArrowUp' ? -1 : 1));
+        requestAnimationFrame(() => {
+          const nextRow = Array.from(statusList.querySelectorAll('.status-item'))
+            .find((candidate) => candidate.dataset.statusId === source.id);
+          nextRow?.focus();
+        });
+      });
+      row.addEventListener('dragstart', (event) => {
+        if (!event.dataTransfer) {
+          event.preventDefault();
+          return;
+        }
+        state.draggedStatusId = source.id;
+        row.classList.add('is-dragging');
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', source.id);
+      });
+      row.addEventListener('dragend', () => {
+        state.draggedStatusId = '';
+        clearStatusDropMarkers();
+      });
+
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'status-item-action';
+      editBtn.textContent = 'Edit';
+      editBtn.setAttribute('aria-label', `Edit ${source.name}`);
+      editBtn.addEventListener('click', () => openStatusModal(source.id));
+
+      const watchBtn = document.createElement('button');
+      const isWatchSource = source.id === state.watchSourceId;
+      watchBtn.type = 'button';
+      watchBtn.className = 'status-item-action status-watch-action';
+      watchBtn.classList.toggle('is-active', isWatchSource);
+      watchBtn.textContent = isWatchSource ? 'Watching' : 'Watch';
+      watchBtn.disabled = isWatchSource;
+      watchBtn.setAttribute('aria-label', isWatchSource
+        ? `${source.name} is shown in the Watch card`
+        : `Show ${source.name} in the Watch card`);
+      watchBtn.addEventListener('click', () => setWatchSource(source.id));
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'status-remove';
+      removeBtn.textContent = 'Remove';
+      removeBtn.addEventListener('click', () => {
+        const removedWatchSource = state.watchSourceId === source.id;
+        state.statusById.delete(source.id);
+        state.statusSources = state.statusSources.filter((item) => item.id !== source.id);
+        if (removedWatchSource) {
+          ensureWatchSourceSelection();
+          state.githubIncident = null;
+          state.githubIncidentRefreshToken += 1;
+          state.githubIncidentIsRefreshing = false;
+        }
+        saveStatusSources();
+        renderStatusList();
+        if (removedWatchSource) {
+          refreshGitHubIncidentCard();
+        }
+      });
+
+      controls.appendChild(editBtn);
+      controls.appendChild(watchBtn);
+      controls.appendChild(removeBtn);
+
+      row.addEventListener('dragover', (event) => {
+        if (!state.draggedStatusId || state.draggedStatusId === source.id) {
+          return;
+        }
+        event.preventDefault();
+        const bounds = row.getBoundingClientRect();
+        const placeAfter = event.clientY >= bounds.top + bounds.height / 2;
+        row.classList.toggle('drop-before', !placeAfter);
+        row.classList.toggle('drop-after', placeAfter);
+      });
+
+      row.addEventListener('dragleave', () => {
+        row.classList.remove('drop-before', 'drop-after');
+      });
+
+      row.addEventListener('drop', (event) => {
+        event.preventDefault();
+        const draggedId = state.draggedStatusId || event.dataTransfer?.getData('text/plain') || '';
+        const draggedIndex = state.statusSources.findIndex((item) => item.id === draggedId);
+        const targetIndex = state.statusSources.findIndex((item) => item.id === source.id);
+        const bounds = row.getBoundingClientRect();
+        const placeAfter = event.clientY >= bounds.top + bounds.height / 2;
+        const insertionIndex = targetIndex + (placeAfter ? 1 : 0) - (draggedIndex < targetIndex ? 1 : 0);
+        state.draggedStatusId = '';
+        clearStatusDropMarkers();
+        moveStatusSource(draggedId, insertionIndex);
+      });
+    }
+
+    if (state.statusEditMode) {
+      row.appendChild(dragIndicator);
+    }
     row.appendChild(top);
     row.appendChild(line);
     row.appendChild(meta);
+    if (controls) {
+      row.appendChild(controls);
+    }
     statusList.appendChild(row);
-  }
+  });
 
   updateStatusPulse();
 }
@@ -327,14 +534,17 @@ function updateGitHubIncidentMeta() {
     return;
   }
 
+  const sourceName = getWatchSource()?.name || 'service';
   if (state.githubIncidentIsRefreshing) {
-    githubIncidentMeta.textContent = 'Refreshing GitHub incident feed...';
+    githubIncidentMeta.textContent = `Refreshing ${sourceName} incident feed...`;
     return;
   }
 
   const info = state.githubIncident;
   if (!info?.checkedAt) {
-    githubIncidentMeta.textContent = 'Checking incident feed...';
+    githubIncidentMeta.textContent = getWatchSource()
+      ? `Checking ${sourceName} incident feed...`
+      : 'No watch source selected';
     return;
   }
 
@@ -358,6 +568,16 @@ async function refreshGitHubIncidentCard() {
     return;
   }
 
+  const source = getWatchSource();
+  if (!source) {
+    state.githubIncident = null;
+    renderGitHubIncidentCard();
+    updateGitHubIncidentMeta();
+    return;
+  }
+
+  const requestToken = ++state.githubIncidentRefreshToken;
+  const historyUrl = getStatusHistoryUrl(source.url);
   state.githubIncidentIsRefreshing = true;
   updateGitHubIncidentMeta();
 
@@ -369,19 +589,25 @@ async function refreshGitHubIncidentCard() {
       credentials: 'omit'
     };
     const [statusRes, incidentsRes] = await Promise.all([
-      fetch(getFreshApiUrl(GITHUB_STATUS_API_URL, startedAt), requestOptions),
-      fetch(getFreshApiUrl(GITHUB_INCIDENTS_API_URL, startedAt), requestOptions)
+      fetch(getFreshApiUrl(getStatusApiUrl(source.url), startedAt), requestOptions),
+      fetch(getFreshApiUrl(getStatusSiblingUrl(source.url, 'incidents.json'), startedAt), requestOptions)
+        .catch(() => null)
     ]);
 
     if (!statusRes.ok) {
       throw new Error(`Status HTTP ${statusRes.status}`);
     }
-    if (!incidentsRes.ok) {
-      throw new Error(`Incidents HTTP ${incidentsRes.status}`);
-    }
 
     const statusData = await statusRes.json();
-    const incidentsData = await incidentsRes.json();
+    let incidentsAvailable = Boolean(incidentsRes?.ok);
+    let incidentsData = null;
+    if (incidentsAvailable) {
+      try {
+        incidentsData = await incidentsRes.json();
+      } catch {
+        incidentsAvailable = false;
+      }
+    }
     const incidents = Array.isArray(incidentsData?.incidents)
       ? incidentsData.incidents
           .filter((incident) => incident?.created_at)
@@ -393,15 +619,15 @@ async function refreshGitHubIncidentCard() {
     const latestStartedAt = latestIncident?.started_at || latestIncident?.created_at || null;
     const latestEnd = latestResolvedAt || latestStartedAt;
     const incidentIsResolved = Boolean(latestResolvedAt);
-    const currentStreakDays = incidentIsResolved && latestEnd
-      ? fullDaysBetween(latestEnd, startedAt)
-      : 0;
+    const currentStreakDays = incidentsAvailable
+      ? (incidentIsResolved && latestEnd ? fullDaysBetween(latestEnd, startedAt) : 0)
+      : '--';
     const statusDescription = statusData?.status?.description || 'Unknown';
     const indicator = statusData?.status?.indicator || 'unknown';
     const tone = getStatusTone(indicator);
 
     const currentYear = new Date().getFullYear();
-    let highScore = currentStreakDays;
+    let highScore = typeof currentStreakDays === 'number' ? currentStreakDays : 0;
 
     for (let index = 0; index < incidents.length - 1; index += 1) {
       const newer = incidents[index];
@@ -423,36 +649,54 @@ async function refreshGitHubIncidentCard() {
 
     const lastIncidentName = latestIncident?.name || 'No recent incidents found';
     const lastIncidentWhen = latestEnd ? formatDateTime(latestEnd) : 'Unknown';
-    const incidentLink = getIncidentAnchor(latestIncident?.shortlink || GITHUB_STATUS_HISTORY_URL);
+    const incidentLink = getIncidentAnchor(latestIncident?.shortlink || historyUrl, historyUrl);
     const incidentTimeLabel = incidentIsResolved ? 'resolved' : 'started';
 
+    if (requestToken !== state.githubIncidentRefreshToken || source.id !== state.watchSourceId) {
+      return;
+    }
+
     state.githubIncident = {
+      sourceId: source.id,
       tone,
       badgeText: tone === 'ok' ? 'LIVE' : tone === 'down' ? 'ALERT' : 'WARN',
       currentStreakDays,
-      rangeLabel: latestIncident
-        ? `Last incident ${incidentTimeLabel} ${lastIncidentWhen}`
-        : 'No GitHub incidents found in feed',
-      summary: `${statusDescription}. Last incident: ${lastIncidentName}.`,
-      highScoreLabel: `High score this year: ${highScore} day${highScore === 1 ? '' : 's'}`,
+      rangeLabel: !incidentsAvailable
+        ? `${source.name} incident history unavailable`
+        : latestIncident
+          ? `Last incident ${incidentTimeLabel} ${lastIncidentWhen}`
+          : `No ${source.name} incidents found in feed`,
+      summary: incidentsAvailable
+        ? `${statusDescription}. Last incident: ${lastIncidentName}.`
+        : `${statusDescription}. Incident history is not exposed by this status page.`,
+      highScoreLabel: incidentsAvailable
+        ? `High score this year: ${highScore} day${highScore === 1 ? '' : 's'}`
+        : 'High score this year: --',
       checkedAt: startedAt,
       link: incidentLink
     };
   } catch (error) {
+    if (requestToken !== state.githubIncidentRefreshToken || source.id !== state.watchSourceId) {
+      return;
+    }
+
     state.githubIncident = {
+      sourceId: source.id,
       tone: 'down',
       badgeText: 'ERR',
       currentStreakDays: '--',
-      rangeLabel: 'GitHub incident feed unavailable',
-      summary: String(error?.message || 'Could not reach GitHub status endpoints.'),
+      rangeLabel: `${source.name} incident feed unavailable`,
+      summary: String(error?.message || `Could not reach ${source.name} status endpoints.`),
       highScoreLabel: 'High score this year: --',
       checkedAt: startedAt,
-      link: GITHUB_STATUS_HISTORY_URL
+      link: historyUrl
     };
   } finally {
-    state.githubIncidentIsRefreshing = false;
-    renderGitHubIncidentCard();
-    updateGitHubIncidentMeta();
+    if (requestToken === state.githubIncidentRefreshToken) {
+      state.githubIncidentIsRefreshing = false;
+      renderGitHubIncidentCard();
+      updateGitHubIncidentMeta();
+    }
   }
 }
 
@@ -502,8 +746,34 @@ function addStatusSourceFromInputs() {
     return;
   }
 
-  const exists = state.statusSources.some((item) => item.id === source.id);
-  if (!exists) {
+  const editIndex = state.statusSources.findIndex((item) => item.id === state.editingStatusId);
+  const duplicateIndex = state.statusSources.findIndex((item) => item.id === source.id);
+  let watchSourceChanged = false;
+
+  if (editIndex >= 0) {
+    if (duplicateIndex >= 0 && duplicateIndex !== editIndex) {
+      statusUrlInput.setCustomValidity('That status source already exists.');
+      statusUrlInput.reportValidity();
+      return;
+    }
+
+    const previousId = state.statusSources[editIndex].id;
+    const editedWatchSource = state.watchSourceId === previousId;
+    state.statusSources[editIndex] = source;
+    if (previousId !== source.id && state.statusById.has(previousId)) {
+      state.statusById.set(source.id, state.statusById.get(previousId));
+      state.statusById.delete(previousId);
+    }
+    if (editedWatchSource) {
+      watchSourceChanged = true;
+      state.watchSourceId = source.id;
+      localStorage.setItem(STORAGE_KEYS.watchSource, source.id);
+      state.githubIncident = null;
+      state.githubIncidentRefreshToken += 1;
+      state.githubIncidentIsRefreshing = false;
+    }
+    saveStatusSources();
+  } else if (duplicateIndex < 0) {
     state.statusSources.push(source);
     saveStatusSources();
   }
@@ -512,14 +782,26 @@ function addStatusSourceFromInputs() {
   statusUrlInput.value = '';
   closeStatusModal();
   refreshStatuses();
+  if (watchSourceChanged) {
+    renderGitHubIncidentCard();
+    refreshGitHubIncidentCard();
+  }
 }
 
-function openStatusModal() {
+function openStatusModal(sourceId = '') {
   if (!statusModal) {
     return;
   }
+
+  const source = state.statusSources.find((item) => item.id === sourceId);
+  state.editingStatusId = source?.id || '';
+  statusNameInput.value = source?.name || '';
+  statusUrlInput.value = source?.url || '';
+  statusUrlInput.setCustomValidity('');
+  statusModalTitle.textContent = source ? 'Edit Status Source' : 'Add Status Source';
+  addStatusBtn.textContent = source ? 'Save Changes' : 'Add Source';
   statusModal.hidden = false;
-  statusUrlInput.focus();
+  (source ? statusNameInput : statusUrlInput).focus();
 }
 
 function closeStatusModal() {
@@ -527,6 +809,20 @@ function closeStatusModal() {
     return;
   }
   statusModal.hidden = true;
+  state.editingStatusId = '';
+  statusNameInput.value = '';
+  statusUrlInput.value = '';
+  statusUrlInput.setCustomValidity('');
+}
+
+function toggleStatusEditMode() {
+  state.statusEditMode = !state.statusEditMode;
+  state.draggedStatusId = '';
+  editStatusBtn.textContent = state.statusEditMode ? 'Done' : 'Edit';
+  editStatusBtn.setAttribute('aria-pressed', String(state.statusEditMode));
+  statusEditHint.hidden = !state.statusEditMode;
+  clearStatusDropMarkers();
+  renderStatusList();
 }
 
 function resolveBookmarkMatchChoice(choice) {
