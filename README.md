@@ -140,4 +140,4 @@ The sidebar status cards rely on public status endpoints. Temporary fetch failur
 
 ## Version
 
-Current manifest version: `0.2.2`
+Current manifest version: `0.3.0`
