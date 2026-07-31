@@ -347,6 +347,30 @@ const THEME_COPY = {
     toolsChannel: 'TOOLS',
     stackKicker: 'BOOKMARK ASSEMBLY',
     footerNotice: 'Live bookmark access requires extension new-tab context with bookmarks permission.'
+  },
+  terminal: {
+    mastheadEyebrow: 'ROOT / SYSTEM / DASHBOARD_OVERVIEW',
+    mastheadTitle: 'SYSTEM DASHBOARD',
+    systemId: 'SYS: OK',
+    nodeLabel: 'TERMINAL_UI',
+    nodeModel: 'LOCAL // STABLE',
+    bookmarksChannel: 'RESOURCE_LIBRARY',
+    tabsChannel: 'ACTIVE_PROCESSES',
+    toolsChannel: 'SYSTEM_UTILITIES',
+    stackKicker: 'TERMINAL_UI // BOOKMARK_ASSEMBLY',
+    footerNotice: 'SYSTEM NOTICE // Browser bookmark permission is required for live resource access.'
+  },
+  'old-pc': {
+    mastheadEyebrow: 'C:\\VAPORTAB\\DESKTOP',
+    mastheadTitle: 'VaporTab Program Manager',
+    systemId: 'LOCAL PC',
+    nodeLabel: 'MY COMPUTER',
+    nodeModel: 'VAPORTAB 95',
+    bookmarksChannel: 'BOOKMARKS.EXE',
+    tabsChannel: 'TASK MANAGER',
+    toolsChannel: 'ACCESSORIES',
+    stackKicker: 'PROGRAM MANAGER // BOOKMARK GROUP',
+    footerNotice: 'SYSTEM MESSAGE // Live bookmarks require browser permission.'
   }
 };
 
@@ -362,7 +386,7 @@ function applyThemeCopy(themeName) {
 }
 
 function applyTheme(themeName) {
-  const allowed = new Set(['lcars', 'synthwave', 'dark']);
+  const allowed = new Set(['lcars', 'synthwave', 'dark', 'terminal', 'old-pc']);
   const nextTheme = allowed.has(themeName) ? themeName : 'lcars';
   state.theme = nextTheme;
   document.documentElement.setAttribute('data-theme', nextTheme);
