@@ -29,6 +29,7 @@ $packageFiles = @(
   'js/app-tabs.js'
   'js/app-bookmarks.js'
   'js/app-tour.js'
+  'js/app-command-palette.js'
   'js/app-init.js'
   'icons/icon-16.png'
   'icons/icon-32.png'

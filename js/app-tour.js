@@ -5,6 +5,11 @@ const TOUR_STEPS = [
     copy: 'This quick tour shows you where everything lives. Use Next and Back, the arrow keys, or press Escape to leave at any time.'
   },
   {
+    target: '#commandPaletteLauncher',
+    title: 'Command palette',
+    copy: 'Open Commands or press Ctrl+K to search bookmarks, switch tabs and themes, jump to tools, refresh data, and run page actions without hunting through the interface.'
+  },
+  {
     target: '.tower-head',
     title: 'Operations sidebar',
     copy: 'The sidebar keeps your clock, bookmark source, theme controls, selected service incident streak, and status monitor together.'
@@ -17,7 +22,7 @@ const TOUR_STEPS = [
   {
     target: '#themeSwitcher',
     title: 'Choose a theme',
-    copy: 'Use this dropdown to switch instantly between LCARS, Synthwave, and Dark Mode. Your selection is remembered for future new tabs.'
+    copy: 'Use this dropdown to switch instantly between LCARS, Synthwave, Dark Mode, Terminal UI, and Old PC Dark. Your selection is remembered for future new tabs.'
   },
   {
     target: '.github-incident-block',
@@ -87,7 +92,7 @@ const TOUR_STEPS = [
   {
     target: '#bookmarkGrid',
     title: 'Bookmark cards',
-    copy: 'Select a card to open it. Cards track local click activity, while stack cards open several related bookmarks together.'
+    copy: 'Select a card to open it. If that bookmark is already open, VaporTab asks whether to reuse the existing tab or open a new instance. Cards track local click activity, while stack cards open several related bookmarks together.'
   },
   {
     target: '.tabs-terminal',

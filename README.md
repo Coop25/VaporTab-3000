@@ -14,7 +14,8 @@ A custom Chromium new-tab page with a retro terminal look, live bookmarks, cross
 - Shows open tabs across browser windows and lets you jump to or close them
 - Includes a configurable incident Watch card driven by sources in the Net Ops sidebar
 - Includes a small utility panel for Base64, URL encode/decode, SHA-256, and Unix timestamp conversion
-- Supports theme switching between `LCARS`, `Synthwave`, and `Dark Mode`
+- Includes a `Ctrl+K` command palette for bookmarks, tabs, themes, tools, and page actions
+- Supports theme switching between `LCARS`, `Synthwave`, `Dark Mode`, `Terminal UI`, and `Old PC Dark`
 - Includes a first-run guided tour that can be replayed at any time
 
 ## Screenshots
@@ -101,12 +102,14 @@ Current behavior:
 - [js/app-tabs.js](js/app-tabs.js): tab rendering, focusing, closing, and move helpers
 - [js/app-bookmarks.js](js/app-bookmarks.js): bookmark loading, filtering, stacked bookmark launch logic, and address handling
 - [js/app-tour.js](js/app-tour.js): first-run and replayable guided tour
+- [js/app-command-palette.js](js/app-command-palette.js): `Ctrl+K` search and execution across bookmarks, tabs, themes, tools, and page actions
 - [js/app-init.js](js/app-init.js): event listeners and bootstrapping
 
 ## Development Notes
 
 - The app is plain HTML/CSS/JavaScript with no bundler.
 - Script loading order matters because the files share global state/functions.
+- When the privacy policy in `index.html` changes, update its visible and machine-readable "Last updated" date.
 - On the first updated launch, legacy `localStorage` preferences are copied once into extension `storage.local`. Existing extension-storage values are never overwritten, and the legacy copy is retained as a rollback safeguard.
 - If bookmark or tab behavior changes, reload the unpacked extension before testing again.
 
