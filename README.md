@@ -15,7 +15,7 @@ A custom Chromium new-tab page with a retro terminal look, live bookmarks, cross
 - Includes a configurable incident Watch card driven by sources in the Net Ops sidebar
 - Includes a small utility panel for Base64, URL encode/decode, SHA-256, and Unix timestamp conversion
 - Includes a `Ctrl+K` command palette for bookmarks, tabs, themes, tools, and page actions
-- Supports theme switching between `LCARS`, `Synthwave`, `Dark Mode`, `Terminal UI`, and `Old PC Dark`
+- Supports theme switching between `LCARS`, `Synthwave`, `Dark Mode`, `Terminal UI`, `Old PC Dark`, and `Orbital Command`
 - Includes a first-run guided tour that can be replayed at any time
 
 ## Screenshots
@@ -127,8 +127,9 @@ the ZIP whose filename matches the target store; the two manifests are not
 interchangeable.
 
 When a GitHub Release is published, the `Build release packages` workflow checks
-out that release tag, runs `task package:force`, and attaches both ZIP files to
-the release automatically.
+out that release tag, copies the release tag number into the packaged
+`manifest.json`, runs `task package:force`, and attaches both ZIP files to the
+release automatically. Release tags can be written as `0.4.0` or `v0.4.0`.
 
 ## Troubleshooting
 
@@ -143,7 +144,3 @@ Open DevTools on the new-tab page and look for `stack-debug` console lines. The 
 ### Status sources are blank
 
 The sidebar status cards rely on public status endpoints. Temporary fetch failures should show up in the UI as error states.
-
-## Version
-
-Current manifest version: `0.3.0`

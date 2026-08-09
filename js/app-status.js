@@ -249,6 +249,13 @@ function renderGitHubIncidentCard() {
   }
 
   if (!info) {
+    if (githubIncidentRadar) {
+      const radarState = source ? 'sync' : 'idle';
+      githubIncidentRadar.dataset.radarState = radarState;
+      githubIncidentRadar.setAttribute('aria-label', source
+        ? `Scanning ${sourceName} service status`
+        : 'No service selected for radar watch');
+    }
     githubIncidentDays.textContent = '--';
     githubIncidentBadge.className = 'status-badge warn';
     githubIncidentBadge.textContent = source ? 'SYNC' : 'N/A';
@@ -263,6 +270,24 @@ function renderGitHubIncidentCard() {
       githubIncidentLink.href = historyUrl;
     }
     return;
+  }
+
+  if (githubIncidentRadar) {
+    const infoTone = ['ok', 'warn', 'down'].includes(info.tone) ? info.tone : 'warn';
+    const radarState = info.badgeText === 'ERR' ? 'offline' : infoTone;
+    const dayCount = typeof info.currentStreakDays === 'number'
+      ? `${info.currentStreakDays} day${info.currentStreakDays === 1 ? '' : 's'} since the last incident`
+      : 'incident streak unavailable';
+    const stateLabel = radarState === 'ok'
+      ? 'operational'
+      : radarState === 'warn'
+        ? 'degraded'
+        : radarState === 'down'
+          ? 'incident detected'
+          : 'status feed unreachable';
+
+    githubIncidentRadar.dataset.radarState = radarState;
+    githubIncidentRadar.setAttribute('aria-label', `${sourceName} ${stateLabel}; ${dayCount}`);
   }
 
   githubIncidentDays.textContent = String(info.currentStreakDays ?? '--');
@@ -292,7 +317,7 @@ function renderStatusList() {
   state.statusSources.forEach((source, sourceIndex) => {
     const status = state.statusById.get(source.id);
 
-    const row = document.createElement('div');
+    const row = document.createElement(state.statusEditMode ? 'div' : 'a');
     row.className = 'status-item';
     row.dataset.statusId = source.id;
     row.classList.toggle('is-watch-source', source.id === state.watchSourceId);
@@ -302,6 +327,12 @@ function renderStatusList() {
       row.tabIndex = 0;
       row.title = 'Drag to reorder';
       row.setAttribute('aria-label', `${source.name}. Drag to reorder, or use the arrow keys.`);
+    } else {
+      row.classList.add('is-link');
+      row.href = source.url;
+      row.rel = 'noreferrer';
+      row.title = `Open ${source.name} status page`;
+      row.setAttribute('aria-label', `Open ${source.name} status page`);
     }
 
     const dragIndicator = document.createElement('span');
@@ -579,6 +610,10 @@ async function refreshGitHubIncidentCard() {
   const requestToken = ++state.githubIncidentRefreshToken;
   const historyUrl = getStatusHistoryUrl(source.url);
   state.githubIncidentIsRefreshing = true;
+  if (githubIncidentRadar) {
+    githubIncidentRadar.dataset.radarState = 'sync';
+    githubIncidentRadar.setAttribute('aria-label', `Refreshing ${source.name} service status`);
+  }
   updateGitHubIncidentMeta();
 
   const startedAt = Date.now();

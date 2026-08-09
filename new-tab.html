@@ -7,13 +7,36 @@
   <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png" />
   <link rel="shortcut icon" type="image/png" href="icons/icon-32.png" />
-  <link rel="stylesheet" href="styles.css?v=20260731.31" />
+  <link rel="stylesheet" href="styles.css?v=20260809.26" />
 </head>
 <body>
   <div class="scene" aria-hidden="true">
     <div class="stars"></div>
     <div class="sun"></div>
     <div class="mountain-lines"></div>
+    <div class="hud-orbit hud-orbit-main"></div>
+    <div class="hud-orbit hud-orbit-side"></div>
+    <div class="hud-circuit"></div>
+    <div class="hud-chevrons"></div>
+    <div class="hud-bloom hud-bloom-a"></div>
+    <div class="hud-bloom hud-bloom-b"></div>
+    <div class="hud-flair hud-panel-field">
+      <i></i><i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="hud-flair hud-rail-bank">
+      <i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="hud-flair hud-dial-bank">
+      <i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="hud-flair hud-data-traces">
+      <i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="hud-flair hud-edge-glyphs">
+      <i></i><i></i><i></i><i></i><i></i>
+    </div>
     <div class="scanlines"></div>
   </div>
 
@@ -30,13 +53,38 @@
       </div>
     </header>
 
-    <aside class="tower">
+    <button
+      id="sidebarDrawerToggle"
+      class="sidebar-drawer-toggle"
+      type="button"
+      aria-controls="sidebarDrawer"
+      aria-expanded="false"
+      aria-label="Open systems drawer"
+    >
+      <span class="sidebar-drawer-toggle-arrow" aria-hidden="true">&#8250;</span>
+    </button>
+
+    <aside id="sidebarDrawer" class="tower" aria-label="Systems sidebar">
+      <button id="sidebarDrawerClose" class="sidebar-drawer-close" type="button" aria-label="Close systems drawer">
+        <span aria-hidden="true">&#8249;</span>
+        <strong>Close</strong>
+      </button>
       <div class="tower-head">
         <p class="tower-kicker" data-theme-copy="nodeLabel">VAPORTAB NODE</p>
         <p class="tower-model" data-theme-copy="nodeModel">VT-3000</p>
       </div>
 
       <section class="tower-block clock-block" aria-live="polite">
+        <div id="orbitalActivityOrb" class="orbital-activity-orb" role="img" aria-label="Morphing orbital energy anomaly">
+          <span class="orbital-spike-aura" aria-hidden="true"></span>
+          <span class="orbital-spike-shell" aria-hidden="true">
+            <span id="orbitalSpikeBody" class="orbital-spike-body"></span>
+          </span>
+          <span class="orbital-spike-core" aria-hidden="true"></span>
+          <span class="orbital-spike-particle orbital-spike-particle-a" aria-hidden="true"></span>
+          <span class="orbital-spike-particle orbital-spike-particle-b" aria-hidden="true"></span>
+          <span class="orbital-spike-particle orbital-spike-particle-c" aria-hidden="true"></span>
+        </div>
         <p id="clockTime" class="clock-time">--:--</p>
         <p id="clockDate" class="clock-date">Loading...</p>
       </section>
@@ -64,6 +112,7 @@
               <option value="dark">Dark Mode</option>
               <option value="terminal">Terminal UI</option>
               <option value="old-pc">Old PC Dark</option>
+              <option value="orbital">Orbital Command</option>
             </select>
           </div>
         </div>
@@ -75,7 +124,18 @@
           <p id="githubIncidentMeta" class="status-refresh-meta">Checking incident feed...</p>
         </div>
         <div class="github-incident-hero">
-          <div class="github-incident-count">
+          <div
+            id="githubIncidentRadar"
+            class="github-incident-count"
+            data-radar-state="sync"
+            role="img"
+            aria-label="Scanning service status"
+          >
+            <span class="service-radar-grid" aria-hidden="true"></span>
+            <span class="service-radar-sweep" aria-hidden="true"></span>
+            <span class="service-radar-blip service-radar-blip-a" aria-hidden="true"></span>
+            <span class="service-radar-blip service-radar-blip-b" aria-hidden="true"></span>
+            <span class="service-radar-blip service-radar-blip-c" aria-hidden="true"></span>
             <span id="githubIncidentDays" class="github-incident-days">--</span>
             <span class="github-incident-unit">days</span>
           </div>
@@ -131,16 +191,6 @@
 
         <section class="monitor-screen">
           <section class="console">
-            <div class="signal" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
             <div class="input-row">
               <input id="searchInput" class="search" type="text" placeholder="Type bookmark, URL, or web query..." autocomplete="off" />
               <button id="refreshBtn" class="btn" type="button">Reload</button>
@@ -231,18 +281,6 @@
         <section class="monitor-screen">
           <section class="console devtools-console">
             <div class="devcalc-block">
-              <div class="devtools-head">
-                <p class="devtools-title">Utility Bus</p>
-                <div class="devtools-meter" aria-hidden="true">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-                <p id="calcLatency" class="calc-latency">Latency: -- ms</p>
-              </div>
               <div id="calcModeBar" class="calc-mode-bar">
                 <button type="button" class="mini-btn calc-mode-btn active" data-mode="base64">Base64</button>
                 <button type="button" class="mini-btn calc-mode-btn" data-mode="url">URL</button>
@@ -274,6 +312,7 @@
         </section>
       </section>
     </section>
+    <div id="sidebarDrawerBackdrop" class="sidebar-drawer-backdrop" hidden></div>
   </main>
 
   <button id="tourLauncher" class="tour-launcher" type="button" aria-label="Start guided page tour">
@@ -518,12 +557,12 @@
 
   <p id="footerNote" class="footer-note" data-theme-copy="footerNotice">Live bookmark access requires extension new-tab context with bookmarks permission.</p>
 
-  <script src="js/app-core.js?v=20260731.12"></script>
-  <script src="js/app-status.js?v=20260730.4"></script>
+  <script src="js/app-core.js?v=20260809.6"></script>
+  <script src="js/app-status.js?v=20260809.2"></script>
   <script src="js/app-tabs.js?v=20260723.10"></script>
   <script src="js/app-bookmarks.js?v=20260730.5"></script>
-  <script src="js/app-tour.js?v=20260731.19"></script>
-  <script src="js/app-command-palette.js?v=20260731.3"></script>
-  <script src="js/app-init.js?v=20260731.9"></script>
+  <script src="js/app-tour.js?v=20260809.20"></script>
+  <script src="js/app-command-palette.js?v=20260809.4"></script>
+  <script src="js/app-init.js?v=20260809.11"></script>
 </body>
 </html>
