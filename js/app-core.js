@@ -233,6 +233,8 @@ const sourceText = document.getElementById('sourceText');
 const helperText = document.getElementById('helperText');
 const clockTime = document.getElementById('clockTime');
 const clockDate = document.getElementById('clockDate');
+const orbitalActivityOrb = document.getElementById('orbitalActivityOrb');
+const orbitalSpikeBody = document.getElementById('orbitalSpikeBody');
 const footerNote = document.getElementById('footerNote');
 const tabsList = document.getElementById('tabsList');
 const tabsSummary = document.getElementById('tabsSummary');
@@ -264,6 +266,7 @@ const statusRefreshMeta = document.getElementById('statusRefreshMeta');
 const statusConsole = document.querySelector('.status-console');
 const themeSwitcher = document.getElementById('themeSwitcher');
 const githubIncidentTitle = document.getElementById('githubIncidentTitle');
+const githubIncidentRadar = document.getElementById('githubIncidentRadar');
 const githubIncidentDays = document.getElementById('githubIncidentDays');
 const githubIncidentBadge = document.getElementById('githubIncidentBadge');
 const githubIncidentRange = document.getElementById('githubIncidentRange');
@@ -371,6 +374,18 @@ const THEME_COPY = {
     toolsChannel: 'ACCESSORIES',
     stackKicker: 'PROGRAM MANAGER // BOOKMARK GROUP',
     footerNotice: 'SYSTEM MESSAGE // Live bookmarks require browser permission.'
+  },
+  orbital: {
+    mastheadEyebrow: 'ORBITAL COMMAND // PERSONAL OPERATIONS',
+    mastheadTitle: 'ORBITAL NAVIGATION ARRAY',
+    systemId: 'SECTOR 07',
+    nodeLabel: 'FIELD COMMAND NODE',
+    nodeModel: 'OCS-3000 // ONLINE',
+    bookmarksChannel: 'NAV POINTS / 01',
+    tabsChannel: 'ACTIVE CONTACTS / 02',
+    toolsChannel: 'FIELD SYSTEMS / 03',
+    stackKicker: 'ORBITAL COMMAND // MISSION GROUP',
+    footerNotice: 'COMMAND NOTICE // Live navigation data requires browser bookmark permission.'
   }
 };
 
@@ -386,7 +401,7 @@ function applyThemeCopy(themeName) {
 }
 
 function applyTheme(themeName) {
-  const allowed = new Set(['lcars', 'synthwave', 'dark', 'terminal', 'old-pc']);
+  const allowed = new Set(['lcars', 'synthwave', 'dark', 'terminal', 'old-pc', 'orbital']);
   const nextTheme = allowed.has(themeName) ? themeName : 'lcars';
   state.theme = nextTheme;
   document.documentElement.setAttribute('data-theme', nextTheme);
@@ -397,16 +412,69 @@ function applyTheme(themeName) {
   if (themeSwitcher instanceof HTMLSelectElement) {
     themeSwitcher.value = nextTheme;
   }
+
+  if (nextTheme === 'orbital') {
+    updateOrbitalActivityOrb();
+  }
 }
 
 function updateClock() {
   const now = new Date();
-  clockTime.textContent = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-  clockDate.textContent = now.toLocaleDateString([], {
+  const timeLabel = now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  const dateLabel = now.toLocaleDateString([], {
     weekday: 'long',
     month: 'long',
     day: 'numeric'
   });
+
+  clockTime.textContent = timeLabel;
+  clockDate.textContent = dateLabel;
+}
+
+function createOrbitalSpikeShape() {
+  const pointCount = 36;
+  const points = [];
+  const spikeIndexes = new Set();
+  const spikeCount = 7 + Math.floor(Math.random() * 5);
+
+  while (spikeIndexes.size < spikeCount) {
+    spikeIndexes.add(Math.floor(Math.random() * pointCount));
+  }
+
+  for (let index = 0; index < pointCount; index += 1) {
+    const angleStep = (Math.PI * 2) / pointCount;
+    const angleJitter = (Math.random() - 0.5) * angleStep * 0.34;
+    const angle = (angleStep * index) - (Math.PI / 2) + angleJitter;
+    const isSpike = spikeIndexes.has(index);
+    const besideSpike = spikeIndexes.has((index + pointCount - 1) % pointCount)
+      || spikeIndexes.has((index + 1) % pointCount);
+    const radius = isSpike
+      ? 42 + (Math.random() * 7)
+      : besideSpike
+        ? 30 + (Math.random() * 7)
+        : 27 + (Math.random() * 10);
+    const x = 50 + (Math.cos(angle) * radius);
+    const y = 50 + (Math.sin(angle) * radius);
+    points.push(`${x.toFixed(2)}% ${y.toFixed(2)}%`);
+  }
+
+  return `polygon(${points.join(', ')})`;
+}
+
+function updateOrbitalActivityOrb() {
+  if (!orbitalActivityOrb || !orbitalSpikeBody || state.theme !== 'orbital' || document.hidden) {
+    return;
+  }
+
+  const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  if (reduceMotion && orbitalActivityOrb.dataset.shapeReady === '1') {
+    return;
+  }
+
+  const shape = createOrbitalSpikeShape();
+  orbitalActivityOrb.style.setProperty('--orbital-spike-shape', shape);
+  orbitalSpikeBody.style.clipPath = shape;
+  orbitalActivityOrb.dataset.shapeReady = '1';
 }
 
 function setMonitorShellCollapsed(shell, collapsed) {

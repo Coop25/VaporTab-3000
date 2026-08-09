@@ -1324,6 +1324,33 @@ body[data-theme='dark'] .calc-stat {
   min-width: 0;
 }
 
+.hud-orbit,
+.hud-circuit,
+.hud-chevrons,
+.hud-bloom {
+  display: none;
+}
+
+.status-item.is-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 120ms ease, filter 120ms ease, transform 120ms ease;
+}
+
+.status-item.is-link:hover {
+  border-color: var(--cyan);
+  filter: brightness(1.12);
+  transform: translateY(-1px);
+}
+
+.status-item.is-link:focus-visible {
+  border-color: var(--cyan);
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
 .status-item.is-editable {
   position: relative;
   padding-left: 24px;
@@ -6607,5 +6634,5341 @@ body[data-theme='old-pc'] .command-palette-footer {
   .command-palette-footer {
     justify-content: space-between;
     gap: 6px;
+  }
+}
+
+/* Orbital Command theme --------------------------------------------------- */
+:root[data-theme='orbital'],
+body[data-theme='orbital'] {
+  --bg-a: #01030d;
+  --bg-b: #03091a;
+  --bg-c: #06152b;
+  --cyan: #59e8ff;
+  --pink: #ff4164;
+  --violet: #4f9fff;
+  --yellow: #b7f8ff;
+  --text: #e0f8ff;
+  --muted: #78a8c0;
+  --panel: rgba(3, 13, 31, 0.94);
+  --panel-2: rgba(5, 20, 42, 0.97);
+  --line: rgba(89, 232, 255, 0.58);
+  --line-hot: rgba(255, 65, 100, 0.76);
+}
+
+body[data-theme='orbital'] {
+  background:
+    radial-gradient(circle at 72% 4%, rgba(51, 188, 255, 0.2), transparent 32%),
+    radial-gradient(circle at 18% 72%, rgba(30, 98, 188, 0.13), transparent 30%),
+    linear-gradient(155deg, #01030d 0%, #03091a 54%, #07172e 100%);
+  font-family: "Arial Narrow", "Roboto Condensed", "Segoe UI", sans-serif;
+  letter-spacing: 0.025em;
+}
+
+body[data-theme='orbital'] .scene {
+  display: block;
+  background:
+    linear-gradient(115deg, transparent 0 66%, rgba(89, 232, 255, 0.055) 66.1% 66.3%, transparent 66.4%),
+    radial-gradient(ellipse at 78% -12%, rgba(35, 157, 224, 0.3), transparent 36%);
+}
+
+body[data-theme='orbital'] .stars {
+  opacity: 0.82;
+  background:
+    radial-gradient(circle at 8% 20%, rgba(229, 255, 250, 0.9) 1px, transparent 1.6px),
+    radial-gradient(circle at 76% 18%, rgba(154, 226, 218, 0.78) 1px, transparent 1.7px),
+    radial-gradient(circle at 44% 33%, rgba(255, 214, 132, 0.7) 1px, transparent 1.8px),
+    radial-gradient(circle at 92% 45%, rgba(206, 240, 230, 0.72) 1px, transparent 1.6px),
+    radial-gradient(circle at 21% 54%, rgba(255, 255, 255, 0.58) 1px, transparent 1.5px);
+  background-size: 260px 260px, 390px 390px, 510px 510px, 330px 330px, 610px 610px;
+}
+
+body[data-theme='orbital'] .sun {
+  width: min(58vw, 760px);
+  left: 55%;
+  right: auto;
+  top: -8%;
+  transform: translateX(-50%);
+  border: 1px solid rgba(89, 232, 255, 0.2);
+  background:
+    repeating-radial-gradient(circle, transparent 0 34px, rgba(89, 232, 255, 0.12) 35px 36px, transparent 37px 54px),
+    conic-gradient(from 8deg, transparent 0 8%, rgba(89, 232, 255, 0.18) 8.2% 9%, transparent 9.2% 22%, rgba(79, 159, 255, 0.14) 22.2% 23%, transparent 23.2% 100%),
+    radial-gradient(circle, rgba(24, 115, 176, 0.12), rgba(2, 9, 24, 0.04) 64%, transparent 65%);
+  box-shadow: 0 0 80px rgba(51, 185, 255, 0.16), inset 0 0 55px rgba(89, 232, 255, 0.06);
+  opacity: 0.64;
+}
+
+body[data-theme='orbital'] .mountain-lines {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 22%;
+  clip-path: none;
+  border-top: 1px solid rgba(89, 232, 255, 0.18);
+  background:
+    linear-gradient(to top, rgba(1, 3, 13, 0.92), transparent),
+    repeating-linear-gradient(90deg, transparent 0 84px, rgba(89, 232, 255, 0.09) 85px 86px),
+    repeating-linear-gradient(0deg, transparent 0 38px, rgba(79, 159, 255, 0.08) 39px 40px);
+  transform: perspective(240px) rotateX(54deg) scale(1.4);
+  transform-origin: bottom;
+  opacity: 0.52;
+}
+
+body[data-theme='orbital'] .scanlines {
+  opacity: 0.075;
+  background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(89, 232, 255, 0.34) 3px 4px);
+}
+
+body[data-theme='orbital'] .rig {
+  grid-template-columns: clamp(235px, 18vw, 305px) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px 14px;
+}
+
+body[data-theme='orbital'] .lcars-masthead {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  align-items: stretch;
+  min-height: 58px;
+  border: 1px solid rgba(127, 243, 231, 0.46);
+  background: linear-gradient(90deg, rgba(34, 48, 37, 0.98), rgba(8, 20, 21, 0.96) 42%, rgba(11, 26, 26, 0.94));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 -3px rgba(127, 243, 231, 0.08);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+body[data-theme='orbital'] .lcars-cap {
+  position: relative;
+  background:
+    linear-gradient(135deg, transparent 0 20%, rgba(255, 211, 106, 0.86) 21% 27%, transparent 28%),
+    #26392f;
+  border-right: 1px solid rgba(127, 243, 231, 0.5);
+}
+
+body[data-theme='orbital'] .lcars-cap::after {
+  content: '07';
+  position: absolute;
+  right: 7px;
+  bottom: 6px;
+  color: var(--yellow);
+  font: 800 0.58rem/1 "Arial Narrow", sans-serif;
+  letter-spacing: 0.12em;
+}
+
+body[data-theme='orbital'] .lcars-title {
+  display: grid;
+  align-content: center;
+  padding: 8px 16px;
+}
+
+body[data-theme='orbital'] .lcars-title p,
+body[data-theme='orbital'] .lcars-title h1 {
+  margin: 0;
+  text-transform: uppercase;
+}
+
+body[data-theme='orbital'] .lcars-title p {
+  color: var(--cyan);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+}
+
+body[data-theme='orbital'] .lcars-title h1 {
+  color: #edf6ee;
+  font-size: clamp(1rem, 2vw, 1.55rem);
+  font-weight: 800;
+  letter-spacing: 0.11em;
+}
+
+body[data-theme='orbital'] .lcars-stardate {
+  display: grid;
+  align-content: center;
+  justify-items: end;
+  min-width: 125px;
+  padding: 8px 20px 8px 12px;
+  border-left: 1px solid rgba(214, 160, 75, 0.5);
+  background: rgba(38, 50, 34, 0.74);
+}
+
+body[data-theme='orbital'] .lcars-stardate span,
+body[data-theme='orbital'] .lcars-stardate strong {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+body[data-theme='orbital'] .lcars-stardate span {
+  color: var(--muted);
+  font-size: 0.55rem;
+}
+
+body[data-theme='orbital'] .lcars-stardate strong {
+  color: var(--yellow);
+  font-size: 0.72rem;
+}
+
+body[data-theme='orbital'] .tower,
+body[data-theme='orbital'] .monitor-shell {
+  border-color: rgba(127, 243, 231, 0.38);
+  border-radius: 2px;
+  background: linear-gradient(155deg, rgba(27, 39, 31, 0.97), rgba(5, 15, 17, 0.96) 34%, rgba(9, 21, 20, 0.94));
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.56), inset 0 0 0 1px rgba(194, 224, 203, 0.04);
+  clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 13px 100%, 0 calc(100% - 13px));
+}
+
+body[data-theme='orbital'] .tower::before,
+body[data-theme='orbital'] .tower::after {
+  right: 5px;
+  width: 3px;
+  border-radius: 0;
+}
+
+body[data-theme='orbital'] .tower-head,
+body[data-theme='orbital'] .monitor-header {
+  border-color: rgba(214, 160, 75, 0.58);
+  background: linear-gradient(90deg, rgba(45, 58, 41, 0.98), rgba(14, 29, 27, 0.96));
+  box-shadow: inset 4px 0 var(--yellow);
+}
+
+body[data-theme='orbital'] .tower-kicker,
+body[data-theme='orbital'] .brand,
+body[data-theme='orbital'] .channel,
+body[data-theme='orbital'] .tower-block h2,
+body[data-theme='orbital'] .status-block h2,
+body[data-theme='orbital'] .devtools-title {
+  color: var(--cyan);
+  text-shadow: none;
+  letter-spacing: 0.13em;
+}
+
+body[data-theme='orbital'] .tower-model,
+body[data-theme='orbital'] .clock-time,
+body[data-theme='orbital'] .github-incident-days {
+  color: var(--yellow);
+  text-shadow: 0 0 12px rgba(255, 211, 106, 0.22);
+}
+
+body[data-theme='orbital'] .tower-block,
+body[data-theme='orbital'] .monitor-screen,
+body[data-theme='orbital'] .console,
+body[data-theme='orbital'] .status-console,
+body[data-theme='orbital'] .github-incident-block,
+body[data-theme='orbital'] .calc-stat {
+  border-color: rgba(127, 243, 231, 0.32);
+  border-radius: 0;
+  background: linear-gradient(165deg, rgba(8, 22, 22, 0.95), rgba(5, 14, 16, 0.96));
+  box-shadow: inset 0 0 0 1px rgba(127, 243, 231, 0.035);
+}
+
+body[data-theme='orbital'] .status-block::before {
+  background: linear-gradient(180deg, var(--yellow), var(--cyan));
+}
+
+body[data-theme='orbital'] .mini-btn,
+body[data-theme='orbital'] .btn,
+body[data-theme='orbital'] .status-item-action,
+body[data-theme='orbital'] .status-remove,
+body[data-theme='orbital'] .status-modal-close,
+body[data-theme='orbital'] .stack-remove-btn,
+body[data-theme='orbital'] .tab-close {
+  border: 1px solid rgba(127, 243, 231, 0.48);
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(53, 69, 51, 0.94), rgba(25, 38, 31, 0.96));
+  color: #e0ede2;
+  box-shadow: inset 3px 0 rgba(214, 160, 75, 0.72);
+  text-transform: uppercase;
+}
+
+body[data-theme='orbital'] .mini-btn:hover,
+body[data-theme='orbital'] .btn:hover,
+body[data-theme='orbital'] .status-item-action:hover,
+body[data-theme='orbital'] .stack-remove-btn:hover,
+body[data-theme='orbital'] .tab-close:hover {
+  border-color: var(--yellow);
+  background: linear-gradient(180deg, rgba(73, 89, 62, 0.98), rgba(34, 49, 39, 0.98));
+  color: #fff3ce;
+}
+
+body[data-theme='orbital'] .theme-select,
+body[data-theme='orbital'] .search,
+body[data-theme='orbital'] .status-input,
+body[data-theme='orbital'] .calc-input,
+body[data-theme='orbital'] .calc-output,
+body[data-theme='orbital'] .stack-name-input,
+body[data-theme='orbital'] .command-palette-search-wrap {
+  border-color: rgba(127, 243, 231, 0.42);
+  border-radius: 0;
+  background: rgba(2, 12, 14, 0.95);
+  color: var(--text);
+  box-shadow: inset 3px 0 rgba(127, 243, 231, 0.22);
+}
+
+body[data-theme='orbital'] .theme-select option {
+  background: #0c1918;
+  color: var(--text);
+}
+
+body[data-theme='orbital'] .chip,
+body[data-theme='orbital'] .ports a,
+body[data-theme='orbital'] .bookmark,
+body[data-theme='orbital'] .tab-item,
+body[data-theme='orbital'] .status-item,
+body[data-theme='orbital'] .bookmark-match-item,
+body[data-theme='orbital'] .stack-picker-item,
+body[data-theme='orbital'] .stack-selected-item,
+body[data-theme='orbital'] .command-palette-item {
+  border-color: rgba(127, 243, 231, 0.34);
+  border-radius: 0;
+  background: linear-gradient(145deg, rgba(22, 35, 29, 0.96), rgba(5, 17, 18, 0.96));
+  box-shadow: inset 0 0 0 1px rgba(196, 223, 199, 0.035);
+}
+
+body[data-theme='orbital'] .bookmark::before {
+  width: 28px;
+  height: 6px;
+  background: linear-gradient(90deg, var(--yellow) 0 45%, var(--cyan) 45% 75%, transparent 75%);
+}
+
+body[data-theme='orbital'] .bookmark:hover,
+body[data-theme='orbital'] .tab-item:hover,
+body[data-theme='orbital'] .status-item.is-link:hover,
+body[data-theme='orbital'] .bookmark-match-item:hover,
+body[data-theme='orbital'] .stack-picker-item:hover,
+body[data-theme='orbital'] .command-palette-item.is-active {
+  border-color: var(--cyan);
+  background: linear-gradient(145deg, rgba(38, 55, 42, 0.98), rgba(8, 25, 25, 0.98));
+  box-shadow: inset 4px 0 var(--yellow), 0 0 14px rgba(127, 243, 231, 0.11);
+}
+
+body[data-theme='orbital'] .bookmark-stack {
+  border-color: rgba(255, 211, 106, 0.62);
+}
+
+body[data-theme='orbital'] .bookmark-title,
+body[data-theme='orbital'] .tab-title,
+body[data-theme='orbital'] .status-name,
+body[data-theme='orbital'] .status-target-name {
+  color: #eef5ef;
+}
+
+body[data-theme='orbital'] .bookmark-url,
+body[data-theme='orbital'] .bookmark-folder,
+body[data-theme='orbital'] .tab-url,
+body[data-theme='orbital'] .tab-host,
+body[data-theme='orbital'] .tab-age,
+body[data-theme='orbital'] .status-line,
+body[data-theme='orbital'] .status-meta,
+body[data-theme='orbital'] .clock-date,
+body[data-theme='orbital'] .tower-copy,
+body[data-theme='orbital'] .status-refresh-meta {
+  color: var(--muted);
+}
+
+body[data-theme='orbital'] .chip.active,
+body[data-theme='orbital'] .calc-mode-btn.active,
+body[data-theme='orbital'] .bookmark-match-item.is-active,
+body[data-theme='orbital'] .stack-selected-item.is-stack-front {
+  border-color: var(--yellow);
+  color: #fff2c5;
+  box-shadow: inset 4px 0 var(--yellow), 0 0 12px rgba(255, 211, 106, 0.12);
+}
+
+body[data-theme='orbital'] .signal span,
+body[data-theme='orbital'] .devtools-meter span,
+body[data-theme='orbital'] .bookmark-heat-fill {
+  --fill-a: #527d68;
+  --fill-b: #7ff3e7;
+  background: linear-gradient(90deg, var(--fill-a), var(--fill-b));
+}
+
+body[data-theme='orbital'] .status-badge,
+body[data-theme='orbital'] .status-pulse,
+body[data-theme='orbital'] .bookmark-stack-badge,
+body[data-theme='orbital'] .tab-badge,
+body[data-theme='orbital'] .command-palette-kind {
+  border-radius: 0;
+  background: rgba(7, 20, 20, 0.96);
+}
+
+body[data-theme='orbital'] .status-badge.ok,
+body[data-theme='orbital'] .status-pulse.ok {
+  border-color: rgba(127, 243, 231, 0.62);
+  color: var(--cyan);
+}
+
+body[data-theme='orbital'] .status-badge.warn,
+body[data-theme='orbital'] .status-pulse.warn {
+  border-color: rgba(255, 211, 106, 0.7);
+  color: var(--yellow);
+}
+
+body[data-theme='orbital'] .status-badge.down,
+body[data-theme='orbital'] .status-pulse.down {
+  border-color: #ff776e;
+  color: #ff9b94;
+}
+
+body[data-theme='orbital'] .status-modal,
+body[data-theme='orbital'] .stack-editor-modal,
+body[data-theme='orbital'] .stack-picker-panel,
+body[data-theme='orbital'] .tour-card,
+body[data-theme='orbital'] .command-palette {
+  border: 1px solid rgba(127, 243, 231, 0.48);
+  border-radius: 0;
+  background: linear-gradient(155deg, rgba(30, 42, 33, 0.99), rgba(3, 14, 16, 0.99) 35%);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.76), inset 0 0 0 1px rgba(214, 160, 75, 0.08);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+}
+
+body[data-theme='orbital'] .status-modal-head,
+body[data-theme='orbital'] .stack-picker-head,
+body[data-theme='orbital'] .command-palette-head,
+body[data-theme='orbital'] .command-palette-footer {
+  border-color: rgba(214, 160, 75, 0.48);
+  background: rgba(30, 44, 34, 0.96);
+}
+
+body[data-theme='orbital'] .tour-backdrop,
+body[data-theme='orbital'] .status-modal-backdrop,
+body[data-theme='orbital'] .command-palette-backdrop {
+  background: rgba(0, 5, 7, 0.82);
+}
+
+body[data-theme='orbital'] .tour-spotlight {
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 9999px rgba(0, 5, 7, 0.8), 0 0 22px rgba(255, 211, 106, 0.55);
+}
+
+body[data-theme='orbital'] .tour-launcher,
+body[data-theme='orbital'] .command-palette-launcher {
+  border-radius: 0;
+  border-color: rgba(127, 243, 231, 0.52);
+  background: linear-gradient(180deg, rgba(48, 63, 47, 0.98), rgba(14, 29, 25, 0.98));
+  color: var(--text);
+  box-shadow: inset 4px 0 var(--yellow), 0 8px 24px rgba(0, 0, 0, 0.46);
+}
+
+body[data-theme='orbital'] .monitor-stack,
+body[data-theme='orbital'] .tower,
+body[data-theme='orbital'] .compact-status-list {
+  scrollbar-color: rgba(127, 243, 231, 0.72) rgba(4, 14, 15, 0.92);
+}
+
+body[data-theme='orbital'] .monitor-stack::-webkit-scrollbar-track,
+body[data-theme='orbital'] .tower::-webkit-scrollbar-track,
+body[data-theme='orbital'] .compact-status-list::-webkit-scrollbar-track {
+  background: rgba(4, 14, 15, 0.96);
+  border-color: rgba(127, 243, 231, 0.2);
+}
+
+body[data-theme='orbital'] .monitor-stack::-webkit-scrollbar-thumb,
+body[data-theme='orbital'] .tower::-webkit-scrollbar-thumb,
+body[data-theme='orbital'] .compact-status-list::-webkit-scrollbar-thumb {
+  border-color: rgba(127, 243, 231, 0.62);
+  background: linear-gradient(180deg, #55745f, #244d47);
+}
+
+@media (max-width: 1030px) {
+  body[data-theme='orbital'] .rig {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  body[data-theme='orbital'] .lcars-masthead {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-theme='orbital'] .lcars-masthead {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  body[data-theme='orbital'] .lcars-stardate {
+    display: none;
+  }
+
+  body[data-theme='orbital'] .lcars-title {
+    padding-inline: 10px 18px;
+  }
+}
+
+/* Orbital holographic HUD finish */
+body[data-theme='orbital'] .lcars-masthead {
+  border-color: rgba(89, 232, 255, 0.72);
+  background:
+    linear-gradient(90deg, rgba(5, 25, 50, 0.98), rgba(2, 10, 28, 0.96) 46%, rgba(5, 24, 49, 0.94)),
+    repeating-linear-gradient(90deg, transparent 0 40px, rgba(89, 232, 255, 0.08) 41px 42px);
+  box-shadow:
+    0 0 22px rgba(89, 232, 255, 0.18),
+    inset 0 0 0 1px rgba(188, 246, 255, 0.08),
+    inset 0 -4px rgba(46, 146, 216, 0.18);
+}
+
+body[data-theme='orbital'] .lcars-cap {
+  background:
+    linear-gradient(135deg, transparent 0 20%, rgba(89, 232, 255, 0.95) 21% 27%, transparent 28%),
+    linear-gradient(180deg, #0d4770, #06172f);
+  border-right-color: rgba(89, 232, 255, 0.7);
+}
+
+body[data-theme='orbital'] .lcars-cap::after,
+body[data-theme='orbital'] .lcars-stardate strong {
+  color: var(--cyan);
+  text-shadow: 0 0 8px rgba(89, 232, 255, 0.65);
+}
+
+body[data-theme='orbital'] .lcars-stardate {
+  border-left-color: rgba(255, 65, 100, 0.55);
+  background:
+    linear-gradient(135deg, transparent 0 12px, rgba(7, 35, 67, 0.92) 13px),
+    rgba(3, 15, 34, 0.94);
+}
+
+body[data-theme='orbital'] .tower,
+body[data-theme='orbital'] .monitor-shell {
+  border-color: rgba(89, 232, 255, 0.64);
+  background:
+    linear-gradient(145deg, rgba(8, 35, 65, 0.96), rgba(2, 9, 25, 0.97) 30%, rgba(4, 18, 39, 0.96)),
+    repeating-linear-gradient(90deg, transparent 0 48px, rgba(89, 232, 255, 0.045) 49px 50px);
+  box-shadow:
+    0 0 22px rgba(89, 232, 255, 0.14),
+    0 22px 48px rgba(0, 0, 0, 0.68),
+    inset 0 0 0 1px rgba(185, 247, 255, 0.07);
+}
+
+body[data-theme='orbital'] .monitor-shell::before {
+  inset: 5px;
+  border-color: rgba(89, 232, 255, 0.24);
+  clip-path: polygon(0 9px, 9px 0, calc(100% - 9px) 0, 100% 9px, 100% calc(100% - 9px), calc(100% - 9px) 100%, 9px 100%, 0 calc(100% - 9px));
+}
+
+body[data-theme='orbital'] .monitor-shell::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  right: 28px;
+  width: 74px;
+  height: 5px;
+  pointer-events: none;
+  background: repeating-linear-gradient(135deg, var(--cyan) 0 6px, transparent 6px 10px);
+  filter: drop-shadow(0 0 4px rgba(89, 232, 255, 0.72));
+  opacity: 0.68;
+}
+
+body[data-theme='orbital'] .tower::before {
+  background: linear-gradient(180deg, var(--cyan), rgba(79, 159, 255, 0.12));
+  box-shadow: 0 0 8px rgba(89, 232, 255, 0.65);
+}
+
+body[data-theme='orbital'] .tower::after {
+  background: linear-gradient(180deg, var(--pink), transparent);
+  box-shadow: 0 0 7px rgba(255, 65, 100, 0.5);
+}
+
+body[data-theme='orbital'] .tower-head,
+body[data-theme='orbital'] .monitor-header {
+  border-color: rgba(89, 232, 255, 0.68);
+  background:
+    linear-gradient(90deg, rgba(18, 74, 112, 0.82), rgba(4, 23, 48, 0.95) 42%, rgba(7, 39, 69, 0.88)),
+    repeating-linear-gradient(135deg, transparent 0 8px, rgba(89, 232, 255, 0.12) 9px 10px);
+  box-shadow:
+    inset 4px 0 var(--cyan),
+    inset 0 -2px rgba(89, 232, 255, 0.2),
+    0 0 9px rgba(89, 232, 255, 0.14);
+}
+
+body[data-theme='orbital'] .tower-head::after {
+  background: repeating-linear-gradient(to right, var(--cyan) 0 5px, transparent 5px 8px);
+  filter: drop-shadow(0 0 3px rgba(89, 232, 255, 0.65));
+}
+
+body[data-theme='orbital'] .tower-model,
+body[data-theme='orbital'] .clock-time,
+body[data-theme='orbital'] .github-incident-days {
+  color: #c8faff;
+  text-shadow: 0 0 10px rgba(89, 232, 255, 0.5);
+}
+
+body[data-theme='orbital'] .tower-block,
+body[data-theme='orbital'] .monitor-screen,
+body[data-theme='orbital'] .console,
+body[data-theme='orbital'] .status-console,
+body[data-theme='orbital'] .github-incident-block,
+body[data-theme='orbital'] .calc-stat {
+  border-color: rgba(89, 232, 255, 0.4);
+  background:
+    linear-gradient(155deg, rgba(7, 30, 57, 0.82), rgba(1, 8, 23, 0.96) 44%, rgba(4, 19, 40, 0.9)),
+    radial-gradient(circle at 90% 10%, rgba(89, 232, 255, 0.11), transparent 28%);
+  box-shadow:
+    inset 0 0 0 1px rgba(181, 245, 255, 0.045),
+    inset 0 0 22px rgba(39, 145, 213, 0.05);
+}
+
+body[data-theme='orbital'] .tower-block,
+body[data-theme='orbital'] .status-item,
+body[data-theme='orbital'] .bookmark,
+body[data-theme='orbital'] .tab-item,
+body[data-theme='orbital'] .bookmark-match-item,
+body[data-theme='orbital'] .stack-picker-item,
+body[data-theme='orbital'] .stack-selected-item,
+body[data-theme='orbital'] .command-palette-item {
+  clip-path: polygon(0 8px, 8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+body[data-theme='orbital'] .status-block::before {
+  background: linear-gradient(180deg, var(--pink), var(--cyan) 34%, rgba(79, 159, 255, 0.18));
+  box-shadow: 0 0 7px rgba(89, 232, 255, 0.42);
+}
+
+body[data-theme='orbital'] .mini-btn,
+body[data-theme='orbital'] .btn,
+body[data-theme='orbital'] .status-item-action,
+body[data-theme='orbital'] .status-remove,
+body[data-theme='orbital'] .status-modal-close,
+body[data-theme='orbital'] .stack-remove-btn,
+body[data-theme='orbital'] .tab-close {
+  border-color: rgba(89, 232, 255, 0.62);
+  background: linear-gradient(180deg, rgba(22, 88, 128, 0.88), rgba(3, 25, 50, 0.96));
+  color: #d9fbff;
+  box-shadow:
+    inset 3px 0 var(--cyan),
+    inset 0 0 0 1px rgba(188, 246, 255, 0.08),
+    0 0 8px rgba(89, 232, 255, 0.1);
+  clip-path: polygon(0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px));
+}
+
+body[data-theme='orbital'] .mini-btn:hover,
+body[data-theme='orbital'] .btn:hover,
+body[data-theme='orbital'] .status-item-action:hover,
+body[data-theme='orbital'] .stack-remove-btn:hover,
+body[data-theme='orbital'] .tab-close:hover {
+  border-color: #d2fbff;
+  background: linear-gradient(180deg, rgba(44, 160, 205, 0.9), rgba(5, 44, 78, 0.98));
+  color: #fff;
+  filter: drop-shadow(0 0 5px rgba(89, 232, 255, 0.45));
+}
+
+body[data-theme='orbital'] .theme-select,
+body[data-theme='orbital'] .search,
+body[data-theme='orbital'] .status-input,
+body[data-theme='orbital'] .calc-input,
+body[data-theme='orbital'] .calc-output,
+body[data-theme='orbital'] .stack-name-input,
+body[data-theme='orbital'] .command-palette-search-wrap {
+  border-color: rgba(89, 232, 255, 0.58);
+  background:
+    linear-gradient(90deg, rgba(4, 25, 50, 0.97), rgba(1, 7, 21, 0.98)),
+    repeating-linear-gradient(90deg, transparent 0 20px, rgba(89, 232, 255, 0.05) 21px 22px);
+  box-shadow: inset 3px 0 rgba(89, 232, 255, 0.68), 0 0 8px rgba(89, 232, 255, 0.08);
+}
+
+body[data-theme='orbital'] .theme-select option {
+  background: #031129;
+}
+
+body[data-theme='orbital'] .chip,
+body[data-theme='orbital'] .ports a,
+body[data-theme='orbital'] .bookmark,
+body[data-theme='orbital'] .tab-item,
+body[data-theme='orbital'] .status-item,
+body[data-theme='orbital'] .bookmark-match-item,
+body[data-theme='orbital'] .stack-picker-item,
+body[data-theme='orbital'] .stack-selected-item,
+body[data-theme='orbital'] .command-palette-item {
+  border-color: rgba(89, 232, 255, 0.4);
+  background:
+    linear-gradient(145deg, rgba(8, 39, 72, 0.9), rgba(1, 8, 23, 0.97) 52%, rgba(4, 22, 44, 0.94)),
+    radial-gradient(circle at 86% 16%, rgba(89, 232, 255, 0.1), transparent 25%);
+  box-shadow: inset 0 0 0 1px rgba(188, 246, 255, 0.045), inset 0 -2px rgba(25, 105, 170, 0.14);
+}
+
+body[data-theme='orbital'] .bookmark::before {
+  width: 34px;
+  height: 7px;
+  background: linear-gradient(90deg, var(--pink) 0 14%, transparent 14% 20%, var(--cyan) 20% 70%, #d5fbff 70% 84%, transparent 84%);
+  filter: drop-shadow(0 0 3px rgba(89, 232, 255, 0.5));
+}
+
+body[data-theme='orbital'] .bookmark:hover,
+body[data-theme='orbital'] .tab-item:hover,
+body[data-theme='orbital'] .status-item.is-link:hover,
+body[data-theme='orbital'] .bookmark-match-item:hover,
+body[data-theme='orbital'] .stack-picker-item:hover,
+body[data-theme='orbital'] .command-palette-item.is-active {
+  border-color: #8ff2ff;
+  background: linear-gradient(145deg, rgba(15, 75, 116, 0.94), rgba(2, 14, 34, 0.98) 58%);
+  box-shadow: inset 4px 0 var(--cyan), 0 0 15px rgba(89, 232, 255, 0.2);
+}
+
+body[data-theme='orbital'] .bookmark-stack,
+body[data-theme='orbital'] .chip.active,
+body[data-theme='orbital'] .calc-mode-btn.active,
+body[data-theme='orbital'] .bookmark-match-item.is-active,
+body[data-theme='orbital'] .stack-selected-item.is-stack-front {
+  border-color: rgba(89, 232, 255, 0.82);
+  color: #d9fbff;
+  box-shadow: inset 4px 0 var(--pink), 0 0 13px rgba(89, 232, 255, 0.18);
+}
+
+body[data-theme='orbital'] .signal span,
+body[data-theme='orbital'] .devtools-meter span,
+body[data-theme='orbital'] .bookmark-heat-fill {
+  --fill-a: #175f94;
+  --fill-b: #65efff;
+  background: linear-gradient(90deg, var(--fill-a), var(--fill-b));
+  box-shadow: 0 0 5px rgba(89, 232, 255, 0.3);
+}
+
+body[data-theme='orbital'] .status-badge,
+body[data-theme='orbital'] .status-pulse,
+body[data-theme='orbital'] .bookmark-stack-badge,
+body[data-theme='orbital'] .tab-badge,
+body[data-theme='orbital'] .command-palette-kind {
+  border-color: rgba(89, 232, 255, 0.58);
+  background: rgba(2, 14, 32, 0.96);
+  box-shadow: inset 0 0 8px rgba(89, 232, 255, 0.08), 0 0 6px rgba(89, 232, 255, 0.08);
+}
+
+body[data-theme='orbital'] .status-badge.warn,
+body[data-theme='orbital'] .status-pulse.warn,
+body[data-theme='orbital'] .status-badge.down,
+body[data-theme='orbital'] .status-pulse.down {
+  border-color: rgba(255, 65, 100, 0.78);
+  color: #ff8aa0;
+  box-shadow: 0 0 8px rgba(255, 65, 100, 0.18);
+}
+
+body[data-theme='orbital'] .status-modal,
+body[data-theme='orbital'] .stack-editor-modal,
+body[data-theme='orbital'] .stack-picker-panel,
+body[data-theme='orbital'] .tour-card,
+body[data-theme='orbital'] .command-palette {
+  border-color: rgba(89, 232, 255, 0.72);
+  background:
+    linear-gradient(150deg, rgba(10, 46, 80, 0.98), rgba(1, 7, 21, 0.995) 34%, rgba(4, 24, 48, 0.99)),
+    repeating-linear-gradient(90deg, transparent 0 36px, rgba(89, 232, 255, 0.05) 37px 38px);
+  box-shadow: 0 0 28px rgba(89, 232, 255, 0.22), 0 28px 80px rgba(0, 0, 0, 0.82), inset 0 0 0 1px rgba(194, 249, 255, 0.08);
+}
+
+body[data-theme='orbital'] .status-modal-head,
+body[data-theme='orbital'] .stack-picker-head,
+body[data-theme='orbital'] .command-palette-head,
+body[data-theme='orbital'] .command-palette-footer {
+  border-color: rgba(89, 232, 255, 0.5);
+  background: linear-gradient(90deg, rgba(10, 59, 96, 0.96), rgba(3, 19, 42, 0.98));
+  box-shadow: inset 4px 0 var(--pink);
+}
+
+body[data-theme='orbital'] .tour-launcher,
+body[data-theme='orbital'] .command-palette-launcher {
+  border-color: rgba(89, 232, 255, 0.72);
+  background: linear-gradient(180deg, rgba(17, 84, 125, 0.98), rgba(3, 24, 50, 0.98));
+  box-shadow: inset 4px 0 var(--pink), 0 0 14px rgba(89, 232, 255, 0.22);
+}
+
+body[data-theme='orbital'] .monitor-stack,
+body[data-theme='orbital'] .tower,
+body[data-theme='orbital'] .compact-status-list {
+  scrollbar-color: rgba(89, 232, 255, 0.84) rgba(2, 9, 24, 0.95);
+}
+
+body[data-theme='orbital'] .monitor-stack::-webkit-scrollbar-track,
+body[data-theme='orbital'] .tower::-webkit-scrollbar-track,
+body[data-theme='orbital'] .compact-status-list::-webkit-scrollbar-track {
+  background: rgba(2, 9, 24, 0.96);
+  border-color: rgba(89, 232, 255, 0.28);
+}
+
+body[data-theme='orbital'] .monitor-stack::-webkit-scrollbar-thumb,
+body[data-theme='orbital'] .tower::-webkit-scrollbar-thumb,
+body[data-theme='orbital'] .compact-status-list::-webkit-scrollbar-thumb {
+  border-color: rgba(142, 243, 255, 0.8);
+  background: linear-gradient(180deg, #49d9f2, #176da8);
+  box-shadow: 0 0 8px rgba(89, 232, 255, 0.4);
+}
+
+/* Orbital Command v3: layered holographic interface */
+body[data-theme='orbital'] .scene {
+  background:
+    linear-gradient(rgba(74, 183, 239, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 183, 239, 0.055) 1px, transparent 1px),
+    linear-gradient(rgba(74, 183, 239, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 183, 239, 0.022) 1px, transparent 1px),
+    radial-gradient(ellipse at 48% 30%, rgba(25, 128, 207, 0.19), transparent 46%),
+    #01030d;
+  background-size: 128px 128px, 128px 128px, 24px 24px, 24px 24px, auto, auto;
+}
+
+body[data-theme='orbital'] .stars {
+  opacity: 0.5;
+  mix-blend-mode: screen;
+}
+
+body[data-theme='orbital'] .hud-orbit,
+body[data-theme='orbital'] .hud-circuit,
+body[data-theme='orbital'] .hud-chevrons,
+body[data-theme='orbital'] .hud-bloom {
+  display: block;
+  position: absolute;
+  pointer-events: none;
+}
+
+body[data-theme='orbital'] .hud-orbit {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle, transparent 0 34px, rgba(72, 208, 255, 0.17) 35px 36px, transparent 37px 52px),
+    repeating-conic-gradient(from 4deg, rgba(89, 232, 255, 0.22) 0deg 1deg, transparent 1deg 7deg),
+    conic-gradient(from 15deg, transparent 0 7%, rgba(89, 232, 255, 0.3) 7.2% 8.5%, transparent 8.7% 25%, rgba(33, 121, 201, 0.22) 25.2% 29%, transparent 29.2% 63%, rgba(89, 232, 255, 0.18) 63.2% 67%, transparent 67.2% 100%);
+  border: 1px solid rgba(89, 232, 255, 0.26);
+  box-shadow:
+    0 0 0 8px rgba(89, 232, 255, 0.025),
+    0 0 0 10px rgba(89, 232, 255, 0.09),
+    0 0 60px rgba(33, 157, 224, 0.15),
+    inset 0 0 54px rgba(34, 136, 205, 0.07);
+  -webkit-mask-image: radial-gradient(circle, transparent 0 18%, #000 18.5% 22%, transparent 22.5% 30%, #000 30.5% 72%, transparent 72.5%);
+  mask-image: radial-gradient(circle, transparent 0 18%, #000 18.5% 22%, transparent 22.5% 30%, #000 30.5% 72%, transparent 72.5%);
+  opacity: 0.7;
+}
+
+body[data-theme='orbital'] .hud-orbit-main {
+  width: min(70vw, 880px);
+  left: 58%;
+  top: 48%;
+  transform: translate(-50%, -50%) rotate(7deg);
+}
+
+body[data-theme='orbital'] .hud-orbit-side {
+  width: min(28vw, 350px);
+  left: 12%;
+  bottom: -8%;
+  transform: translateX(-50%) rotate(-12deg);
+  opacity: 0.36;
+}
+
+body[data-theme='orbital'] .hud-circuit {
+  inset: 7% 2% 8%;
+  background:
+    linear-gradient(90deg, transparent 0 7%, rgba(89, 232, 255, 0.22) 7% 7.12%, transparent 7.12% 92%, rgba(89, 232, 255, 0.18) 92% 92.12%, transparent 92.12%),
+    linear-gradient(0deg, transparent 0 18%, rgba(89, 232, 255, 0.14) 18% 18.15%, transparent 18.15% 82%, rgba(89, 232, 255, 0.12) 82% 82.15%, transparent 82.15%),
+    linear-gradient(135deg, transparent 0 46%, rgba(89, 232, 255, 0.13) 46.1% 46.25%, transparent 46.35% 100%);
+  clip-path: polygon(0 0, 36% 0, 40% 8%, 75% 8%, 81% 0, 100% 0, 100% 100%, 66% 100%, 62% 92%, 25% 92%, 19% 100%, 0 100%);
+  opacity: 0.68;
+}
+
+body[data-theme='orbital'] .hud-chevrons {
+  top: 10%;
+  right: 1.4%;
+  width: 96px;
+  height: 220px;
+  background:
+    linear-gradient(135deg, transparent 38%, rgba(89, 232, 255, 0.65) 39% 48%, transparent 49%) 0 0 / 28px 28px repeat-y,
+    linear-gradient(45deg, transparent 38%, rgba(23, 112, 185, 0.48) 39% 48%, transparent 49%) 34px 14px / 28px 28px repeat-y;
+  filter: drop-shadow(0 0 5px rgba(89, 232, 255, 0.48));
+  opacity: 0.45;
+}
+
+body[data-theme='orbital'] .hud-bloom {
+  width: 240px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(193, 250, 255, 0.5) 0 1px, rgba(89, 232, 255, 0.22) 2px 8%, rgba(35, 145, 219, 0.08) 18%, transparent 66%);
+  mix-blend-mode: screen;
+}
+
+body[data-theme='orbital'] .hud-bloom-a {
+  top: -7%;
+  left: 39%;
+}
+
+body[data-theme='orbital'] .hud-bloom-b {
+  right: 3%;
+  bottom: 8%;
+  width: 170px;
+  opacity: 0.7;
+}
+
+body[data-theme='orbital'] .sun {
+  display: none;
+}
+
+body[data-theme='orbital'] .mountain-lines {
+  height: 32%;
+  background:
+    linear-gradient(to top, rgba(1, 3, 13, 0.96), transparent),
+    repeating-linear-gradient(90deg, transparent 0 88px, rgba(89, 232, 255, 0.1) 89px 90px),
+    repeating-linear-gradient(0deg, transparent 0 38px, rgba(79, 159, 255, 0.09) 39px 40px);
+  transform: perspective(310px) rotateX(62deg) scale(1.5);
+  opacity: 0.38;
+}
+
+body[data-theme='orbital'] .rig {
+  gap: 14px 18px;
+}
+
+body[data-theme='orbital'] .lcars-masthead {
+  min-height: 64px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(100deg, rgba(6, 31, 60, 0.97), rgba(1, 7, 22, 0.98) 42%, rgba(5, 28, 55, 0.96)) padding-box,
+    linear-gradient(100deg, #9cf5ff 0%, #168bc4 20%, #7eeeff 52%, #12659c 78%, #8fefff 100%) border-box;
+  box-shadow:
+    0 0 0 1px rgba(1, 8, 23, 0.96),
+    0 0 0 3px rgba(89, 232, 255, 0.16),
+    0 0 26px rgba(89, 232, 255, 0.24),
+    inset 0 0 0 1px rgba(180, 247, 255, 0.16),
+    inset 0 -7px 18px rgba(13, 105, 164, 0.16);
+  clip-path: polygon(0 0, 23px 0, 30px 7px, calc(100% - 34px) 7px, calc(100% - 20px) 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+body[data-theme='orbital'] .lcars-title {
+  position: relative;
+  border-block: 1px solid rgba(89, 232, 255, 0.18);
+  background:
+    linear-gradient(90deg, rgba(89, 232, 255, 0.11), transparent 18% 72%, rgba(89, 232, 255, 0.08)),
+    repeating-linear-gradient(135deg, transparent 0 9px, rgba(89, 232, 255, 0.05) 10px 11px);
+}
+
+body[data-theme='orbital'] .lcars-title::after {
+  content: '';
+  position: absolute;
+  right: 18px;
+  top: 8px;
+  width: 98px;
+  height: 5px;
+  background: repeating-linear-gradient(135deg, #77edff 0 6px, transparent 6px 10px);
+  filter: drop-shadow(0 0 4px rgba(89, 232, 255, 0.7));
+  opacity: 0.56;
+}
+
+body[data-theme='orbital'] .lcars-title p {
+  color: #84deef;
+  font-size: 0.54rem;
+  font-weight: 500;
+  letter-spacing: 0.27em;
+}
+
+body[data-theme='orbital'] .lcars-title h1 {
+  color: #d8f9ff;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-shadow: 0 0 8px rgba(89, 232, 255, 0.45);
+}
+
+body[data-theme='orbital'] .lcars-cap {
+  box-shadow: inset -6px 0 12px rgba(89, 232, 255, 0.12), 3px 0 10px rgba(89, 232, 255, 0.16);
+}
+
+body[data-theme='orbital'] .tower,
+body[data-theme='orbital'] .monitor-shell {
+  padding: 14px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(145deg, rgba(5, 25, 51, 0.92), rgba(1, 7, 22, 0.97) 34%, rgba(4, 20, 43, 0.94)) padding-box,
+    linear-gradient(145deg, #8ef1ff 0%, #155b90 18%, #65deef 42%, #0f4d7f 70%, #8aefff 100%) border-box;
+  box-shadow:
+    0 0 0 1px rgba(2, 10, 27, 0.98),
+    0 0 0 3px rgba(41, 141, 197, 0.24),
+    0 0 25px rgba(57, 196, 244, 0.17),
+    0 24px 50px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(179, 246, 255, 0.13),
+    inset 0 0 32px rgba(29, 119, 184, 0.06);
+  clip-path: polygon(0 18px, 18px 0, calc(100% - 42px) 0, calc(100% - 30px) 10px, 100% 10px, 100% calc(100% - 18px), calc(100% - 18px) 100%, 26px 100%, 16px calc(100% - 10px), 0 calc(100% - 10px));
+}
+
+body[data-theme='orbital'] .tower {
+  padding-top: 16px;
+}
+
+body[data-theme='orbital'] .monitor-shell::before {
+  inset: 6px;
+  border: 1px solid rgba(109, 232, 255, 0.42);
+  box-shadow:
+    inset 0 0 0 2px rgba(1, 8, 23, 0.94),
+    inset 0 0 0 3px rgba(43, 129, 181, 0.16),
+    0 0 9px rgba(89, 232, 255, 0.11);
+}
+
+body[data-theme='orbital'] .monitor-shell::after {
+  top: 3px;
+  right: 44px;
+  width: 132px;
+  height: 9px;
+  background:
+    linear-gradient(90deg, transparent 0 5%, #72ecff 5% 46%, transparent 46% 50%, #2b94c6 50% 78%, transparent 78%),
+    repeating-linear-gradient(135deg, #8ef4ff 0 4px, transparent 4px 8px);
+  clip-path: polygon(0 50%, 8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%);
+  opacity: 0.78;
+}
+
+body[data-theme='orbital'] .tower-head,
+body[data-theme='orbital'] .monitor-header {
+  height: 29px;
+  min-height: 29px;
+  border: 1px solid rgba(119, 235, 255, 0.72);
+  background:
+    linear-gradient(180deg, rgba(26, 104, 151, 0.78), rgba(3, 25, 54, 0.96) 55%, rgba(8, 54, 91, 0.82)),
+    repeating-linear-gradient(135deg, transparent 0 7px, rgba(154, 245, 255, 0.1) 8px 9px);
+  box-shadow:
+    inset 0 0 0 2px rgba(1, 9, 25, 0.82),
+    inset 0 0 0 3px rgba(79, 207, 237, 0.18),
+    inset 5px 0 #61e4fa,
+    0 0 10px rgba(89, 232, 255, 0.2);
+  clip-path: polygon(0 7px, 7px 0, calc(100% - 18px) 0, calc(100% - 11px) 7px, 100% 7px, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .monitor-header::before {
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  top: 2px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #9ff7ff 20% 80%, transparent);
+  box-shadow: 0 0 5px rgba(89, 232, 255, 0.7);
+}
+
+body[data-theme='orbital'] .monitor-header::after {
+  content: '';
+  position: absolute;
+  right: 34px;
+  bottom: 3px;
+  width: 64px;
+  height: 3px;
+  background: repeating-linear-gradient(135deg, #65dff1 0 4px, transparent 4px 7px);
+  opacity: 0.55;
+}
+
+body[data-theme='orbital'] .tower-head {
+  min-height: 58px;
+  height: auto;
+  align-content: center;
+  padding: 11px 14px;
+  clip-path: polygon(0 9px, 9px 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .tower-head::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 42%;
+  right: 12px;
+  height: 3px;
+  background: repeating-linear-gradient(135deg, #6fe9fa 0 4px, transparent 4px 8px);
+  filter: drop-shadow(0 0 3px rgba(89, 232, 255, 0.55));
+  opacity: 0.48;
+}
+
+body[data-theme='orbital'] .tower-kicker {
+  font-weight: 500;
+  letter-spacing: 0.2em;
+}
+
+body[data-theme='orbital'] .tower-model {
+  margin-top: 6px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+}
+
+body[data-theme='orbital'] .brand,
+body[data-theme='orbital'] .channel {
+  font-weight: 500;
+  font-size: 0.57rem;
+  letter-spacing: 0.21em;
+  text-shadow: 0 0 5px rgba(89, 232, 255, 0.48);
+}
+
+body[data-theme='orbital'] .leds span {
+  border: 1px solid rgba(165, 246, 255, 0.74);
+  box-shadow: 0 0 5px currentColor;
+}
+
+body[data-theme='orbital'] .leds span:nth-child(3) {
+  background: var(--pink);
+  border-color: #ff91a5;
+}
+
+body[data-theme='orbital'] .monitor-screen {
+  padding: 12px;
+  border: 1px solid rgba(99, 219, 241, 0.52);
+  background:
+    linear-gradient(145deg, rgba(5, 31, 59, 0.78), rgba(1, 6, 19, 0.96) 46%, rgba(4, 24, 48, 0.82)),
+    radial-gradient(circle at 56% 48%, rgba(35, 135, 199, 0.12), transparent 42%);
+  box-shadow:
+    0 0 0 3px rgba(1, 7, 21, 0.94),
+    0 0 0 4px rgba(77, 200, 230, 0.16),
+    inset 0 0 0 1px rgba(151, 240, 253, 0.06),
+    inset 0 0 35px rgba(31, 121, 187, 0.08);
+  clip-path: polygon(0 12px, 12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px));
+}
+
+body[data-theme='orbital'] .monitor-screen::before {
+  inset: 0;
+  z-index: 0;
+  background:
+    repeating-radial-gradient(circle at 57% 42%, transparent 0 46px, rgba(89, 232, 255, 0.045) 47px 48px, transparent 49px 68px),
+    conic-gradient(from 18deg at 57% 42%, transparent 0 9%, rgba(89, 232, 255, 0.055) 9.2% 10%, transparent 10.2% 28%, rgba(79, 159, 255, 0.05) 28.2% 31%, transparent 31.2% 100%),
+    radial-gradient(circle at center, transparent 52%, rgba(0, 2, 12, 0.54) 100%);
+  opacity: 0.82;
+}
+
+body[data-theme='orbital'] .monitor-screen > * {
+  position: relative;
+  z-index: 1;
+}
+
+body[data-theme='orbital'] .console,
+body[data-theme='orbital'] .status-console {
+  border: 1px solid rgba(80, 193, 222, 0.36);
+  background:
+    linear-gradient(135deg, rgba(7, 32, 58, 0.48), rgba(1, 7, 20, 0.75)),
+    repeating-linear-gradient(90deg, transparent 0 58px, rgba(89, 232, 255, 0.025) 59px 60px);
+  box-shadow: inset 0 0 18px rgba(47, 158, 214, 0.045);
+}
+
+body[data-theme='orbital'] .tower-block,
+body[data-theme='orbital'] .github-incident-block {
+  border: 1px solid rgba(91, 211, 235, 0.5);
+  background:
+    linear-gradient(140deg, rgba(7, 38, 68, 0.7), rgba(1, 8, 22, 0.92) 50%, rgba(5, 26, 50, 0.76)),
+    radial-gradient(circle at 88% 12%, rgba(89, 232, 255, 0.12), transparent 28%);
+  box-shadow:
+    0 0 0 2px rgba(1, 8, 22, 0.94),
+    0 0 0 3px rgba(43, 132, 181, 0.12),
+    inset 0 0 0 1px rgba(171, 243, 255, 0.05),
+    inset 0 -10px 24px rgba(13, 75, 125, 0.08);
+}
+
+body[data-theme='orbital'] .tower-block::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  width: 32px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--pink) 0 5px, transparent 5px 8px, var(--cyan) 8px 100%);
+  filter: drop-shadow(0 0 3px rgba(89, 232, 255, 0.55));
+  opacity: 0.58;
+}
+
+body[data-theme='orbital'] .tower-block {
+  position: relative;
+}
+
+body[data-theme='orbital'] .tower-block h2,
+body[data-theme='orbital'] .status-block h2,
+body[data-theme='orbital'] .devtools-title {
+  color: #7fe9f8;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 5px rgba(89, 232, 255, 0.42);
+}
+
+body[data-theme='orbital'] .clock-time,
+body[data-theme='orbital'] .github-incident-days {
+  font-weight: 300;
+  color: #c9f9ff;
+  text-shadow: 0 0 9px rgba(89, 232, 255, 0.55);
+}
+
+body[data-theme='orbital'] .mini-btn,
+body[data-theme='orbital'] .btn,
+body[data-theme='orbital'] .status-item-action,
+body[data-theme='orbital'] .status-remove,
+body[data-theme='orbital'] .status-modal-close,
+body[data-theme='orbital'] .stack-remove-btn,
+body[data-theme='orbital'] .tab-close {
+  border: 1px solid rgba(121, 234, 253, 0.8);
+  background:
+    linear-gradient(180deg, rgba(45, 152, 195, 0.82), rgba(4, 31, 62, 0.96) 54%, rgba(12, 77, 117, 0.82)) padding-box,
+    linear-gradient(90deg, #a8f7ff, #197bab 35%, #75e9f8 70%, #0f537e) border-box;
+  color: #dffcff;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  box-shadow:
+    0 0 0 2px rgba(1, 8, 23, 0.96),
+    0 0 0 3px rgba(65, 176, 218, 0.24),
+    inset 0 0 0 1px rgba(207, 251, 255, 0.13),
+    inset 0 -6px 12px rgba(3, 18, 43, 0.4),
+    0 0 10px rgba(89, 232, 255, 0.14);
+  clip-path: polygon(0 7px, 7px 0, calc(100% - 9px) 0, 100% 9px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 9px 100%, 0 calc(100% - 9px));
+}
+
+body[data-theme='orbital'] .mini-btn:hover,
+body[data-theme='orbital'] .btn:hover,
+body[data-theme='orbital'] .status-item-action:hover,
+body[data-theme='orbital'] .stack-remove-btn:hover,
+body[data-theme='orbital'] .tab-close:hover {
+  border-color: #e6fdff;
+  background: linear-gradient(180deg, rgba(90, 218, 240, 0.94), rgba(8, 66, 106, 0.98) 58%, rgba(20, 120, 157, 0.9));
+  box-shadow:
+    0 0 0 2px rgba(1, 8, 23, 0.96),
+    0 0 0 3px rgba(123, 233, 251, 0.38),
+    inset 0 0 8px rgba(220, 253, 255, 0.18),
+    0 0 16px rgba(89, 232, 255, 0.35);
+}
+
+body[data-theme='orbital'] .theme-select,
+body[data-theme='orbital'] .search,
+body[data-theme='orbital'] .status-input,
+body[data-theme='orbital'] .calc-input,
+body[data-theme='orbital'] .calc-output,
+body[data-theme='orbital'] .stack-name-input,
+body[data-theme='orbital'] .command-palette-search-wrap {
+  border: 1px solid rgba(100, 218, 239, 0.64);
+  background:
+    linear-gradient(90deg, rgba(6, 34, 63, 0.88), rgba(1, 7, 21, 0.96) 48%, rgba(5, 27, 52, 0.86)),
+    repeating-linear-gradient(135deg, transparent 0 12px, rgba(89, 232, 255, 0.035) 13px 14px);
+  box-shadow:
+    0 0 0 2px rgba(1, 8, 23, 0.92),
+    inset 4px 0 #50dff4,
+    inset 0 0 12px rgba(47, 158, 214, 0.06),
+    0 0 8px rgba(89, 232, 255, 0.08);
+  clip-path: polygon(0 6px, 6px 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .chip,
+body[data-theme='orbital'] .ports a {
+  border: 1px solid rgba(91, 209, 233, 0.56);
+  background: linear-gradient(180deg, rgba(12, 65, 101, 0.72), rgba(2, 18, 41, 0.94));
+  color: #bfeff7;
+  box-shadow: inset 0 0 0 1px rgba(169, 241, 251, 0.05), 0 0 7px rgba(89, 232, 255, 0.08);
+  clip-path: polygon(0 5px, 5px 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .chip.active {
+  border-color: #88efff;
+  color: #e0fbff;
+  background: linear-gradient(180deg, rgba(32, 126, 163, 0.85), rgba(4, 35, 66, 0.96));
+  box-shadow: inset 4px 0 var(--pink), 0 0 11px rgba(89, 232, 255, 0.25);
+}
+
+body[data-theme='orbital'] .bookmark,
+body[data-theme='orbital'] .tab-item,
+body[data-theme='orbital'] .status-item,
+body[data-theme='orbital'] .bookmark-match-item,
+body[data-theme='orbital'] .stack-picker-item,
+body[data-theme='orbital'] .stack-selected-item,
+body[data-theme='orbital'] .command-palette-item {
+  border: 1px solid rgba(97, 216, 238, 0.58);
+  background:
+    linear-gradient(145deg, rgba(10, 53, 88, 0.74), rgba(1, 7, 21, 0.96) 46%, rgba(5, 29, 57, 0.84)),
+    radial-gradient(circle at 78% 22%, rgba(89, 232, 255, 0.13), transparent 30%);
+  box-shadow:
+    0 0 0 2px rgba(1, 7, 21, 0.92),
+    0 0 0 3px rgba(46, 150, 194, 0.1),
+    inset 0 0 0 1px rgba(190, 248, 255, 0.055),
+    inset 0 -12px 24px rgba(8, 74, 125, 0.08);
+  clip-path: polygon(0 10px, 10px 0, calc(100% - 18px) 0, calc(100% - 10px) 8px, 100% 8px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+body[data-theme='orbital'] .bookmark::before {
+  top: 2px;
+  left: 10px;
+  width: 52px;
+  height: 5px;
+  background:
+    linear-gradient(90deg, var(--pink) 0 6px, transparent 6px 10px, #a4f5ff 10px 34px, transparent 34px 38px, #39badf 38px 100%);
+  box-shadow: 0 0 5px rgba(89, 232, 255, 0.55);
+}
+
+body[data-theme='orbital'] .bookmark::after {
+  content: '';
+  position: absolute;
+  right: 6px;
+  bottom: 5px;
+  width: 24px;
+  height: 3px;
+  border: 0;
+  background: repeating-linear-gradient(135deg, #4dcce4 0 3px, transparent 3px 6px);
+  box-shadow: none;
+  opacity: 0.36;
+}
+
+body[data-theme='orbital'] .bookmark-stack::after {
+  width: 24px;
+  height: 16px;
+  border: 1px solid rgba(117, 230, 247, 0.54);
+  background: rgba(2, 13, 31, 0.75);
+  box-shadow: -4px -4px 0 -1px rgba(89, 232, 255, 0.18), -8px -8px 0 -3px rgba(89, 232, 255, 0.13);
+  opacity: 1;
+}
+
+body[data-theme='orbital'] .bookmark:hover,
+body[data-theme='orbital'] .tab-item:hover,
+body[data-theme='orbital'] .status-item.is-link:hover,
+body[data-theme='orbital'] .bookmark-match-item:hover,
+body[data-theme='orbital'] .stack-picker-item:hover,
+body[data-theme='orbital'] .command-palette-item.is-active {
+  border-color: #b6f7ff;
+  background:
+    linear-gradient(145deg, rgba(24, 111, 151, 0.82), rgba(2, 14, 34, 0.97) 54%, rgba(8, 53, 88, 0.9)),
+    radial-gradient(circle at 78% 22%, rgba(115, 240, 255, 0.18), transparent 34%);
+  box-shadow:
+    0 0 0 2px rgba(1, 7, 21, 0.94),
+    0 0 0 3px rgba(94, 220, 243, 0.22),
+    inset 4px 0 var(--cyan),
+    0 0 18px rgba(89, 232, 255, 0.28);
+}
+
+body[data-theme='orbital'] .bookmark-title,
+body[data-theme='orbital'] .tab-title,
+body[data-theme='orbital'] .status-name {
+  color: #d9f8fc;
+  font-weight: 500;
+  text-shadow: 0 0 5px rgba(89, 232, 255, 0.18);
+}
+
+body[data-theme='orbital'] .bookmark-url,
+body[data-theme='orbital'] .bookmark-folder,
+body[data-theme='orbital'] .tab-url,
+body[data-theme='orbital'] .tab-host,
+body[data-theme='orbital'] .tab-age,
+body[data-theme='orbital'] .status-line,
+body[data-theme='orbital'] .status-meta,
+body[data-theme='orbital'] .clock-date,
+body[data-theme='orbital'] .tower-copy,
+body[data-theme='orbital'] .status-refresh-meta {
+  color: #75a9bf;
+  font-weight: 400;
+}
+
+body[data-theme='orbital'] .bookmark-heat,
+body[data-theme='orbital'] .bookmark-stack-badge,
+body[data-theme='orbital'] .tab-badge,
+body[data-theme='orbital'] .calc-stat {
+  border-color: rgba(93, 211, 234, 0.48);
+  background: rgba(2, 12, 29, 0.86);
+  box-shadow: inset 0 0 8px rgba(89, 232, 255, 0.06);
+}
+
+body[data-theme='orbital'] .bookmark-heat-track {
+  border-color: rgba(75, 175, 210, 0.44);
+  background: rgba(1, 6, 20, 0.94);
+}
+
+body[data-theme='orbital'] .bookmark-heat-fill,
+body[data-theme='orbital'] .signal span,
+body[data-theme='orbital'] .devtools-meter span {
+  --fill-a: #14689c;
+  --fill-b: #78eeff;
+  background: linear-gradient(90deg, var(--fill-a), var(--fill-b));
+  box-shadow: 0 0 6px rgba(89, 232, 255, 0.38);
+}
+
+body[data-theme='orbital'] .status-pulse,
+body[data-theme='orbital'] .status-badge {
+  border: 1px solid rgba(111, 226, 246, 0.68);
+  background: linear-gradient(180deg, rgba(8, 49, 80, 0.82), rgba(1, 12, 29, 0.96));
+  color: #aef4ff;
+  box-shadow: inset 0 0 8px rgba(89, 232, 255, 0.08), 0 0 7px rgba(89, 232, 255, 0.12);
+  clip-path: polygon(0 5px, 5px 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .status-pulse.warn,
+body[data-theme='orbital'] .status-badge.warn,
+body[data-theme='orbital'] .status-pulse.down,
+body[data-theme='orbital'] .status-badge.down {
+  border-color: rgba(255, 79, 111, 0.78);
+  color: #ff9daf;
+  box-shadow: inset 3px 0 var(--pink), 0 0 8px rgba(255, 65, 100, 0.2);
+}
+
+body[data-theme='orbital'] .status-modal,
+body[data-theme='orbital'] .stack-editor-modal,
+body[data-theme='orbital'] .stack-picker-panel,
+body[data-theme='orbital'] .tour-card,
+body[data-theme='orbital'] .command-palette {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(145deg, rgba(8, 39, 72, 0.99), rgba(1, 6, 19, 0.997) 40%, rgba(4, 25, 50, 0.99)) padding-box,
+    linear-gradient(145deg, #a5f6ff, #155d91 20%, #68e3f3 52%, #104d7c 78%, #8ff1ff) border-box;
+  box-shadow:
+    0 0 0 2px rgba(1, 7, 21, 0.98),
+    0 0 0 4px rgba(46, 151, 196, 0.24),
+    0 0 35px rgba(89, 232, 255, 0.28),
+    0 32px 90px rgba(0, 0, 0, 0.86),
+    inset 0 0 0 1px rgba(199, 250, 255, 0.1);
+  clip-path: polygon(0 20px, 20px 0, calc(100% - 34px) 0, calc(100% - 20px) 12px, 100% 12px, 100% calc(100% - 20px), calc(100% - 20px) 100%, 24px 100%, 12px calc(100% - 12px), 0 calc(100% - 12px));
+}
+
+body[data-theme='orbital'] .status-modal-head,
+body[data-theme='orbital'] .stack-picker-head,
+body[data-theme='orbital'] .command-palette-head,
+body[data-theme='orbital'] .command-palette-footer {
+  border-color: rgba(105, 224, 245, 0.58);
+  background:
+    linear-gradient(90deg, rgba(17, 85, 129, 0.92), rgba(3, 20, 44, 0.98)),
+    repeating-linear-gradient(135deg, transparent 0 8px, rgba(89, 232, 255, 0.08) 9px 10px);
+  box-shadow: inset 5px 0 var(--pink), inset 0 -2px rgba(89, 232, 255, 0.15);
+}
+
+body[data-theme='orbital'] .tour-spotlight {
+  border: 2px solid #8ff2ff;
+  box-shadow: 0 0 0 9999px rgba(0, 3, 12, 0.84), 0 0 28px rgba(89, 232, 255, 0.68), inset 0 0 14px rgba(89, 232, 255, 0.14);
+}
+
+body[data-theme='orbital'] .tour-launcher,
+body[data-theme='orbital'] .command-palette-launcher {
+  border: 1px solid rgba(127, 235, 253, 0.84);
+  background: linear-gradient(180deg, rgba(28, 124, 166, 0.96), rgba(3, 27, 57, 0.99));
+  box-shadow: 0 0 0 2px rgba(1, 8, 22, 0.94), inset 4px 0 var(--pink), 0 0 15px rgba(89, 232, 255, 0.28);
+  clip-path: polygon(0 7px, 7px 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
+}
+
+@media (max-width: 1030px) {
+  body[data-theme='orbital'] .hud-orbit-main {
+    position: fixed;
+    width: min(100vw, 760px);
+    top: 38%;
+    left: 70%;
+  }
+
+  body[data-theme='orbital'] .hud-chevrons {
+    opacity: 0.24;
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-theme='orbital'] .tower,
+  body[data-theme='orbital'] .monitor-shell {
+    padding: 11px;
+    clip-path: polygon(0 14px, 14px 0, calc(100% - 22px) 0, calc(100% - 14px) 8px, 100% 8px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 6px calc(100% - 8px), 0 calc(100% - 8px));
+  }
+
+  body[data-theme='orbital'] .monitor-shell::after {
+    width: 78px;
+    right: 30px;
+  }
+
+  body[data-theme='orbital'] .lcars-title::after,
+  body[data-theme='orbital'] .hud-chevrons,
+  body[data-theme='orbital'] .hud-orbit-side {
+    display: none;
+  }
+
+  body[data-theme='orbital'] .hud-orbit-main {
+    width: 620px;
+    left: 82%;
+    top: 28%;
+    opacity: 0.34;
+  }
+}
+
+/* Orbital Command v4: luminous broadcast-overlay finish */
+:root[data-theme='orbital'],
+body[data-theme='orbital'] {
+  --cyan: #68eaff;
+  --pink: #ff385f;
+  --violet: #318ed0;
+  --yellow: #d2fbff;
+  --text: #d8f7ff;
+  --muted: #719db5;
+  --panel: rgba(2, 12, 31, 0.82);
+  --panel-2: rgba(4, 24, 51, 0.9);
+  --line: rgba(104, 234, 255, 0.72);
+  --line-hot: rgba(255, 56, 95, 0.78);
+}
+
+body[data-theme='orbital'] {
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 300;
+  background:
+    radial-gradient(circle at 47% 3%, rgba(90, 221, 255, 0.23), transparent 24%),
+    radial-gradient(circle at 18% 44%, rgba(33, 137, 210, 0.16), transparent 31%),
+    radial-gradient(circle at 86% 72%, rgba(30, 107, 188, 0.12), transparent 27%),
+    linear-gradient(160deg, #01020b, #020718 48%, #061329);
+}
+
+body[data-theme='orbital'] .hud-bloom-a {
+  width: 420px;
+  top: -17%;
+  left: 31%;
+  background: radial-gradient(circle, rgba(225, 253, 255, 0.72) 0 1px, rgba(103, 233, 255, 0.3) 2px 7%, rgba(35, 154, 222, 0.12) 20%, transparent 67%);
+  filter: blur(1px);
+}
+
+body[data-theme='orbital'] .hud-bloom-b {
+  width: 280px;
+  right: -1%;
+  bottom: 2%;
+  background: radial-gradient(circle, rgba(218, 252, 255, 0.5) 0 1px, rgba(86, 221, 255, 0.22) 2px 8%, rgba(30, 119, 191, 0.09) 23%, transparent 67%);
+}
+
+body[data-theme='orbital'] .hud-orbit-main {
+  filter: drop-shadow(0 0 7px rgba(80, 214, 255, 0.2));
+  opacity: 0.86;
+}
+
+body[data-theme='orbital'] .lcars-masthead,
+body[data-theme='orbital'] .tower,
+body[data-theme='orbital'] .monitor-shell,
+body[data-theme='orbital'] .status-modal,
+body[data-theme='orbital'] .tour-card,
+body[data-theme='orbital'] .command-palette {
+  -webkit-backdrop-filter: blur(8px) saturate(1.35);
+  backdrop-filter: blur(8px) saturate(1.35);
+  filter: drop-shadow(0 0 5px rgba(72, 205, 244, 0.2));
+}
+
+body[data-theme='orbital'] .lcars-masthead {
+  min-height: 70px;
+  border-width: 3px;
+  background:
+    linear-gradient(100deg, rgba(10, 54, 91, 0.93), rgba(1, 7, 22, 0.91) 36%, rgba(5, 35, 70, 0.9)) padding-box,
+    linear-gradient(100deg, #d5fcff 0%, #4bd2ef 7%, #0b4f87 18%, #9cf4ff 41%, #1a78ae 68%, #b6f8ff 91%, #277eb0 100%) border-box;
+  box-shadow:
+    0 0 0 1px rgba(191, 250, 255, 0.23),
+    0 0 0 4px rgba(19, 89, 137, 0.25),
+    0 0 22px rgba(78, 220, 255, 0.3),
+    0 0 64px rgba(36, 146, 213, 0.12),
+    inset 0 0 0 2px rgba(1, 8, 23, 0.86),
+    inset 0 -9px 18px rgba(34, 146, 202, 0.19),
+    inset 0 8px 18px rgba(142, 244, 255, 0.05);
+}
+
+body[data-theme='orbital'] .lcars-title {
+  background:
+    linear-gradient(90deg, rgba(91, 225, 255, 0.17), transparent 24% 68%, rgba(62, 180, 229, 0.13)),
+    repeating-linear-gradient(135deg, transparent 0 10px, rgba(148, 243, 255, 0.06) 11px 12px);
+}
+
+body[data-theme='orbital'] .lcars-title p {
+  color: #93dbea;
+  font-size: 0.5rem;
+  font-weight: 300;
+  letter-spacing: 0.34em;
+}
+
+body[data-theme='orbital'] .lcars-title h1 {
+  color: #d7f9ff;
+  font-size: clamp(1.08rem, 2vw, 1.62rem);
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  text-shadow: 0 0 7px rgba(112, 235, 255, 0.62), 0 0 20px rgba(53, 168, 225, 0.18);
+}
+
+body[data-theme='orbital'] .lcars-cap {
+  background:
+    linear-gradient(135deg, transparent 0 18%, #e2fdff 18.5% 20%, #62e5fa 20.5% 29%, #176895 29.5% 34%, transparent 34.5%),
+    linear-gradient(180deg, #207da9, #06365f 46%, #02152e);
+  box-shadow: inset -9px 0 15px rgba(159, 246, 255, 0.18), 4px 0 14px rgba(91, 224, 255, 0.3);
+}
+
+body[data-theme='orbital'] .lcars-stardate {
+  background:
+    linear-gradient(135deg, transparent 0 13px, rgba(17, 76, 113, 0.84) 14px 16px, rgba(3, 18, 43, 0.94) 17px),
+    rgba(2, 10, 27, 0.9);
+  box-shadow: inset 7px 0 12px rgba(255, 56, 95, 0.08);
+}
+
+body[data-theme='orbital'] .tower,
+body[data-theme='orbital'] .monitor-shell {
+  border-width: 3px;
+  background:
+    linear-gradient(145deg, rgba(9, 49, 85, 0.82), rgba(1, 6, 20, 0.9) 31%, rgba(5, 32, 64, 0.8)) padding-box,
+    linear-gradient(145deg, #ddfdff 0%, #54d9ee 5%, #0d4a7d 14%, #99f2ff 31%, #1a77a8 53%, #72e9f8 72%, #0e4d7d 88%, #c2faff 100%) border-box;
+  box-shadow:
+    0 0 0 1px rgba(190, 249, 255, 0.24),
+    0 0 0 4px rgba(19, 83, 129, 0.24),
+    0 0 20px rgba(82, 225, 255, 0.27),
+    0 0 54px rgba(29, 132, 205, 0.1),
+    0 25px 52px rgba(0, 0, 0, 0.74),
+    inset 0 0 0 2px rgba(1, 8, 24, 0.88),
+    inset 0 0 0 3px rgba(107, 224, 244, 0.13),
+    inset 0 0 34px rgba(47, 161, 217, 0.09);
+}
+
+body[data-theme='orbital'] .monitor-shell {
+  padding: 16px;
+}
+
+body[data-theme='orbital'] .monitor-shell::before {
+  inset: 7px;
+  border-color: rgba(178, 248, 255, 0.58);
+  box-shadow:
+    inset 0 0 0 2px rgba(1, 8, 23, 0.94),
+    inset 0 0 0 4px rgba(56, 169, 213, 0.22),
+    0 0 10px rgba(103, 230, 250, 0.18);
+}
+
+body[data-theme='orbital'] .monitor-shell::after {
+  top: 2px;
+  height: 12px;
+  width: 168px;
+  background:
+    linear-gradient(180deg, #c9fbff 0 1px, #55d9ee 2px 4px, #0d5d91 5px 7px, #8eecfa 8px 9px, transparent 10px),
+    repeating-linear-gradient(135deg, #b9f8ff 0 5px, transparent 5px 9px);
+  filter: drop-shadow(0 0 6px rgba(104, 234, 255, 0.78));
+  opacity: 0.9;
+}
+
+body[data-theme='orbital'] .tower-head,
+body[data-theme='orbital'] .monitor-header {
+  border-color: rgba(174, 247, 255, 0.86);
+  background:
+    linear-gradient(180deg, rgba(84, 192, 221, 0.88), rgba(13, 80, 124, 0.9) 22%, rgba(3, 23, 52, 0.97) 60%, rgba(13, 72, 111, 0.93)),
+    repeating-linear-gradient(135deg, transparent 0 7px, rgba(190, 249, 255, 0.13) 8px 9px);
+  box-shadow:
+    inset 0 0 0 2px rgba(1, 9, 26, 0.84),
+    inset 0 0 0 3px rgba(136, 237, 250, 0.3),
+    inset 6px 0 #a7f4ff,
+    inset 0 5px 10px rgba(194, 251, 255, 0.1),
+    0 0 12px rgba(104, 234, 255, 0.35);
+}
+
+body[data-theme='orbital'] .monitor-header {
+  height: 32px;
+  min-height: 32px;
+}
+
+body[data-theme='orbital'] .brand,
+body[data-theme='orbital'] .channel,
+body[data-theme='orbital'] .tower-kicker,
+body[data-theme='orbital'] .tower-model {
+  font-weight: 300;
+  text-shadow: 0 0 6px rgba(117, 235, 250, 0.58);
+}
+
+body[data-theme='orbital'] .monitor-screen {
+  padding: 14px;
+  border-color: rgba(145, 238, 251, 0.7);
+  background:
+    linear-gradient(145deg, rgba(12, 61, 99, 0.52), rgba(1, 5, 18, 0.84) 44%, rgba(5, 35, 70, 0.58)),
+    radial-gradient(circle at 54% 43%, rgba(62, 183, 231, 0.17), transparent 46%);
+  box-shadow:
+    0 0 0 3px rgba(1, 6, 20, 0.96),
+    0 0 0 5px rgba(82, 199, 229, 0.23),
+    0 0 18px rgba(90, 228, 255, 0.17),
+    inset 0 0 0 1px rgba(195, 249, 255, 0.11),
+    inset 0 0 50px rgba(45, 158, 220, 0.12);
+}
+
+body[data-theme='orbital'] .monitor-screen::before {
+  background:
+    repeating-radial-gradient(circle at 57% 42%, transparent 0 39px, rgba(102, 225, 250, 0.07) 40px 41px, transparent 42px 57px),
+    repeating-conic-gradient(from 7deg at 57% 42%, rgba(110, 231, 253, 0.07) 0deg 1deg, transparent 1deg 8deg),
+    conic-gradient(from 18deg at 57% 42%, transparent 0 9%, rgba(108, 232, 253, 0.1) 9.2% 10.2%, transparent 10.4% 28%, rgba(63, 165, 225, 0.08) 28.2% 32%, transparent 32.2% 100%),
+    radial-gradient(circle at center, transparent 48%, rgba(0, 2, 12, 0.5) 100%);
+}
+
+body[data-theme='orbital'] .console,
+body[data-theme='orbital'] .status-console {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(105, 218, 239, 0.5);
+  background:
+    linear-gradient(135deg, rgba(10, 56, 91, 0.35), rgba(1, 6, 19, 0.62)),
+    repeating-linear-gradient(90deg, transparent 0 58px, rgba(104, 234, 255, 0.035) 59px 60px);
+}
+
+body[data-theme='orbital'] .console::before,
+body[data-theme='orbital'] .status-console::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  width: 430px;
+  aspect-ratio: 1;
+  left: 55%;
+  top: 48%;
+  transform: translate(-50%, -50%) rotate(9deg);
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle, transparent 0 35px, rgba(100, 225, 249, 0.08) 36px 37px, transparent 38px 55px),
+    repeating-conic-gradient(rgba(94, 219, 245, 0.07) 0 1deg, transparent 1deg 8deg),
+    conic-gradient(transparent 0 12%, rgba(86, 214, 243, 0.09) 12.2% 14%, transparent 14.2% 66%, rgba(86, 214, 243, 0.07) 66.2% 69%, transparent 69.2%);
+  -webkit-mask-image: radial-gradient(circle, transparent 0 28%, #000 28.5% 75%, transparent 75.5%);
+  mask-image: radial-gradient(circle, transparent 0 28%, #000 28.5% 75%, transparent 75.5%);
+  opacity: 0.74;
+  pointer-events: none;
+}
+
+body[data-theme='orbital'] .console::after,
+body[data-theme='orbital'] .status-console::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  right: 10px;
+  top: 9px;
+  width: 92px;
+  height: 5px;
+  background: repeating-linear-gradient(135deg, #8ceeff 0 5px, transparent 5px 9px);
+  filter: drop-shadow(0 0 4px rgba(104, 234, 255, 0.62));
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+body[data-theme='orbital'] .console > *,
+body[data-theme='orbital'] .status-console > * {
+  position: relative;
+  z-index: 1;
+}
+
+body[data-theme='orbital'] .tower-block,
+body[data-theme='orbital'] .github-incident-block {
+  border-color: rgba(120, 229, 247, 0.7);
+  background:
+    linear-gradient(140deg, rgba(12, 66, 104, 0.54), rgba(1, 7, 21, 0.81) 48%, rgba(7, 42, 77, 0.58)),
+    radial-gradient(circle at 84% 12%, rgba(122, 237, 255, 0.16), transparent 31%);
+  box-shadow:
+    0 0 0 2px rgba(1, 7, 21, 0.94),
+    0 0 0 4px rgba(54, 158, 204, 0.17),
+    0 0 12px rgba(92, 226, 252, 0.14),
+    inset 0 0 0 1px rgba(186, 246, 255, 0.09),
+    inset 0 -15px 28px rgba(21, 103, 163, 0.11);
+}
+
+body[data-theme='orbital'] .clock-block {
+  min-height: 102px;
+  padding: 20px 10px 14px 104px;
+  overflow: hidden;
+}
+
+body[data-theme='orbital'] .clock-block::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  width: 76px;
+  aspect-ratio: 1;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  border: 1px solid rgba(170, 244, 255, 0.8);
+  background:
+    repeating-radial-gradient(circle, transparent 0 7px, rgba(103, 231, 253, 0.22) 8px 9px, transparent 10px 14px),
+    repeating-conic-gradient(from 5deg, #7de7f9 0 2deg, transparent 2deg 10deg),
+    radial-gradient(circle, rgba(40, 148, 207, 0.24), rgba(2, 16, 37, 0.85) 64%);
+  box-shadow: 0 0 0 4px rgba(1, 8, 22, 0.93), 0 0 0 6px rgba(57, 170, 213, 0.25), 0 0 15px rgba(104, 234, 255, 0.4), inset 0 0 16px rgba(104, 234, 255, 0.15);
+  -webkit-mask-image: radial-gradient(circle, transparent 0 34%, #000 35%);
+  mask-image: radial-gradient(circle, transparent 0 34%, #000 35%);
+}
+
+body[data-theme='orbital'] .clock-block::after {
+  content: '';
+  position: absolute;
+  left: 45px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #c7faff;
+  box-shadow: 0 0 7px #68eaff, 0 0 18px rgba(104, 234, 255, 0.7);
+}
+
+body[data-theme='orbital'] .clock-time {
+  font-size: 1.5rem;
+  font-weight: 300;
+  white-space: nowrap;
+}
+
+body[data-theme='orbital'] .github-incident-count {
+  position: relative;
+  display: grid;
+  width: 76px;
+  height: 76px;
+  place-content: center;
+  gap: 1px;
+  border-radius: 50%;
+  border: 1px solid rgba(149, 239, 253, 0.72);
+  background:
+    repeating-radial-gradient(circle, transparent 0 6px, rgba(103, 230, 251, 0.14) 7px 8px, transparent 9px 13px),
+    conic-gradient(from 9deg, rgba(104, 234, 255, 0.3), transparent 23%, rgba(52, 145, 207, 0.22) 42%, transparent 67%, rgba(104, 234, 255, 0.24));
+  box-shadow: 0 0 0 3px rgba(1, 8, 22, 0.94), 0 0 0 5px rgba(53, 163, 207, 0.2), 0 0 14px rgba(104, 234, 255, 0.28), inset 0 0 16px rgba(104, 234, 255, 0.1);
+}
+
+body[data-theme='orbital'] .github-incident-days {
+  font-size: 1.65rem;
+  text-align: center;
+}
+
+body[data-theme='orbital'] .github-incident-unit {
+  font-size: 0.48rem;
+  text-align: center;
+  letter-spacing: 0.2em;
+}
+
+body[data-theme='orbital'] .github-incident-hero {
+  align-items: center;
+  padding: 4px 3px 8px;
+}
+
+body[data-theme='orbital'] .mini-btn,
+body[data-theme='orbital'] .btn,
+body[data-theme='orbital'] .status-item-action,
+body[data-theme='orbital'] .status-remove,
+body[data-theme='orbital'] .status-modal-close,
+body[data-theme='orbital'] .stack-remove-btn,
+body[data-theme='orbital'] .tab-close {
+  border-width: 2px;
+  background:
+    linear-gradient(180deg, rgba(143, 236, 247, 0.94) 0 2%, rgba(49, 166, 203, 0.92) 7%, rgba(8, 56, 94, 0.98) 48%, rgba(4, 25, 54, 0.98) 72%, rgba(36, 132, 171, 0.86) 100%) padding-box,
+    linear-gradient(120deg, #e6feff, #5cd8ec 12%, #0f5f92 30%, #b6f7ff 48%, #278dbb 72%, #d0fbff 100%) border-box;
+  box-shadow:
+    0 0 0 2px rgba(1, 7, 21, 0.97),
+    0 0 0 4px rgba(59, 169, 210, 0.26),
+    inset 0 0 0 1px rgba(223, 254, 255, 0.28),
+    inset 0 7px 9px rgba(207, 251, 255, 0.08),
+    inset 0 -8px 12px rgba(1, 13, 34, 0.5),
+    0 0 12px rgba(104, 234, 255, 0.25);
+  font-weight: 300;
+  text-shadow: 0 0 5px rgba(104, 234, 255, 0.35);
+}
+
+body[data-theme='orbital'] .mini-btn:hover,
+body[data-theme='orbital'] .btn:hover,
+body[data-theme='orbital'] .status-item-action:hover,
+body[data-theme='orbital'] .stack-remove-btn:hover,
+body[data-theme='orbital'] .tab-close:hover {
+  background: linear-gradient(180deg, #cffbff 0 3%, #5bd9ec 10%, #0f79ae 48%, #06426f 76%, #2b9ec5 100%);
+  box-shadow:
+    0 0 0 2px rgba(1, 7, 21, 0.97),
+    0 0 0 4px rgba(121, 229, 247, 0.42),
+    inset 0 0 9px rgba(226, 254, 255, 0.22),
+    0 0 19px rgba(104, 234, 255, 0.48);
+}
+
+body[data-theme='orbital'] .bookmark,
+body[data-theme='orbital'] .tab-item,
+body[data-theme='orbital'] .status-item,
+body[data-theme='orbital'] .bookmark-match-item,
+body[data-theme='orbital'] .stack-picker-item,
+body[data-theme='orbital'] .stack-selected-item,
+body[data-theme='orbital'] .command-palette-item {
+  border-width: 2px;
+  background:
+    linear-gradient(145deg, rgba(19, 90, 131, 0.64), rgba(1, 6, 20, 0.87) 42%, rgba(7, 45, 82, 0.72)) padding-box,
+    linear-gradient(145deg, #c3faff 0%, #3eb7d5 8%, #0d4e7d 21%, #77e7f7 44%, #155d8e 68%, #a6f4ff 90%, #266e9b 100%) border-box;
+  box-shadow:
+    0 0 0 2px rgba(1, 7, 21, 0.95),
+    0 0 0 4px rgba(42, 139, 186, 0.14),
+    0 0 10px rgba(104, 234, 255, 0.14),
+    inset 0 0 0 1px rgba(212, 252, 255, 0.12),
+    inset 0 9px 19px rgba(106, 222, 242, 0.06),
+    inset 0 -14px 26px rgba(4, 53, 98, 0.13);
+}
+
+body[data-theme='orbital'] .bookmark::before {
+  height: 7px;
+  width: 68px;
+  background: linear-gradient(90deg, var(--pink) 0 6px, transparent 6px 10px, #e2fdff 10px 15px, #73e8f8 15px 42px, #1c7fad 42px 53px, transparent 53px 57px, #a8f3ff 57px 100%);
+  box-shadow: 0 0 7px rgba(104, 234, 255, 0.72);
+}
+
+body[data-theme='orbital'] .bookmark:hover,
+body[data-theme='orbital'] .tab-item:hover,
+body[data-theme='orbital'] .status-item.is-link:hover,
+body[data-theme='orbital'] .bookmark-match-item:hover,
+body[data-theme='orbital'] .stack-picker-item:hover,
+body[data-theme='orbital'] .command-palette-item.is-active {
+  border-color: transparent;
+  background:
+    linear-gradient(145deg, rgba(40, 154, 188, 0.76), rgba(2, 15, 34, 0.91) 52%, rgba(12, 77, 116, 0.78)) padding-box,
+    linear-gradient(145deg, #efffff, #64dbed 16%, #177ead 38%, #d0fbff 58%, #3fb4d2 77%, #ebfeff) border-box;
+  box-shadow:
+    0 0 0 2px rgba(1, 7, 21, 0.96),
+    0 0 0 4px rgba(105, 222, 242, 0.27),
+    inset 5px 0 var(--cyan),
+    inset 0 0 16px rgba(143, 240, 251, 0.09),
+    0 0 20px rgba(104, 234, 255, 0.38);
+}
+
+body[data-theme='orbital'] .theme-select,
+body[data-theme='orbital'] .search,
+body[data-theme='orbital'] .status-input,
+body[data-theme='orbital'] .calc-input,
+body[data-theme='orbital'] .calc-output,
+body[data-theme='orbital'] .stack-name-input,
+body[data-theme='orbital'] .command-palette-search-wrap {
+  border-width: 2px;
+  background:
+    linear-gradient(90deg, rgba(10, 62, 101, 0.58), rgba(1, 6, 20, 0.88) 43%, rgba(6, 37, 72, 0.64)) padding-box,
+    linear-gradient(100deg, #b9f8ff, #1e86b4 22%, #69e2f3 48%, #155c8f 72%, #9ef3ff) border-box;
+  box-shadow: 0 0 0 2px rgba(1, 7, 21, 0.94), inset 5px 0 #9ef5ff, inset 0 0 14px rgba(104, 234, 255, 0.09), 0 0 10px rgba(104, 234, 255, 0.16);
+  font-weight: 300;
+}
+
+body[data-theme='orbital'] .status-modal,
+body[data-theme='orbital'] .stack-editor-modal,
+body[data-theme='orbital'] .stack-picker-panel,
+body[data-theme='orbital'] .tour-card,
+body[data-theme='orbital'] .command-palette {
+  border-width: 3px;
+  background:
+    linear-gradient(145deg, rgba(12, 63, 101, 0.94), rgba(1, 5, 18, 0.98) 38%, rgba(6, 39, 76, 0.95)) padding-box,
+    linear-gradient(145deg, #e0fdff, #58d7ea 7%, #0d4c7d 18%, #a5f4ff 38%, #1b76a8 60%, #70e8f8 77%, #0f4b7b 89%, #d1fbff) border-box;
+  box-shadow: 0 0 0 2px rgba(1, 7, 21, 0.98), 0 0 0 5px rgba(44, 145, 192, 0.28), 0 0 38px rgba(104, 234, 255, 0.39), 0 34px 95px rgba(0, 0, 0, 0.88), inset 0 0 0 2px rgba(1, 8, 23, 0.86), inset 0 0 38px rgba(62, 181, 228, 0.12);
+}
+
+body[data-theme='orbital'] .status-modal-head,
+body[data-theme='orbital'] .stack-picker-head,
+body[data-theme='orbital'] .command-palette-head,
+body[data-theme='orbital'] .command-palette-footer {
+  background:
+    linear-gradient(180deg, rgba(84, 193, 219, 0.86), rgba(8, 62, 104, 0.96) 25%, rgba(3, 20, 45, 0.98) 70%, rgba(16, 84, 124, 0.92)),
+    repeating-linear-gradient(135deg, transparent 0 8px, rgba(202, 251, 255, 0.11) 9px 10px);
+  box-shadow: inset 6px 0 var(--pink), inset 0 0 0 1px rgba(189, 248, 255, 0.15), inset 0 -3px rgba(88, 217, 241, 0.2);
+}
+
+@media (max-width: 1030px) {
+  body[data-theme='orbital'] .clock-block {
+    min-height: 98px;
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-theme='orbital'] .clock-block {
+    min-height: 92px;
+    padding-left: 96px;
+  }
+
+  body[data-theme='orbital'] .clock-block::before {
+    width: 68px;
+  }
+
+  body[data-theme='orbital'] .github-incident-count {
+    width: 70px;
+    height: 70px;
+  }
+
+  body[data-theme='orbital'] .monitor-shell {
+    padding: 13px;
+  }
+}
+
+/* Orbital Command v5: reference fidelity and readability */
+:root[data-theme='orbital'],
+body[data-theme='orbital'] {
+  --text: #ecfcff;
+  --muted: #9bc6d2;
+}
+
+body[data-theme='orbital'] {
+  color: var(--text);
+  font-weight: 400;
+}
+
+body[data-theme='orbital'] .bookmark-terminal .console {
+  padding-top: 12px;
+}
+
+body[data-theme='orbital'] .devcalc-block {
+  gap: 10px;
+}
+
+body[data-theme='orbital'] .clock-date,
+body[data-theme='orbital'] .tower-copy,
+body[data-theme='orbital'] .status-refresh-meta,
+body[data-theme='orbital'] .github-incident-summary,
+body[data-theme='orbital'] .github-incident-high-score,
+body[data-theme='orbital'] .github-incident-unit,
+body[data-theme='orbital'] .bookmark-url,
+body[data-theme='orbital'] .bookmark-folder,
+body[data-theme='orbital'] .tab-url,
+body[data-theme='orbital'] .tab-host,
+body[data-theme='orbital'] .tab-age,
+body[data-theme='orbital'] .status-line,
+body[data-theme='orbital'] .status-meta,
+body[data-theme='orbital'] .helper,
+body[data-theme='orbital'] .count,
+body[data-theme='orbital'] .bookmark-order-hint,
+body[data-theme='orbital'] .calc-hint,
+body[data-theme='orbital'] .stack-modal-message,
+body[data-theme='orbital'] .command-palette-copy span,
+body[data-theme='orbital'] .tour-card > p:not(.tour-progress) {
+  color: #a8ced8;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 4, 14, 0.9);
+}
+
+body[data-theme='orbital'] .bookmark-title,
+body[data-theme='orbital'] .tab-title,
+body[data-theme='orbital'] .status-name,
+body[data-theme='orbital'] .status-target-name,
+body[data-theme='orbital'] .status-console-label,
+body[data-theme='orbital'] .github-incident-summary,
+body[data-theme='orbital'] .command-palette-copy strong,
+body[data-theme='orbital'] .stack-picker-copy strong {
+  color: #f0fdff;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0, 4, 14, 0.95), 0 0 5px rgba(104, 234, 255, 0.14);
+}
+
+body[data-theme='orbital'] .tower-block h2,
+body[data-theme='orbital'] .status-block h2,
+body[data-theme='orbital'] .tower-kicker,
+body[data-theme='orbital'] .brand,
+body[data-theme='orbital'] .channel,
+body[data-theme='orbital'] .github-incident-range,
+body[data-theme='orbital'] .status-console-label,
+body[data-theme='orbital'] .command-palette-kicker,
+body[data-theme='orbital'] .stack-modal-kicker {
+  color: #a9f4ff;
+  font-weight: 500;
+  text-shadow: 0 0 6px rgba(104, 234, 255, 0.38), 0 1px 2px rgba(0, 4, 14, 0.92);
+}
+
+body[data-theme='orbital'] .theme-select,
+body[data-theme='orbital'] .search,
+body[data-theme='orbital'] .status-input,
+body[data-theme='orbital'] .calc-input,
+body[data-theme='orbital'] .calc-output,
+body[data-theme='orbital'] .stack-name-input,
+body[data-theme='orbital'] .command-palette-search {
+  color: #f1fdff;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 4, 14, 0.9);
+}
+
+body[data-theme='orbital'] .theme-select::placeholder,
+body[data-theme='orbital'] .search::placeholder,
+body[data-theme='orbital'] .status-input::placeholder,
+body[data-theme='orbital'] .calc-input::placeholder,
+body[data-theme='orbital'] .calc-output::placeholder,
+body[data-theme='orbital'] .stack-name-input::placeholder,
+body[data-theme='orbital'] .command-palette-search::placeholder {
+  color: #a5c5cf;
+  opacity: 0.9;
+}
+
+body[data-theme='orbital'] .bookmark,
+body[data-theme='orbital'] .tab-item,
+body[data-theme='orbital'] .status-item,
+body[data-theme='orbital'] .bookmark-match-item,
+body[data-theme='orbital'] .stack-picker-item,
+body[data-theme='orbital'] .stack-selected-item,
+body[data-theme='orbital'] .command-palette-item {
+  background:
+    linear-gradient(145deg, rgba(16, 76, 115, 0.62), rgba(1, 6, 20, 0.94) 42%, rgba(6, 38, 74, 0.72)) padding-box,
+    linear-gradient(145deg, #d5fcff 0%, #49c6df 8%, #0d4e7d 21%, #8bedf9 44%, #155d8e 68%, #b8f7ff 90%, #266e9b 100%) border-box;
+}
+
+body[data-theme='orbital'] .monitor-screen,
+body[data-theme='orbital'] .console,
+body[data-theme='orbital'] .status-console {
+  color: #eafcff;
+}
+
+body[data-theme='orbital'] .console,
+body[data-theme='orbital'] .status-console {
+  background:
+    linear-gradient(135deg, rgba(7, 42, 75, 0.26), rgba(0, 4, 16, 0.78)),
+    repeating-linear-gradient(90deg, transparent 0 58px, rgba(104, 234, 255, 0.026) 59px 60px);
+}
+
+body[data-theme='orbital'] .console::before,
+body[data-theme='orbital'] .status-console::before {
+  opacity: 0.46;
+}
+
+body[data-theme='orbital'] .mini-btn,
+body[data-theme='orbital'] .btn,
+body[data-theme='orbital'] .status-item-action,
+body[data-theme='orbital'] .status-remove,
+body[data-theme='orbital'] .status-modal-close,
+body[data-theme='orbital'] .stack-remove-btn,
+body[data-theme='orbital'] .tab-close,
+body[data-theme='orbital'] .chip,
+body[data-theme='orbital'] .ports a {
+  color: #f4feff;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 4, 14, 0.95), 0 0 5px rgba(104, 234, 255, 0.22);
+}
+
+body[data-theme='orbital'] .status-badge,
+body[data-theme='orbital'] .status-pulse,
+body[data-theme='orbital'] .bookmark-stack-badge,
+body[data-theme='orbital'] .tab-badge,
+body[data-theme='orbital'] .command-palette-kind,
+body[data-theme='orbital'] .calc-stat {
+  color: #dffbff;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 4, 14, 0.95);
+}
+
+body[data-theme='orbital'] .support-link,
+body[data-theme='orbital'] .github-incident-link {
+  color: #bfeef5;
+  opacity: 1;
+  font-weight: 500;
+}
+
+body[data-theme='orbital'] .footer-note {
+  color: #afd2da;
+  background: rgba(0, 5, 17, 0.86);
+  text-shadow: 0 1px 2px #000;
+}
+
+/* Orbital Command v6: dense etched HUD ornament */
+.hud-flair {
+  display: none;
+}
+
+body[data-theme='orbital'] .hud-flair {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  pointer-events: none;
+  color: #69eaff;
+  filter: drop-shadow(0 0 5px rgba(76, 220, 255, 0.48));
+}
+
+body[data-theme='orbital'] .hud-rail-bank {
+  top: 10%;
+  left: 1.2%;
+  width: clamp(150px, 17vw, 260px);
+  height: 30%;
+  opacity: 0.72;
+}
+
+body[data-theme='orbital'] .hud-rail-bank::before,
+body[data-theme='orbital'] .hud-rail-bank::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 72%;
+  height: 1px;
+  background: linear-gradient(90deg, #baf8ff, #38bfe5 58%, transparent);
+  box-shadow: 0 0 5px rgba(89, 232, 255, 0.72);
+}
+
+body[data-theme='orbital'] .hud-rail-bank::before { top: -12px; }
+body[data-theme='orbital'] .hud-rail-bank::after { bottom: -12px; width: 92%; }
+
+body[data-theme='orbital'] .hud-rail-bank i {
+  position: relative;
+  display: block;
+  width: 74%;
+  height: 13%;
+  margin-bottom: 6.5%;
+  border: 1px solid rgba(118, 236, 255, 0.72);
+  background:
+    linear-gradient(90deg, rgba(99, 232, 255, 0.72) 0 5px, transparent 5px calc(100% - 7px), rgba(92, 204, 245, 0.36) calc(100% - 7px)),
+    linear-gradient(180deg, rgba(33, 128, 177, 0.48), rgba(2, 24, 53, 0.2));
+  box-shadow: inset 0 0 8px rgba(100, 232, 255, 0.22), 0 0 5px rgba(64, 193, 239, 0.2);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%, 7px 50%);
+}
+
+body[data-theme='orbital'] .hud-rail-bank i:nth-child(2) { width: 96%; margin-left: 8%; }
+body[data-theme='orbital'] .hud-rail-bank i:nth-child(3) { width: 61%; margin-left: 20%; }
+body[data-theme='orbital'] .hud-rail-bank i:nth-child(4) { width: 89%; margin-left: 4%; }
+body[data-theme='orbital'] .hud-rail-bank i:nth-child(5) { width: 69%; margin-left: 16%; }
+
+body[data-theme='orbital'] .hud-dial-bank {
+  left: 2.2%;
+  bottom: 5%;
+  display: grid;
+  grid-template-columns: repeat(2, clamp(58px, 6.3vw, 94px));
+  gap: 14px;
+  opacity: 0.62;
+}
+
+body[data-theme='orbital'] .hud-dial-bank i {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 31%, rgba(95, 224, 255, 0.18) 32% 38%, transparent 39% 50%, rgba(99, 224, 255, 0.68) 51% 53%, transparent 54%),
+    repeating-conic-gradient(from 4deg, rgba(110, 234, 255, 0.74) 0 2deg, transparent 2deg 9deg),
+    radial-gradient(circle, rgba(31, 117, 174, 0.26), rgba(1, 8, 25, 0.08) 67%, transparent 68%);
+  border: 1px solid rgba(101, 222, 255, 0.62);
+  box-shadow: inset 0 0 13px rgba(76, 215, 255, 0.22), 0 0 9px rgba(54, 190, 239, 0.26);
+}
+
+body[data-theme='orbital'] .hud-dial-bank i:nth-child(2),
+body[data-theme='orbital'] .hud-dial-bank i:nth-child(3) {
+  transform: scale(0.82) rotate(12deg);
+}
+
+body[data-theme='orbital'] .hud-data-traces {
+  left: 19%;
+  top: 35%;
+  width: 31%;
+  height: 34%;
+  opacity: 0.6;
+}
+
+body[data-theme='orbital'] .hud-data-traces i {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 18px;
+  margin: 12px 0;
+  border-top: 2px solid rgba(103, 225, 255, 0.72);
+  background:
+    repeating-linear-gradient(90deg, rgba(89, 232, 255, 0.7) 0 8px, transparent 8px 13px) left 5px / 36% 4px no-repeat;
+  clip-path: polygon(0 0, 28% 0, 32% 70%, 74% 70%, 78% 0, 100% 0, 100% 18%, 79% 18%, 76% 88%, 30% 88%, 26% 18%, 0 18%);
+}
+
+body[data-theme='orbital'] .hud-data-traces i:nth-child(2) { width: 74%; margin-left: 13%; }
+body[data-theme='orbital'] .hud-data-traces i:nth-child(3) { width: 91%; margin-left: 3%; }
+body[data-theme='orbital'] .hud-data-traces i:nth-child(4) { width: 64%; margin-left: 19%; }
+body[data-theme='orbital'] .hud-data-traces i:nth-child(5) { width: 82%; margin-left: 8%; }
+
+body[data-theme='orbital'] .hud-edge-glyphs {
+  top: 12%;
+  right: 1.1%;
+  display: grid;
+  gap: 9px;
+  width: clamp(62px, 6vw, 96px);
+  opacity: 0.75;
+}
+
+body[data-theme='orbital'] .hud-edge-glyphs i {
+  display: block;
+  height: 15px;
+  background:
+    linear-gradient(135deg, transparent 0 35%, #87f1ff 36% 49%, transparent 50%) 0 0 / 24px 15px repeat-x;
+  filter: drop-shadow(0 0 3px rgba(89, 232, 255, 0.65));
+}
+
+body[data-theme='orbital'] .hud-edge-glyphs i:nth-child(even) {
+  margin-left: 19px;
+  opacity: 0.55;
+}
+
+body[data-theme='orbital'] .lcars-masthead {
+  background:
+    repeating-linear-gradient(135deg, transparent 0 7px, rgba(138, 240, 255, 0.16) 7px 9px, transparent 9px 13px) top right 155px / 120px 7px no-repeat,
+    linear-gradient(90deg, transparent 0 12%, rgba(100, 229, 255, 0.78) 12% 22%, transparent 22% 23%, rgba(41, 138, 196, 0.5) 23% 36%, transparent 36%) bottom 5px left 78px / 55% 2px no-repeat,
+    linear-gradient(100deg, rgba(6, 31, 60, 0.98), rgba(1, 7, 22, 0.98) 42%, rgba(5, 28, 55, 0.96)) padding-box,
+    linear-gradient(100deg, #c5fbff 0%, #168bc4 20%, #7eeeff 52%, #12659c 78%, #aaf7ff 100%) border-box;
+}
+
+body[data-theme='orbital'] .tower,
+body[data-theme='orbital'] .monitor-shell {
+  background:
+    repeating-linear-gradient(135deg, rgba(135, 240, 255, 0.5) 0 4px, transparent 4px 8px) top 7px right 115px / 76px 4px no-repeat,
+    repeating-linear-gradient(90deg, rgba(94, 219, 255, 0.34) 0 2px, transparent 2px 7px) bottom 6px left 36px / 128px 3px no-repeat,
+    linear-gradient(145deg, rgba(8, 35, 65, 0.96), rgba(2, 9, 25, 0.97) 30%, rgba(4, 18, 39, 0.96)) padding-box,
+    linear-gradient(145deg, #d2fcff, #3199c8 13%, #0a486f 24%, #7ae9f9 48%, #145c89 76%, #aaf6ff) border-box;
+}
+
+body[data-theme='orbital'] .monitor-header {
+  padding-left: 32px;
+  background:
+    linear-gradient(135deg, transparent 0 45%, rgba(141, 244, 255, 0.7) 46% 53%, transparent 54%) 8px center / 12px 12px repeat-x,
+    linear-gradient(90deg, rgba(18, 74, 112, 0.9), rgba(4, 23, 48, 0.97) 42%, rgba(7, 39, 69, 0.92));
+  background-size: 13px 13px, auto;
+  background-repeat: repeat-x, no-repeat;
+}
+
+body[data-theme='orbital'] .monitor-screen {
+  background:
+    repeating-linear-gradient(0deg, rgba(97, 226, 255, 0.34) 0 2px, transparent 2px 9px) left 4px top 20px / 3px calc(100% - 40px) no-repeat,
+    repeating-linear-gradient(0deg, rgba(97, 226, 255, 0.2) 0 1px, transparent 1px 12px) right 4px top 20px / 2px calc(100% - 40px) no-repeat,
+    linear-gradient(155deg, rgba(7, 30, 57, 0.82), rgba(1, 8, 23, 0.96) 44%, rgba(4, 19, 40, 0.9));
+  box-shadow:
+    inset 12px 0 16px -16px rgba(104, 231, 255, 0.9),
+    inset -12px 0 16px -16px rgba(104, 231, 255, 0.7),
+    inset 0 0 0 1px rgba(181, 245, 255, 0.06);
+}
+
+body[data-theme='orbital'] .tower-block {
+  background:
+    linear-gradient(90deg, #84edff 0 20%, transparent 20% 24%, #217eae 24% 45%, transparent 45%) top 5px left 14px / 76px 2px no-repeat,
+    radial-gradient(circle, #d9fbff 0 1px, #4ed9f5 2px 3px, transparent 4px) top 8px right 9px / 8px 8px no-repeat,
+    linear-gradient(155deg, rgba(7, 30, 57, 0.86), rgba(1, 8, 23, 0.97) 44%, rgba(4, 19, 40, 0.92));
+  padding-top: 19px;
+}
+
+body[data-theme='orbital'] .bookmark,
+body[data-theme='orbital'] .tab-item,
+body[data-theme='orbital'] .status-item {
+  background:
+    repeating-linear-gradient(90deg, rgba(130, 239, 255, 0.48) 0 5px, transparent 5px 9px) top 5px right 12px / 44px 2px no-repeat,
+    linear-gradient(145deg, rgba(16, 76, 115, 0.66), rgba(1, 6, 20, 0.95) 42%, rgba(6, 38, 74, 0.76)) padding-box,
+    linear-gradient(145deg, #d5fcff 0%, #49c6df 8%, #0d4e7d 21%, #8bedf9 44%, #155d8e 68%, #b8f7ff 90%, #266e9b 100%) border-box;
+}
+
+body[data-theme='orbital'] .bookmark::after,
+body[data-theme='orbital'] .tab-item::after,
+body[data-theme='orbital'] .status-item::after {
+  content: '';
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ff496b;
+  box-shadow: -8px 0 #4be1fa, -16px 0 #2c77b5, 0 0 5px rgba(255, 73, 107, 0.8);
+  pointer-events: none;
+}
+
+body[data-theme='orbital'] .channel-strip,
+body[data-theme='orbital'] .calc-mode-bar,
+body[data-theme='orbital'] .calc-quick-bar {
+  position: relative;
+  padding-block: 8px;
+  border-block: 1px solid rgba(94, 220, 255, 0.18);
+  background:
+    linear-gradient(90deg, rgba(105, 230, 255, 0.62), transparent 42%) top left / 38% 1px no-repeat,
+    linear-gradient(90deg, transparent 58%, rgba(105, 230, 255, 0.52)) bottom right / 38% 1px no-repeat;
+}
+
+@media (max-width: 1030px) {
+  body[data-theme='orbital'] .hud-rail-bank,
+  body[data-theme='orbital'] .hud-dial-bank {
+    opacity: 0.3;
+  }
+
+  body[data-theme='orbital'] .hud-data-traces {
+    left: 8%;
+    width: 62%;
+    opacity: 0.28;
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-theme='orbital'] .hud-rail-bank,
+  body[data-theme='orbital'] .hud-dial-bank,
+  body[data-theme='orbital'] .hud-data-traces,
+  body[data-theme='orbital'] .hud-edge-glyphs {
+    opacity: 0.18;
+  }
+
+  body[data-theme='orbital'] .monitor-header {
+    padding-left: 24px;
+  }
+
+  body[data-theme='orbital'] .tower-block {
+    padding-top: 17px;
+  }
+}
+
+/* Orbital Command v7: legible engraved header plates */
+body[data-theme='orbital'] .monitor-header {
+  height: 34px;
+  min-height: 34px;
+  padding: 5px 10px 5px 14px;
+  gap: 10px;
+  isolation: isolate;
+  background:
+    repeating-linear-gradient(135deg, #85efff 0 4px, transparent 4px 8px) top 3px right 78px / 94px 3px no-repeat,
+    linear-gradient(90deg, #9cf5ff 0 22%, transparent 22% 25%, #277fae 25% 48%, transparent 48%) bottom 3px left 22px / 170px 2px no-repeat,
+    linear-gradient(90deg, rgba(15, 74, 113, 0.96), rgba(2, 15, 36, 0.99) 32%, rgba(3, 20, 43, 0.99) 72%, rgba(10, 56, 91, 0.97));
+}
+
+body[data-theme='orbital'] .monitor-header::before {
+  z-index: 0;
+  left: 9px;
+  right: 9px;
+  top: 5px;
+  height: calc(100% - 10px);
+  border: 1px solid rgba(110, 228, 250, 0.18);
+  background:
+    linear-gradient(90deg, rgba(89, 232, 255, 0.32), transparent 9% 91%, rgba(89, 232, 255, 0.26));
+  box-shadow: inset 0 0 8px rgba(56, 180, 226, 0.08);
+  clip-path: polygon(0 5px, 5px 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .monitor-header::after {
+  z-index: 0;
+  right: 48px;
+  bottom: 4px;
+  width: 72px;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, #69e5f8 0 6px, transparent 6px 10px);
+  box-shadow: 0 0 4px rgba(89, 232, 255, 0.55);
+  opacity: 0.48;
+}
+
+body[data-theme='orbital'] .monitor-header .brand,
+body[data-theme='orbital'] .monitor-header .channel {
+  z-index: 2;
+  box-sizing: border-box;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(104, 224, 247, 0.32);
+  background:
+    linear-gradient(90deg, rgba(0, 7, 22, 0.98), rgba(3, 22, 43, 0.96) 68%, rgba(5, 35, 61, 0.9));
+  box-shadow:
+    inset 3px 0 rgba(93, 228, 250, 0.72),
+    inset 0 0 8px rgba(50, 176, 224, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.8);
+  clip-path: polygon(0 4px, 4px 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%);
+  color: #dffbff;
+  font-family: "Arial Narrow", "Roboto Condensed", "Segoe UI", sans-serif;
+  font-weight: 600;
+  text-shadow: 0 1px 2px #000, 0 0 5px rgba(89, 232, 255, 0.24);
+}
+
+body[data-theme='orbital'] .monitor-header .brand {
+  width: fit-content;
+  max-width: min(240px, 44vw);
+  padding: 3px 14px 3px 10px;
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+}
+
+body[data-theme='orbital'] .monitor-header .channel {
+  left: 50%;
+  width: auto;
+  max-width: 34%;
+  padding: 3px 18px;
+  justify-content: center;
+  color: #aeeefa;
+  font-size: 0.61rem;
+  letter-spacing: 0.2em;
+  box-shadow:
+    inset 0 -2px rgba(74, 196, 226, 0.42),
+    inset 0 0 8px rgba(50, 176, 224, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+body[data-theme='orbital'] .monitor-header .leds {
+  z-index: 3;
+  gap: 5px;
+  padding: 5px 6px;
+  border: 1px solid rgba(92, 213, 240, 0.24);
+  background: rgba(0, 8, 23, 0.92);
+  clip-path: polygon(4px 0, 100% 0, 100% 100%, 0 100%, 0 4px);
+}
+
+body[data-theme='orbital'] .lcars-title p,
+body[data-theme='orbital'] .lcars-title h1,
+body[data-theme='orbital'] .tower-head .tower-kicker,
+body[data-theme='orbital'] .tower-head .tower-model {
+  position: relative;
+  z-index: 2;
+  width: fit-content;
+  padding-inline: 3px 8px;
+  background: linear-gradient(90deg, rgba(0, 8, 24, 0.78), rgba(0, 8, 24, 0));
+  text-shadow: 0 1px 3px #000, 0 0 6px rgba(89, 232, 255, 0.18);
+}
+
+@media (max-width: 700px) {
+  body[data-theme='orbital'] .monitor-header {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    height: 33px;
+    min-height: 33px;
+    padding-inline: 9px;
+    gap: 5px;
+  }
+
+  body[data-theme='orbital'] .monitor-header .brand {
+    width: auto;
+    max-width: 38vw;
+    padding-inline: 7px 8px;
+    font-size: 0.54rem;
+    letter-spacing: 0.08em;
+  }
+
+  body[data-theme='orbital'] .monitor-header .channel {
+    position: relative;
+    left: auto;
+    transform: none;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    padding-inline: 5px;
+    font-size: 0.48rem;
+    letter-spacing: 0.07em;
+  }
+
+  body[data-theme='orbital'] .monitor-header .leds {
+    gap: 3px;
+    padding-inline: 4px;
+  }
+}
+
+/* Orbital Command v8: deep-space navigation array */
+:root[data-theme='orbital'],
+body[data-theme='orbital'] {
+  --bg-a: #00030a;
+  --bg-b: #010914;
+  --bg-c: #031525;
+  --cyan: #32cdec;
+  --violet: #188ac0;
+  --yellow: #a9eff8;
+  --text: #e3faff;
+  --muted: #7baab8;
+  --panel: rgba(1, 10, 23, 0.91);
+  --panel-2: rgba(2, 17, 34, 0.95);
+  --line: rgba(47, 196, 229, 0.48);
+}
+
+body[data-theme='orbital'] {
+  background:
+    radial-gradient(ellipse at 73% 12%, rgba(7, 84, 130, 0.22), transparent 35%),
+    radial-gradient(ellipse at 18% 78%, rgba(10, 63, 100, 0.15), transparent 30%),
+    linear-gradient(155deg, #000208 0%, #010712 48%, #020b16 72%, #00030a 100%);
+}
+
+body[data-theme='orbital'] .scene {
+  background:
+    radial-gradient(circle at 72% 24%, rgba(64, 194, 229, 0.055) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 19% 62%, rgba(144, 235, 249, 0.05) 0 1px, transparent 1.5px),
+    linear-gradient(rgba(24, 139, 179, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(24, 139, 179, 0.035) 1px, transparent 1px),
+    radial-gradient(ellipse at 55% 38%, rgba(8, 89, 135, 0.17), transparent 46%),
+    #00030a;
+  background-size: 173px 191px, 271px 239px, 72px 72px, 72px 72px, auto, auto;
+}
+
+body[data-theme='orbital'] .scene::before {
+  content: '';
+  position: absolute;
+  right: -12%;
+  bottom: -56%;
+  width: min(60vw, 880px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(66, 196, 226, 0.28);
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle at 38% 24%, transparent 0 28px, rgba(40, 145, 184, 0.035) 29px 30px),
+    radial-gradient(circle at 34% 20%, rgba(21, 88, 121, 0.27), rgba(1, 10, 20, 0.94) 47%, #00040a 68%);
+  box-shadow:
+    0 -2px 14px rgba(59, 200, 232, 0.22),
+    0 -18px 90px rgba(12, 99, 143, 0.14),
+    inset 0 24px 50px rgba(57, 177, 213, 0.05);
+  opacity: 0.76;
+}
+
+body[data-theme='orbital'] .scene::after {
+  content: '';
+  position: absolute;
+  inset: 4% 3%;
+  border: 1px solid rgba(49, 178, 211, 0.08);
+  background:
+    linear-gradient(125deg, transparent 0 18%, rgba(37, 172, 210, 0.11) 18.05% 18.12%, transparent 18.18% 74%, rgba(37, 172, 210, 0.08) 74.05% 74.12%, transparent 74.18%),
+    linear-gradient(35deg, transparent 0 54%, rgba(37, 172, 210, 0.07) 54.05% 54.12%, transparent 54.18%);
+  clip-path: polygon(0 3%, 3% 0, 36% 0, 38% 3%, 76% 3%, 79% 0, 100% 0, 100% 92%, 97% 95%, 66% 95%, 63% 100%, 21% 100%, 18% 96%, 0 96%);
+  opacity: 0.62;
+}
+
+body[data-theme='orbital'] .stars {
+  opacity: 0.78;
+  background:
+    radial-gradient(circle at 8% 20%, #d9fbff 0 0.8px, transparent 1.4px),
+    radial-gradient(circle at 76% 18%, rgba(119, 220, 241, 0.9) 0 0.8px, transparent 1.5px),
+    radial-gradient(circle at 44% 33%, rgba(218, 249, 255, 0.78) 0 0.7px, transparent 1.4px),
+    radial-gradient(circle at 92% 45%, rgba(77, 185, 221, 0.84) 0 0.8px, transparent 1.4px),
+    radial-gradient(circle at 21% 54%, rgba(226, 250, 255, 0.65) 0 0.7px, transparent 1.3px),
+    radial-gradient(circle at 57% 81%, rgba(91, 201, 229, 0.66) 0 0.7px, transparent 1.3px);
+  background-size: 211px 223px, 347px 331px, 421px 389px, 283px 307px, 503px 467px, 379px 413px;
+  filter: drop-shadow(0 0 2px rgba(109, 224, 246, 0.44));
+}
+
+body[data-theme='orbital'] .hud-orbit-main {
+  left: 38%;
+  top: 58%;
+  width: min(58vw, 760px);
+  transform: translate(-50%, -50%) rotate(-7deg);
+  border-color: rgba(42, 184, 218, 0.38);
+  background:
+    repeating-radial-gradient(circle, transparent 0 23px, rgba(38, 179, 214, 0.22) 24px 25px, transparent 26px 37px),
+    repeating-conic-gradient(from 2deg, rgba(48, 199, 232, 0.34) 0deg 0.8deg, transparent 0.8deg 5deg),
+    conic-gradient(from 18deg, transparent 0 5%, rgba(48, 199, 232, 0.65) 5% 7%, transparent 7% 21%, rgba(18, 109, 160, 0.48) 21% 25%, transparent 25% 54%, rgba(50, 203, 233, 0.52) 54% 58%, transparent 58% 78%, rgba(28, 125, 174, 0.36) 78% 82%, transparent 82%);
+  box-shadow:
+    0 0 0 6px rgba(39, 178, 214, 0.028),
+    0 0 0 8px rgba(39, 178, 214, 0.13),
+    0 0 48px rgba(22, 146, 191, 0.18),
+    inset 0 0 40px rgba(17, 120, 166, 0.08);
+  opacity: 0.82;
+}
+
+body[data-theme='orbital'] .hud-orbit-side {
+  left: 77%;
+  bottom: -13%;
+  width: min(25vw, 330px);
+  opacity: 0.42;
+}
+
+body[data-theme='orbital'] .hud-circuit {
+  inset: 5% 1.4% 7%;
+  opacity: 0.5;
+  background:
+    linear-gradient(90deg, transparent 0 4%, rgba(44, 190, 225, 0.2) 4% 4.08%, transparent 4.08% 96%, rgba(44, 190, 225, 0.16) 96% 96.08%, transparent 96.08%),
+    linear-gradient(0deg, transparent 0 12%, rgba(44, 190, 225, 0.13) 12% 12.1%, transparent 12.1% 88%, rgba(44, 190, 225, 0.1) 88% 88.1%, transparent 88.1%),
+    linear-gradient(135deg, transparent 0 46%, rgba(44, 190, 225, 0.1) 46.05% 46.12%, transparent 46.18%);
+}
+
+body[data-theme='orbital'] .hud-bloom-a {
+  left: 58%;
+  top: -13%;
+  width: 310px;
+  opacity: 0.42;
+}
+
+body[data-theme='orbital'] .hud-bloom-b {
+  right: 13%;
+  bottom: 4%;
+  opacity: 0.38;
+}
+
+body[data-theme='orbital'] .mountain-lines {
+  height: 28%;
+  border-top-color: rgba(41, 171, 207, 0.1);
+  background:
+    linear-gradient(to top, rgba(0, 3, 10, 0.98), transparent),
+    repeating-linear-gradient(90deg, transparent 0 95px, rgba(34, 157, 194, 0.065) 96px 97px),
+    repeating-linear-gradient(0deg, transparent 0 42px, rgba(34, 157, 194, 0.055) 43px 44px);
+  opacity: 0.26;
+}
+
+body[data-theme='orbital'] .scanlines {
+  opacity: 0.045;
+}
+
+body[data-theme='orbital'] .lcars-masthead {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(90deg, rgba(41, 182, 218, 0.72) 0 16%, transparent 16% 18%, rgba(13, 91, 131, 0.52) 18% 36%, transparent 36%) bottom 5px left 76px / 54% 1px no-repeat,
+    linear-gradient(100deg, rgba(3, 24, 43, 0.96), rgba(0, 6, 16, 0.98) 42%, rgba(2, 19, 36, 0.96)) padding-box,
+    linear-gradient(100deg, #63dff4 0%, #0f668f 24%, #37bcd8 52%, #0b5078 78%, #50cae3 100%) border-box;
+  box-shadow:
+    0 0 0 2px rgba(24, 129, 169, 0.1),
+    0 0 20px rgba(22, 148, 189, 0.13),
+    inset 0 -5px 15px rgba(9, 78, 116, 0.11);
+}
+
+body[data-theme='orbital'] .lcars-cap {
+  background:
+    linear-gradient(135deg, transparent 0 20%, rgba(75, 211, 237, 0.92) 21% 27%, transparent 28%),
+    linear-gradient(180deg, #07304c, #020c1a);
+}
+
+body[data-theme='orbital'] .tower,
+body[data-theme='orbital'] .monitor-shell {
+  border: 1px solid transparent;
+  background:
+    repeating-linear-gradient(90deg, rgba(53, 190, 222, 0.28) 0 2px, transparent 2px 7px) bottom 6px left 36px / 128px 2px no-repeat,
+    linear-gradient(145deg, rgba(3, 24, 43, 0.91), rgba(0, 6, 16, 0.95) 34%, rgba(2, 17, 33, 0.92)) padding-box,
+    linear-gradient(145deg, #55cee6, #0b5a82 15%, #063852 28%, #29a9ca 51%, #0a486d 76%, #41bdd7) border-box;
+  box-shadow:
+    0 0 0 1px rgba(1, 8, 18, 0.96),
+    0 0 14px rgba(27, 159, 199, 0.1),
+    0 18px 44px rgba(0, 0, 0, 0.62),
+    inset 0 0 24px rgba(20, 112, 153, 0.04);
+  backdrop-filter: blur(2px);
+}
+
+body[data-theme='orbital'] .monitor-shell::after {
+  background:
+    linear-gradient(90deg, transparent 0 5%, #42c5df 5% 46%, transparent 46% 50%, #176b98 50% 78%, transparent 78%),
+    repeating-linear-gradient(135deg, #57cee4 0 4px, transparent 4px 8px);
+  opacity: 0.58;
+}
+
+body[data-theme='orbital'] .monitor-header {
+  border-color: rgba(51, 184, 214, 0.52);
+  background:
+    repeating-linear-gradient(135deg, #43bfd8 0 4px, transparent 4px 8px) top 3px right 78px / 94px 2px no-repeat,
+    linear-gradient(90deg, #43c2dc 0 22%, transparent 22% 25%, #155d82 25% 48%, transparent 48%) bottom 3px left 22px / 170px 1px no-repeat,
+    linear-gradient(90deg, rgba(7, 53, 80, 0.94), rgba(0, 10, 24, 0.98) 32%, rgba(1, 15, 30, 0.98) 72%, rgba(5, 39, 64, 0.95));
+  box-shadow:
+    inset 0 0 0 1px rgba(1, 8, 19, 0.88),
+    inset 4px 0 #31b9d5,
+    0 0 7px rgba(27, 155, 193, 0.12);
+}
+
+body[data-theme='orbital'] .monitor-header .brand,
+body[data-theme='orbital'] .monitor-header .channel {
+  border-color: rgba(52, 181, 210, 0.26);
+  background: linear-gradient(90deg, rgba(0, 5, 15, 0.99), rgba(1, 15, 29, 0.97) 70%, rgba(2, 29, 48, 0.92));
+  color: #d8f8fd;
+  box-shadow:
+    inset 2px 0 rgba(48, 188, 218, 0.62),
+    inset 0 0 7px rgba(28, 127, 169, 0.06),
+    0 1px 2px #000;
+}
+
+body[data-theme='orbital'] .monitor-header .channel {
+  color: #8bd9e7;
+  box-shadow: inset 0 -1px rgba(42, 163, 192, 0.42), 0 1px 2px #000;
+}
+
+body[data-theme='orbital'] .tower-head {
+  border-color: rgba(53, 187, 218, 0.5);
+  background:
+    linear-gradient(180deg, rgba(12, 78, 111, 0.84), rgba(1, 15, 31, 0.97) 55%, rgba(4, 39, 64, 0.88));
+  box-shadow: inset 4px 0 #33bad7, inset 0 0 0 1px rgba(0, 5, 14, 0.92);
+}
+
+body[data-theme='orbital'] .tower-block,
+body[data-theme='orbital'] .monitor-screen,
+body[data-theme='orbital'] .console,
+body[data-theme='orbital'] .status-console,
+body[data-theme='orbital'] .github-incident-block {
+  border-color: rgba(43, 166, 197, 0.32);
+  background:
+    linear-gradient(rgba(31, 142, 177, 0.027) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31, 142, 177, 0.027) 1px, transparent 1px),
+    linear-gradient(155deg, rgba(3, 24, 43, 0.74), rgba(0, 5, 15, 0.93) 48%, rgba(2, 17, 32, 0.83));
+  background-size: 24px 24px, 24px 24px, auto;
+  box-shadow: inset 0 0 0 1px rgba(76, 199, 225, 0.025), inset 0 0 18px rgba(13, 95, 133, 0.035);
+}
+
+body[data-theme='orbital'] .console::before,
+body[data-theme='orbital'] .status-console::before {
+  opacity: 0.62;
+  filter: hue-rotate(-8deg) saturate(0.88);
+}
+
+body[data-theme='orbital'] .bookmark,
+body[data-theme='orbital'] .tab-item,
+body[data-theme='orbital'] .status-item,
+body[data-theme='orbital'] .bookmark-match-item,
+body[data-theme='orbital'] .stack-picker-item,
+body[data-theme='orbital'] .stack-selected-item,
+body[data-theme='orbital'] .command-palette-item {
+  border-color: rgba(45, 177, 207, 0.42);
+  background:
+    repeating-linear-gradient(90deg, rgba(61, 191, 217, 0.36) 0 5px, transparent 5px 9px) top 5px right 12px / 44px 1px no-repeat,
+    linear-gradient(145deg, rgba(5, 45, 70, 0.72), rgba(0, 6, 17, 0.95) 48%, rgba(3, 27, 48, 0.78));
+  box-shadow:
+    inset 0 0 0 1px rgba(83, 202, 226, 0.035),
+    inset 0 -1px rgba(24, 104, 139, 0.13),
+    0 5px 14px rgba(0, 0, 0, 0.24);
+}
+
+body[data-theme='orbital'] .bookmark:hover,
+body[data-theme='orbital'] .tab-item:hover,
+body[data-theme='orbital'] .status-item.is-link:hover,
+body[data-theme='orbital'] .bookmark-match-item:hover,
+body[data-theme='orbital'] .stack-picker-item:hover,
+body[data-theme='orbital'] .command-palette-item.is-active {
+  border-color: #4cc6df;
+  background: linear-gradient(145deg, rgba(8, 65, 94, 0.84), rgba(0, 8, 21, 0.98) 62%);
+  box-shadow: inset 3px 0 #32b9d5, 0 0 12px rgba(38, 174, 207, 0.16);
+}
+
+body[data-theme='orbital'] .mini-btn,
+body[data-theme='orbital'] .btn,
+body[data-theme='orbital'] .status-item-action,
+body[data-theme='orbital'] .status-remove,
+body[data-theme='orbital'] .status-modal-close,
+body[data-theme='orbital'] .stack-remove-btn,
+body[data-theme='orbital'] .tab-close {
+  border-color: rgba(46, 178, 207, 0.5);
+  background: linear-gradient(180deg, rgba(8, 59, 87, 0.9), rgba(0, 13, 30, 0.97));
+  box-shadow: inset 2px 0 #2ba9c5, inset 0 0 0 1px rgba(71, 189, 216, 0.04);
+}
+
+body[data-theme='orbital'] .theme-select,
+body[data-theme='orbital'] .search,
+body[data-theme='orbital'] .status-input,
+body[data-theme='orbital'] .calc-input,
+body[data-theme='orbital'] .calc-output,
+body[data-theme='orbital'] .stack-name-input,
+body[data-theme='orbital'] .command-palette-search-wrap {
+  border-color: rgba(48, 180, 210, 0.5);
+  background: linear-gradient(90deg, rgba(2, 21, 39, 0.98), rgba(0, 5, 15, 0.99));
+  box-shadow: inset 2px 0 rgba(47, 184, 214, 0.7), 0 0 6px rgba(31, 145, 179, 0.06);
+}
+
+body[data-theme='orbital'] .hud-rail-bank,
+body[data-theme='orbital'] .hud-data-traces,
+body[data-theme='orbital'] .hud-edge-glyphs {
+  color: #31b9d5;
+  filter: drop-shadow(0 0 4px rgba(37, 169, 203, 0.32));
+  opacity: 0.42;
+}
+
+body[data-theme='orbital'] .hud-dial-bank {
+  opacity: 0.5;
+  filter: drop-shadow(0 0 4px rgba(37, 169, 203, 0.32));
+}
+
+body[data-theme='orbital'] .footer-note {
+  background: rgba(0, 4, 12, 0.9);
+  color: #86b7c3;
+  border-top-color: rgba(39, 153, 184, 0.22);
+}
+
+@media (max-width: 1030px) {
+  body[data-theme='orbital'] .hud-orbit-main {
+    left: 54%;
+    top: 62%;
+    width: min(94vw, 690px);
+    opacity: 0.52;
+  }
+
+  body[data-theme='orbital'] .scene::before {
+    width: min(92vw, 720px);
+    right: -38%;
+    bottom: -35%;
+    opacity: 0.42;
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-theme='orbital'] .scene::after {
+    inset: 2%;
+    opacity: 0.34;
+  }
+
+  body[data-theme='orbital'] .hud-orbit-main {
+    left: 50%;
+    top: 56%;
+    width: 150vw;
+    opacity: 0.24;
+  }
+
+  body[data-theme='orbital'] .scene::before {
+    right: -72%;
+    bottom: -12%;
+    width: 150vw;
+    opacity: 0.28;
+  }
+}
+
+/* Orbital Command v9: holographic schematic composition */
+body[data-theme='orbital'] {
+  background: #00040a;
+}
+
+body[data-theme='orbital'] .scene {
+  background:
+    linear-gradient(rgba(18, 137, 174, 0.026) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 137, 174, 0.026) 1px, transparent 1px),
+    radial-gradient(ellipse at 58% 46%, rgba(5, 74, 105, 0.21), transparent 57%),
+    linear-gradient(155deg, #000208, #010a14 56%, #00050b);
+  background-size: 42px 42px, 42px 42px, auto, auto;
+}
+
+body[data-theme='orbital'] .scene::before {
+  inset: 0;
+  width: auto;
+  aspect-ratio: auto;
+  border: 0;
+  border-radius: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 42%, rgba(0, 2, 7, 0.18) 65%, rgba(0, 1, 5, 0.76) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.38), transparent 16% 84%, rgba(0, 0, 0, 0.42));
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.78);
+  opacity: 1;
+}
+
+body[data-theme='orbital'] .scene::after {
+  inset: 6% 4% 9%;
+  border-color: rgba(42, 174, 207, 0.07);
+  background:
+    linear-gradient(90deg, transparent 0 9%, rgba(39, 164, 197, 0.09) 9% 9.08%, transparent 9.08% 72%, rgba(39, 164, 197, 0.07) 72% 72.08%, transparent 72.08%),
+    linear-gradient(0deg, transparent 0 16%, rgba(39, 164, 197, 0.07) 16% 16.08%, transparent 16.08% 88%, rgba(39, 164, 197, 0.06) 88% 88.08%, transparent 88.08%);
+  opacity: 0.58;
+}
+
+body[data-theme='orbital'] .stars {
+  opacity: 0.22;
+  filter: none;
+}
+
+body[data-theme='orbital'] .hud-panel-field {
+  inset: 4% 3% 24% 16%;
+  opacity: 0.2;
+  filter: drop-shadow(0 0 5px rgba(23, 167, 203, 0.24));
+}
+
+body[data-theme='orbital'] .hud-panel-field i {
+  position: absolute;
+  display: block;
+  border: 1px solid rgba(37, 181, 215, 0.78);
+  background:
+    linear-gradient(180deg, rgba(10, 93, 126, 0.48), rgba(2, 34, 54, 0.34)),
+    repeating-linear-gradient(0deg, transparent 0 7px, rgba(62, 192, 220, 0.055) 8px 9px);
+  box-shadow: inset 0 0 0 1px rgba(89, 212, 235, 0.08), inset 0 0 14px rgba(28, 155, 192, 0.1);
+  clip-path: polygon(0 7px, 7px 0, calc(72% - 5px) 0, 75% 4px, 100% 4px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 9px 100%, 0 calc(100% - 9px));
+}
+
+body[data-theme='orbital'] .hud-panel-field i::after {
+  content: '';
+  position: absolute;
+  left: 13%;
+  right: 21%;
+  top: 3px;
+  height: 2px;
+  background: linear-gradient(90deg, #36b8d6 0 35%, transparent 35% 41%, #176989 41% 76%, transparent 76%);
+  opacity: 0.72;
+}
+
+body[data-theme='orbital'] .hud-panel-field i:nth-child(1) { left: 0; top: 0; width: 12%; height: 13%; }
+body[data-theme='orbital'] .hud-panel-field i:nth-child(2) { left: 17%; top: 1%; width: 17%; height: 12%; }
+body[data-theme='orbital'] .hud-panel-field i:nth-child(3) { left: 41%; top: 0; width: 13%; height: 10%; }
+body[data-theme='orbital'] .hud-panel-field i:nth-child(4) { left: 58%; top: 0; width: 18%; height: 13%; }
+body[data-theme='orbital'] .hud-panel-field i:nth-child(5) { left: 81%; top: 1%; width: 10%; height: 16%; }
+body[data-theme='orbital'] .hud-panel-field i:nth-child(6) { left: 22%; top: 19%; width: 16%; height: 13%; }
+body[data-theme='orbital'] .hud-panel-field i:nth-child(7) { left: 43%; top: 18%; width: 18%; height: 11%; }
+body[data-theme='orbital'] .hud-panel-field i:nth-child(8) { left: 65%; top: 19%; width: 13%; height: 12%; }
+body[data-theme='orbital'] .hud-panel-field i:nth-child(9) { left: 82%; top: 22%; width: 15%; height: 10%; }
+body[data-theme='orbital'] .hud-panel-field i:nth-child(10) { left: 38%; top: 43%; width: 17%; height: 12%; }
+body[data-theme='orbital'] .hud-panel-field i:nth-child(11) { left: 59%; top: 43%; width: 16%; height: 11%; }
+body[data-theme='orbital'] .hud-panel-field i:nth-child(12) { left: 80%; top: 45%; width: 14%; height: 12%; }
+
+body[data-theme='orbital'] .hud-orbit-main {
+  left: 22%;
+  top: 57%;
+  width: min(34vw, 430px);
+  opacity: 0.88;
+  transform: translate(-50%, -50%) rotate(-5deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 0 12%, #000 12.5% 27%, transparent 27.5% 32%, #000 32.5% 76%, transparent 76.5%);
+  mask-image: radial-gradient(circle, transparent 0 12%, #000 12.5% 27%, transparent 27.5% 32%, #000 32.5% 76%, transparent 76.5%);
+}
+
+body[data-theme='orbital'] .hud-orbit-main::before,
+body[data-theme='orbital'] .hud-orbit-main::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+body[data-theme='orbital'] .hud-orbit-main::before {
+  inset: 20%;
+  border: 2px solid rgba(45, 193, 225, 0.62);
+  box-shadow: 0 0 0 8px rgba(42, 177, 211, 0.12), 0 0 0 15px rgba(42, 177, 211, 0.05);
+}
+
+body[data-theme='orbital'] .hud-orbit-main::after {
+  inset: 37%;
+  border: 2px solid rgba(56, 203, 232, 0.72);
+  box-shadow: 0 0 8px rgba(43, 188, 220, 0.32);
+}
+
+body[data-theme='orbital'] .hud-orbit-side,
+body[data-theme='orbital'] .hud-bloom-a,
+body[data-theme='orbital'] .hud-bloom-b {
+  opacity: 0.16;
+}
+
+body[data-theme='orbital'] .hud-rail-bank {
+  display: none;
+}
+
+body[data-theme='orbital'] .hud-data-traces {
+  left: 43%;
+  top: 57%;
+  width: 32%;
+  opacity: 0.23;
+}
+
+body[data-theme='orbital'] .hud-dial-bank {
+  left: 2%;
+  right: 2%;
+  bottom: 1.8%;
+  display: flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: clamp(8px, 1.7vw, 25px);
+  opacity: 0.38;
+  filter: drop-shadow(0 0 4px rgba(32, 173, 207, 0.3));
+}
+
+body[data-theme='orbital'] .hud-dial-bank i {
+  flex: 0 0 clamp(30px, 3.4vw, 50px);
+  border-color: rgba(46, 190, 220, 0.68);
+  background:
+    radial-gradient(circle, transparent 0 38%, rgba(48, 192, 222, 0.5) 39% 42%, transparent 43% 55%, rgba(48, 192, 222, 0.26) 56% 59%, transparent 60%),
+    repeating-conic-gradient(from 2deg, rgba(63, 204, 231, 0.58) 0 2deg, transparent 2deg 13deg);
+}
+
+body[data-theme='orbital'] .hud-dial-bank i:nth-child(2),
+body[data-theme='orbital'] .hud-dial-bank i:nth-child(3) {
+  transform: none;
+}
+
+body[data-theme='orbital'] .hud-dial-bank i:nth-child(3n) { transform: scale(0.78); opacity: 0.72; }
+body[data-theme='orbital'] .hud-dial-bank i:nth-child(4n) { transform: scale(1.12) rotate(8deg); }
+
+body[data-theme='orbital'] .mountain-lines {
+  display: none;
+}
+
+body[data-theme='orbital'] .lcars-masthead {
+  min-height: 54px;
+  border-color: rgba(41, 174, 205, 0.46);
+  background:
+    linear-gradient(90deg, rgba(20, 136, 168, 0.5), transparent 17% 83%, rgba(13, 91, 125, 0.36)) bottom 4px / 100% 1px no-repeat,
+    linear-gradient(100deg, rgba(4, 34, 52, 0.84), rgba(0, 7, 17, 0.94) 42%, rgba(3, 26, 44, 0.85));
+  box-shadow: inset 0 0 18px rgba(20, 118, 151, 0.05), 0 0 10px rgba(23, 137, 170, 0.08);
+}
+
+body[data-theme='orbital'] .tower {
+  padding: 5px;
+  border-color: transparent;
+  background: rgba(0, 5, 13, 0.38);
+  box-shadow: none;
+  clip-path: none;
+  backdrop-filter: none;
+}
+
+body[data-theme='orbital'] .tower::before,
+body[data-theme='orbital'] .tower::after {
+  opacity: 0.34;
+}
+
+body[data-theme='orbital'] .tower-head,
+body[data-theme='orbital'] .tower-block {
+  border: 1px solid rgba(43, 174, 205, 0.44);
+  background:
+    linear-gradient(180deg, rgba(8, 69, 93, 0.56), rgba(1, 18, 31, 0.78)),
+    rgba(1, 13, 24, 0.84);
+  box-shadow: inset 0 0 12px rgba(31, 143, 175, 0.06), 0 0 7px rgba(21, 132, 163, 0.05);
+}
+
+body[data-theme='orbital'] .tower-block:nth-of-type(2n) {
+  clip-path: polygon(0 7px, 7px 0, 72% 0, calc(72% + 5px) 5px, 100% 5px, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .monitor-shell {
+  padding: 7px;
+  border: 1px solid rgba(40, 166, 198, 0.42);
+  background: rgba(0, 6, 15, 0.42);
+  box-shadow: inset 0 0 22px rgba(17, 104, 139, 0.04), 0 10px 28px rgba(0, 0, 0, 0.34);
+  backdrop-filter: none;
+}
+
+body[data-theme='orbital'] .monitor-shell::before {
+  inset: 2px;
+  border-color: rgba(43, 175, 207, 0.14);
+}
+
+body[data-theme='orbital'] .monitor-shell::after {
+  top: 1px;
+  right: 7%;
+  width: 112px;
+  height: 4px;
+  background: linear-gradient(90deg, #259fbe 0 52%, transparent 52% 58%, #0f5c7c 58% 82%, transparent 82%);
+  opacity: 0.58;
+}
+
+body[data-theme='orbital'] .monitor-header {
+  border-color: rgba(40, 169, 200, 0.42);
+  background:
+    linear-gradient(90deg, rgba(7, 67, 91, 0.62), rgba(0, 11, 23, 0.88) 33%, rgba(1, 23, 38, 0.76));
+  box-shadow: inset 2px 0 rgba(44, 180, 210, 0.58), inset 0 0 8px rgba(31, 130, 163, 0.05);
+}
+
+body[data-theme='orbital'] .monitor-header::before {
+  border-color: rgba(54, 182, 210, 0.1);
+  background: none;
+}
+
+body[data-theme='orbital'] .monitor-header::after {
+  background: linear-gradient(90deg, #279fbc 0 45%, transparent 45% 54%, #125a79 54% 78%, transparent 78%);
+  box-shadow: none;
+}
+
+body[data-theme='orbital'] .monitor-header .brand,
+body[data-theme='orbital'] .monitor-header .channel,
+body[data-theme='orbital'] .monitor-header .leds {
+  border-color: rgba(42, 164, 193, 0.22);
+  background: rgba(0, 8, 18, 0.88);
+  box-shadow: inset 1px 0 rgba(44, 177, 207, 0.42);
+}
+
+body[data-theme='orbital'] .monitor-screen {
+  border-color: rgba(41, 169, 200, 0.34);
+  background:
+    linear-gradient(rgba(27, 138, 171, 0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 138, 171, 0.022) 1px, transparent 1px),
+    rgba(0, 7, 17, 0.7);
+  background-size: 22px 22px, 22px 22px, auto;
+  box-shadow: inset 0 0 16px rgba(19, 112, 145, 0.035);
+}
+
+body[data-theme='orbital'] .console,
+body[data-theme='orbital'] .status-console {
+  border-color: rgba(39, 160, 190, 0.24);
+  background: rgba(0, 7, 17, 0.58);
+  box-shadow: none;
+}
+
+body[data-theme='orbital'] .bookmark,
+body[data-theme='orbital'] .tab-item,
+body[data-theme='orbital'] .status-item,
+body[data-theme='orbital'] .bookmark-match-item,
+body[data-theme='orbital'] .stack-picker-item,
+body[data-theme='orbital'] .stack-selected-item,
+body[data-theme='orbital'] .command-palette-item {
+  border: 1px solid rgba(40, 174, 205, 0.52);
+  background:
+    linear-gradient(180deg, rgba(8, 76, 101, 0.46), rgba(2, 30, 48, 0.48)),
+    rgba(1, 14, 26, 0.86);
+  box-shadow: inset 0 0 12px rgba(33, 157, 189, 0.055), 0 0 6px rgba(24, 139, 171, 0.045);
+}
+
+body[data-theme='orbital'] .bookmark:nth-child(3n + 1),
+body[data-theme='orbital'] .tab-item:nth-child(3n + 1),
+body[data-theme='orbital'] .status-item:nth-child(3n + 1) {
+  clip-path: polygon(0 7px, 7px 0, 73% 0, calc(73% + 6px) 5px, 100% 5px, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .bookmark:nth-child(3n + 2),
+body[data-theme='orbital'] .tab-item:nth-child(3n + 2),
+body[data-theme='orbital'] .status-item:nth-child(3n + 2) {
+  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% 74%, calc(100% - 6px) 80%, calc(100% - 6px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+}
+
+body[data-theme='orbital'] .bookmark:nth-child(3n),
+body[data-theme='orbital'] .tab-item:nth-child(3n),
+body[data-theme='orbital'] .status-item:nth-child(3n) {
+  clip-path: polygon(0 5px, 5px 0, calc(100% - 18px) 0, calc(100% - 12px) 6px, 100% 6px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+body[data-theme='orbital'] .bookmark::after,
+body[data-theme='orbital'] .tab-item::after,
+body[data-theme='orbital'] .status-item::after {
+  background: #32b8d4;
+  box-shadow: -8px 0 #1a7698, -16px 0 #104a68, 0 0 4px rgba(49, 185, 213, 0.45);
+}
+
+body[data-theme='orbital'] .mini-btn,
+body[data-theme='orbital'] .btn,
+body[data-theme='orbital'] .status-item-action,
+body[data-theme='orbital'] .status-remove,
+body[data-theme='orbital'] .status-modal-close,
+body[data-theme='orbital'] .stack-remove-btn,
+body[data-theme='orbital'] .tab-close {
+  border: 1px solid rgba(44, 173, 202, 0.42);
+  background: rgba(2, 30, 47, 0.78);
+  box-shadow: inset 1px 0 rgba(51, 183, 210, 0.52);
+}
+
+body[data-theme='orbital'] .footer-note {
+  border: 0;
+  background: rgba(0, 3, 9, 0.66);
+}
+
+@media (max-width: 1030px) {
+  body[data-theme='orbital'] .hud-panel-field {
+    inset: 7% 2% 26%;
+    opacity: 0.09;
+  }
+
+  body[data-theme='orbital'] .hud-orbit-main {
+    left: 28%;
+    top: 52%;
+    width: min(62vw, 420px);
+    opacity: 0.34;
+  }
+
+  body[data-theme='orbital'] .hud-dial-bank {
+    opacity: 0.2;
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-theme='orbital'] .hud-panel-field {
+    opacity: 0.055;
+  }
+
+  body[data-theme='orbital'] .hud-orbit-main {
+    left: 18%;
+    top: 47%;
+    width: 120vw;
+    opacity: 0.16;
+  }
+
+  body[data-theme='orbital'] .hud-dial-bank {
+    gap: 7px;
+    opacity: 0.12;
+  }
+
+  body[data-theme='orbital'] .hud-dial-bank i {
+    flex-basis: 28px;
+  }
+}
+
+/* Orbital Command v10: free-floating hologram layout */
+body[data-theme='orbital'] .rig {
+  gap: 13px 20px;
+}
+
+body[data-theme='orbital'] .lcars-masthead {
+  width: 100%;
+  justify-self: stretch;
+  grid-template-columns: 42px minmax(0, 1fr) 116px;
+  min-height: 52px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  clip-path: none;
+}
+
+body[data-theme='orbital'] .lcars-cap {
+  border: 1px solid rgba(43, 178, 209, 0.5);
+  background:
+    linear-gradient(135deg, transparent 0 30%, rgba(49, 192, 220, 0.9) 31% 39%, transparent 40%),
+    rgba(2, 35, 53, 0.72);
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+  box-shadow: inset 0 0 10px rgba(36, 166, 199, 0.08);
+}
+
+body[data-theme='orbital'] .lcars-title {
+  margin-left: 7px;
+  border: 1px solid rgba(43, 178, 209, 0.48);
+  background:
+    linear-gradient(180deg, rgba(6, 68, 91, 0.48), rgba(1, 20, 34, 0.7)),
+    rgba(0, 8, 18, 0.82);
+  clip-path: polygon(0 8px, 8px 0, 72% 0, calc(72% + 6px) 5px, 100% 5px, 100% 100%, 0 100%);
+  box-shadow: inset 0 0 12px rgba(37, 160, 192, 0.055), 0 0 8px rgba(28, 144, 176, 0.05);
+}
+
+body[data-theme='orbital'] .lcars-title::after {
+  right: 12px;
+  top: 4px;
+  width: 82px;
+  height: 2px;
+  background: linear-gradient(90deg, #31abc7 0 55%, transparent 55% 63%, #145d7b 63% 83%, transparent 83%);
+  filter: none;
+  opacity: 0.78;
+}
+
+body[data-theme='orbital'] .lcars-stardate {
+  margin-left: 8px;
+  min-width: 0;
+  border: 1px solid rgba(42, 170, 201, 0.42);
+  background: rgba(2, 28, 43, 0.74);
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+  box-shadow: inset 0 0 10px rgba(31, 142, 173, 0.05);
+}
+
+body[data-theme='orbital'] .tower {
+  gap: 10px;
+  padding: 0;
+  background: transparent;
+}
+
+body[data-theme='orbital'] .tower::before,
+body[data-theme='orbital'] .tower::after {
+  display: none;
+}
+
+body[data-theme='orbital'] .tower-head,
+body[data-theme='orbital'] .tower-block {
+  margin: 0;
+  border-color: rgba(40, 169, 199, 0.48);
+  background:
+    linear-gradient(180deg, rgba(7, 74, 99, 0.58), rgba(2, 30, 47, 0.56)),
+    rgba(0, 10, 21, 0.86);
+  box-shadow: inset 0 0 13px rgba(35, 157, 187, 0.06), 0 0 7px rgba(22, 133, 163, 0.05);
+}
+
+body[data-theme='orbital'] .tower-head {
+  min-height: 52px;
+  padding: 9px 12px;
+  clip-path: polygon(0 8px, 8px 0, 76% 0, calc(76% + 6px) 5px, 100% 5px, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .monitor-stack {
+  gap: 22px;
+  padding-right: 3px;
+}
+
+body[data-theme='orbital'] .monitor-shell {
+  padding: 0;
+  border: 0;
+  background:
+    linear-gradient(145deg, rgba(3, 26, 48, 0.94), rgba(0, 6, 16, 0.98) 42%, rgba(3, 24, 44, 0.95));
+  box-shadow:
+    inset 0 0 0 1px rgba(43, 174, 205, 0.2),
+    inset 0 0 28px rgba(16, 103, 141, 0.08),
+    0 12px 30px rgba(0, 0, 0, 0.42);
+  clip-path: none;
+}
+
+body[data-theme='orbital'] .monitor-shell::before {
+  display: none;
+}
+
+body[data-theme='orbital'] .monitor-shell::after {
+  top: 17px;
+  right: 6px;
+  left: 6px;
+  width: auto;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(42, 169, 200, 0.64), rgba(42, 169, 200, 0.12) 32%, transparent 48% 72%, rgba(42, 169, 200, 0.34));
+  opacity: 0.74;
+}
+
+body[data-theme='orbital'] .monitor-header {
+  height: 35px;
+  min-height: 35px;
+  padding: 1px 4px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  clip-path: none;
+  overflow: visible;
+}
+
+body[data-theme='orbital'] .monitor-header::before {
+  left: 0;
+  right: 0;
+  top: 17px;
+  height: 1px;
+  border: 0;
+  background: linear-gradient(90deg, rgba(43, 175, 206, 0.58), rgba(43, 175, 206, 0.1) 30%, transparent 48% 70%, rgba(43, 175, 206, 0.32));
+  box-shadow: none;
+  clip-path: none;
+}
+
+body[data-theme='orbital'] .monitor-header::after {
+  right: 13%;
+  bottom: auto;
+  top: 13px;
+  width: 78px;
+  height: 3px;
+  background: repeating-linear-gradient(135deg, rgba(47, 183, 212, 0.68) 0 4px, transparent 4px 8px);
+  opacity: 0.48;
+}
+
+body[data-theme='orbital'] .monitor-header .brand,
+body[data-theme='orbital'] .monitor-header .channel,
+body[data-theme='orbital'] .monitor-header .leds {
+  border: 1px solid rgba(39, 164, 193, 0.44);
+  background:
+    linear-gradient(180deg, rgba(6, 66, 88, 0.5), rgba(1, 20, 33, 0.76)),
+    rgba(0, 8, 17, 0.92);
+  box-shadow: inset 0 0 8px rgba(34, 153, 183, 0.055), 0 0 5px rgba(24, 128, 157, 0.045);
+}
+
+body[data-theme='orbital'] .monitor-header .brand {
+  clip-path: polygon(0 5px, 5px 0, 72% 0, calc(72% + 5px) 4px, 100% 4px, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .monitor-header .channel {
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%, 0 6px);
+}
+
+body[data-theme='orbital'] .monitor-header .leds {
+  clip-path: polygon(5px 0, 100% 0, 100% 100%, 0 100%, 0 5px);
+}
+
+body[data-theme='orbital'] .monitor-header .leds span {
+  background: #36bad5;
+  box-shadow: 0 0 4px rgba(49, 185, 212, 0.45);
+}
+
+body[data-theme='orbital'] .monitor-header .leds span:nth-child(2) {
+  background: #1f829f;
+}
+
+body[data-theme='orbital'] .monitor-header .leds span:nth-child(3) {
+  background: #15526e;
+}
+
+body[data-theme='orbital'] .monitor-screen {
+  padding: 7px 0 0;
+  border: 0;
+  background:
+    linear-gradient(rgba(43, 174, 205, 0.024) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43, 174, 205, 0.024) 1px, transparent 1px),
+    linear-gradient(155deg, rgba(3, 25, 48, 0.94), rgba(0, 6, 16, 0.985) 44%, rgba(3, 22, 42, 0.96));
+  background-size: 24px 24px, 24px 24px, auto;
+  box-shadow:
+    inset 0 0 0 1px rgba(43, 174, 205, 0.14),
+    inset 0 0 34px rgba(17, 108, 148, 0.07);
+  clip-path: none;
+}
+
+body[data-theme='orbital'] .console,
+body[data-theme='orbital'] .status-console {
+  padding: 10px 14px 12px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  clip-path: none;
+}
+
+body[data-theme='orbital'] .console::before,
+body[data-theme='orbital'] .status-console::before {
+  display: none;
+}
+
+body[data-theme='orbital'] .input-row,
+body[data-theme='orbital'] .status-actions,
+body[data-theme='orbital'] .tabs-actions,
+body[data-theme='orbital'] .devcalc-block {
+  position: relative;
+  z-index: 2;
+}
+
+body[data-theme='orbital'] .input-row::after,
+body[data-theme='orbital'] .status-actions::after,
+body[data-theme='orbital'] .tabs-actions::after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: -7px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(45, 181, 210, 0.58), rgba(45, 181, 210, 0.08) 62%, transparent);
+  pointer-events: none;
+}
+
+body[data-theme='orbital'] .bookmark-filter-row {
+  margin-top: 10px;
+  border: 0;
+  background: transparent;
+}
+
+body[data-theme='orbital'] .channel-strip {
+  border: 0;
+  background: none;
+}
+
+body[data-theme='orbital'] .rack,
+body[data-theme='orbital'] .tabs-list,
+body[data-theme='orbital'] .status-list {
+  position: relative;
+  z-index: 2;
+}
+
+body[data-theme='orbital'] .bookmark,
+body[data-theme='orbital'] .tab-item,
+body[data-theme='orbital'] .status-item,
+body[data-theme='orbital'] .bookmark-match-item,
+body[data-theme='orbital'] .stack-picker-item,
+body[data-theme='orbital'] .stack-selected-item,
+body[data-theme='orbital'] .command-palette-item {
+  border-color: rgba(40, 177, 208, 0.58);
+  background:
+    linear-gradient(180deg, rgba(7, 81, 107, 0.64), rgba(2, 40, 59, 0.58)),
+    rgba(0, 12, 23, 0.86);
+  box-shadow: inset 0 0 14px rgba(37, 166, 197, 0.075), 0 0 7px rgba(24, 140, 171, 0.055);
+}
+
+body[data-theme='orbital'] .bookmark::before {
+  width: 42px;
+  height: 4px;
+  background: linear-gradient(90deg, #37b6d1 0 48%, transparent 48% 57%, #176d8d 57% 79%, transparent 79%);
+  filter: none;
+}
+
+body[data-theme='orbital'] .bookmark:hover,
+body[data-theme='orbital'] .tab-item:hover,
+body[data-theme='orbital'] .status-item.is-link:hover,
+body[data-theme='orbital'] .bookmark-match-item:hover,
+body[data-theme='orbital'] .stack-picker-item:hover,
+body[data-theme='orbital'] .command-palette-item.is-active {
+  border-color: #42bfd9;
+  background: linear-gradient(180deg, rgba(10, 101, 130, 0.72), rgba(2, 43, 64, 0.68));
+  box-shadow: inset 2px 0 #31abc7, 0 0 10px rgba(37, 170, 200, 0.13);
+}
+
+body[data-theme='orbital'] .search,
+body[data-theme='orbital'] .theme-select,
+body[data-theme='orbital'] .calc-input,
+body[data-theme='orbital'] .calc-output,
+body[data-theme='orbital'] .status-input,
+body[data-theme='orbital'] .stack-name-input,
+body[data-theme='orbital'] .command-palette-search-wrap {
+  background:
+    linear-gradient(180deg, rgba(7, 72, 96, 0.42), rgba(1, 20, 33, 0.68)),
+    rgba(0, 8, 18, 0.94);
+}
+
+body[data-theme='orbital'] .mini-btn,
+body[data-theme='orbital'] .btn,
+body[data-theme='orbital'] .status-item-action,
+body[data-theme='orbital'] .status-remove,
+body[data-theme='orbital'] .status-modal-close,
+body[data-theme='orbital'] .stack-remove-btn,
+body[data-theme='orbital'] .tab-close {
+  background:
+    linear-gradient(180deg, rgba(8, 78, 104, 0.52), rgba(2, 29, 45, 0.76)),
+    rgba(0, 10, 20, 0.9);
+}
+
+body[data-theme='orbital'] .hud-panel-field {
+  opacity: 0.27;
+}
+
+body[data-theme='orbital'] .hud-orbit-main {
+  left: 31%;
+  top: 58%;
+  width: min(29vw, 360px);
+  opacity: 0.94;
+}
+
+body[data-theme='orbital'] .hud-dial-bank {
+  opacity: 0.52;
+}
+
+@media (max-width: 1030px) {
+  body[data-theme='orbital'] .lcars-masthead {
+    width: min(760px, 100%);
+  }
+
+  body[data-theme='orbital'] .hud-orbit-main {
+    left: 20%;
+    width: min(52vw, 350px);
+    opacity: 0.29;
+  }
+
+  body[data-theme='orbital'] .hud-panel-field {
+    opacity: 0.1;
+  }
+
+  body[data-theme='orbital'] .hud-dial-bank {
+    opacity: 0.22;
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-theme='orbital'] .lcars-masthead {
+    width: 100%;
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  body[data-theme='orbital'] .tower {
+    gap: 8px;
+  }
+
+  body[data-theme='orbital'] .monitor-header {
+    padding-inline: 0;
+  }
+
+  body[data-theme='orbital'] .monitor-screen {
+    padding-top: 5px;
+  }
+
+  body[data-theme='orbital'] .console,
+  body[data-theme='orbital'] .status-console {
+    padding-inline: 5px;
+  }
+
+  body[data-theme='orbital'] .hud-orbit-main {
+    left: 10%;
+    width: 100vw;
+    opacity: 0.12;
+  }
+
+  body[data-theme='orbital'] .hud-dial-bank {
+    opacity: 0.1;
+  }
+}
+
+/* Keep the Net Ops controls readable inside unusually narrow sidebars. */
+.status-sidebar-block {
+  container-type: inline-size;
+}
+
+.sidebar-status-actions {
+  grid-template-columns: minmax(0, 1.35fr) repeat(2, minmax(0, 1fr));
+}
+
+.sidebar-status-actions .mini-btn {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding-inline: 4px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+@container (max-width: 185px) {
+  .sidebar-status-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sidebar-status-actions #refreshStatusBtn {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Off-canvas systems drawer for layouts where the sidebar would stack. */
+.sidebar-drawer-toggle,
+.sidebar-drawer-close,
+.sidebar-drawer-backdrop {
+  display: none;
+}
+
+@media (max-width: 1030px) {
+  .rig > .lcars-masthead {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .rig > .monitor-stack {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .sidebar-drawer-toggle {
+    position: fixed;
+    left: 12px;
+    bottom: 12px;
+    z-index: 74;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 36px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 7px 11px;
+    background: var(--panel-2);
+    color: var(--text);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.52), inset 3px 0 var(--cyan);
+    font: 700 0.64rem/1 "Arial Narrow", "Segoe UI", sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .sidebar-drawer-toggle > span {
+    color: var(--cyan);
+    font-size: 0.9rem;
+  }
+
+  .sidebar-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 78;
+    display: block;
+    background: rgba(0, 3, 10, 0.72);
+    backdrop-filter: blur(2px);
+  }
+
+  .sidebar-drawer-backdrop[hidden] {
+    display: none;
+  }
+
+  body .rig > .tower {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 82;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-sizing: border-box;
+    width: min(360px, calc(100vw - 44px));
+    max-width: none;
+    height: 100dvh;
+    min-height: 0;
+    border: 1px solid var(--line);
+    border-left: 0;
+    border-radius: 0 8px 8px 0;
+    padding: 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: var(--panel);
+    box-shadow: 22px 0 70px rgba(0, 0, 0, 0.72), inset -1px 0 rgba(80, 242, 255, 0.12);
+    clip-path: none;
+    transform: translateX(calc(-100% - 24px));
+    transition: transform 220ms ease;
+    pointer-events: none;
+    scrollbar-gutter: stable;
+  }
+
+  body.sidebar-drawer-open .rig > .tower {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  body.sidebar-drawer-open {
+    overflow: hidden;
+  }
+
+  body.sidebar-drawer-open .sidebar-drawer-toggle {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .sidebar-drawer-close {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    align-self: flex-end;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    margin: 0 0 -44px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: var(--panel-2);
+    color: var(--cyan);
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.42);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  body[data-theme='orbital'] .sidebar-drawer-toggle,
+  body[data-theme='orbital'] .sidebar-drawer-close {
+    border-color: rgba(45, 181, 210, 0.58);
+    background:
+      linear-gradient(180deg, rgba(7, 76, 101, 0.62), rgba(1, 22, 36, 0.9)),
+      #000a14;
+    clip-path: polygon(0 6px, 6px 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 0 100%);
+  }
+
+  body[data-theme='orbital'] .sidebar-drawer-backdrop {
+    background: rgba(0, 3, 9, 0.78);
+  }
+
+  body[data-theme='orbital'] .rig > .tower {
+    border-color: rgba(43, 174, 205, 0.52);
+    background:
+      linear-gradient(rgba(28, 142, 175, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28, 142, 175, 0.025) 1px, transparent 1px),
+      rgba(0, 7, 16, 0.97);
+    background-size: 28px 28px, 28px 28px, auto;
+    box-shadow: 22px 0 70px rgba(0, 0, 0, 0.82), inset -1px 0 rgba(45, 181, 210, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body .rig > .tower {
+    transition: none;
+  }
+}
+
+/* Morphing orbital anomaly: an organic spiky energy ball with no radar geometry. */
+.orbital-activity-orb {
+  display: none;
+}
+
+body[data-theme='orbital'] .orbital-activity-orb {
+  --orbital-spike-shape: polygon(49% 3%, 54% 17%, 65% 8%, 66% 24%, 85% 18%, 73% 36%, 96% 39%, 74% 49%, 92% 61%, 70% 62%, 83% 82%, 63% 72%, 58% 96%, 48% 76%, 35% 91%, 36% 70%, 14% 80%, 27% 60%, 3% 55%, 26% 46%, 8% 31%, 31% 34%, 25% 10%, 43% 28%);
+  position: absolute;
+  top: 50%;
+  left: 11px;
+  display: block;
+  width: 76px;
+  aspect-ratio: 1;
+  overflow: visible;
+  transform: translateY(-50%);
+  filter: drop-shadow(0 0 9px rgba(89, 232, 255, 0.32));
+}
+
+body[data-theme='orbital'] .orbital-spike-aura,
+body[data-theme='orbital'] .orbital-spike-shell,
+body[data-theme='orbital'] .orbital-spike-body,
+body[data-theme='orbital'] .orbital-spike-core,
+body[data-theme='orbital'] .orbital-spike-particle {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+body[data-theme='orbital'] .orbital-spike-aura {
+  inset: 4px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(89, 232, 255, 0.22), rgba(79, 159, 255, 0.1) 43%, transparent 72%);
+  filter: blur(4px);
+  animation: orbital-spike-aura-pulse 2.8s ease-in-out infinite;
+}
+
+body[data-theme='orbital'] .orbital-spike-shell {
+  inset: 4px;
+  z-index: 2;
+  animation: orbital-spike-tumble 12s linear infinite;
+}
+
+body[data-theme='orbital'] .orbital-spike-shell::before,
+body[data-theme='orbital'] .orbital-spike-shell::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  clip-path: var(--orbital-spike-shape);
+  transition: clip-path 700ms cubic-bezier(0.45, 0.05, 0.22, 1);
+}
+
+body[data-theme='orbital'] .orbital-spike-shell::before {
+  background: rgba(89, 232, 255, 0.28);
+  filter: blur(3px);
+  transform: scale(1.08);
+}
+
+body[data-theme='orbital'] .orbital-spike-shell::after {
+  background:
+    radial-gradient(ellipse at 31% 28%, rgba(222, 253, 255, 0.54) 0 7%, transparent 19%),
+    radial-gradient(ellipse at 69% 64%, rgba(255, 65, 100, 0.3) 0 10%, transparent 26%),
+    linear-gradient(145deg, rgba(92, 231, 255, 0.5), rgba(24, 102, 164, 0.34) 48%, rgba(126, 98, 255, 0.27));
+  opacity: 0.7;
+  transform: scale(0.91) rotate(7deg);
+}
+
+body[data-theme='orbital'] .orbital-spike-body {
+  inset: 2px;
+  z-index: 3;
+  clip-path: var(--orbital-spike-shape);
+  background:
+    radial-gradient(ellipse at 35% 29%, rgba(226, 253, 255, 0.92) 0 4%, rgba(93, 228, 249, 0.58) 5% 15%, transparent 29%),
+    radial-gradient(ellipse at 62% 59%, rgba(255, 65, 100, 0.36) 0 8%, transparent 26%),
+    radial-gradient(ellipse at 49% 51%, #1583a8 0 16%, #064569 36%, #061b3a 61%, #020817 78%),
+    linear-gradient(137deg, #59e8ff, #4f9fff 37%, #512f7c 68%, #ff4164);
+  box-shadow:
+    inset 0 0 10px rgba(218, 252, 255, 0.3),
+    inset 0 -10px 18px rgba(1, 6, 24, 0.78);
+  transition: clip-path 700ms cubic-bezier(0.45, 0.05, 0.22, 1);
+  animation: orbital-spike-surface 3.6s ease-in-out infinite;
+}
+
+body[data-theme='orbital'] .orbital-spike-core {
+  top: 49%;
+  left: 52%;
+  z-index: 5;
+  width: 18px;
+  height: 14px;
+  border-radius: 61% 39% 67% 33% / 42% 59% 41% 58%;
+  background: radial-gradient(ellipse at 38% 34%, #f4feff 0 8%, #72edff 11% 32%, #137da3 46%, rgba(3, 28, 51, 0.92) 76%);
+  box-shadow:
+    0 0 7px #59e8ff,
+    0 0 17px rgba(89, 232, 255, 0.78),
+    -4px 2px 11px rgba(255, 65, 100, 0.32);
+  transform: translate(-50%, -50%);
+  animation: orbital-spike-core-pulse 1.55s ease-in-out infinite;
+}
+
+body[data-theme='orbital'] .orbital-spike-particle {
+  z-index: 6;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #c8faff;
+  box-shadow: 0 0 4px #59e8ff, 0 0 8px rgba(89, 232, 255, 0.74);
+}
+
+body[data-theme='orbital'] .orbital-spike-particle-a {
+  top: 12px;
+  right: 5px;
+  animation: orbital-spike-particle-a 2.4s ease-in-out infinite;
+}
+
+body[data-theme='orbital'] .orbital-spike-particle-b {
+  bottom: 9px;
+  left: 8px;
+  background: #ff758f;
+  box-shadow: 0 0 4px #ff4164, 0 0 8px rgba(255, 65, 100, 0.66);
+  animation: orbital-spike-particle-b 3.1s ease-in-out infinite;
+}
+
+body[data-theme='orbital'] .orbital-spike-particle-c {
+  top: 37px;
+  right: 0;
+  width: 2px;
+  height: 2px;
+  background: #7eaaff;
+  animation: orbital-spike-particle-c 1.9s ease-in-out infinite;
+}
+
+@keyframes orbital-spike-tumble {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes orbital-spike-aura-pulse {
+  0%, 100% {
+    opacity: 0.42;
+    transform: scale(0.88);
+  }
+
+  50% {
+    opacity: 0.92;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes orbital-spike-surface {
+  0%, 100% {
+    filter: brightness(0.86) saturate(1.08);
+  }
+
+  50% {
+    filter: brightness(1.22) saturate(1.32);
+  }
+}
+
+@keyframes orbital-spike-core-pulse {
+  0%, 100% {
+    border-radius: 61% 39% 67% 33% / 42% 59% 41% 58%;
+    transform: translate(-50%, -50%) rotate(-11deg) scale(0.78, 0.9);
+  }
+
+  45% {
+    border-radius: 35% 65% 41% 59% / 63% 34% 66% 37%;
+    transform: translate(-50%, -50%) rotate(13deg) scale(1.18, 1.02);
+  }
+}
+
+@keyframes orbital-spike-particle-a {
+  0%, 100% { opacity: 0.16; transform: translate(-2px, 7px) scale(0.6); }
+  42% { opacity: 1; transform: translate(4px, -6px) scale(1.3); }
+}
+
+@keyframes orbital-spike-particle-b {
+  0%, 100% { opacity: 0.2; transform: translate(7px, -3px) scale(0.7); }
+  55% { opacity: 0.9; transform: translate(-4px, 5px) scale(1.2); }
+}
+
+@keyframes orbital-spike-particle-c {
+  0%, 100% { opacity: 0.12; transform: translate(-7px, 0); }
+  50% { opacity: 0.92; transform: translate(3px, -4px); }
+}
+
+@media (max-width: 700px) {
+  body[data-theme='orbital'] .orbital-activity-orb {
+    width: 68px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme='orbital'] .orbital-spike-aura,
+  body[data-theme='orbital'] .orbital-spike-shell,
+  body[data-theme='orbital'] .orbital-spike-body,
+  body[data-theme='orbital'] .orbital-spike-core,
+  body[data-theme='orbital'] .orbital-spike-particle {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Orbital activity core: decorative motion separate from the digital clock. */
+.orbital-activity-dial {
+  display: none;
+}
+
+body[data-theme='orbital'] .orbital-activity-dial {
+  position: absolute;
+  top: 50%;
+  left: 11px;
+  display: block;
+  width: 76px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid rgba(158, 240, 255, 0.74);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(86, 226, 255, 0.2) 0 4%, transparent 5% 23%, rgba(25, 138, 182, 0.12) 24% 25%, transparent 26%),
+    radial-gradient(circle, rgba(5, 51, 80, 0.5), rgba(0, 7, 19, 0.98) 72%);
+  box-shadow:
+    0 0 0 4px rgba(1, 8, 22, 0.94),
+    0 0 0 6px rgba(57, 170, 213, 0.22),
+    0 0 16px rgba(89, 232, 255, 0.4),
+    inset 0 0 20px rgba(59, 193, 225, 0.16);
+  transform: translateY(-50%);
+}
+
+body[data-theme='orbital'] .orbital-activity-field,
+body[data-theme='orbital'] .orbital-activity-ring,
+body[data-theme='orbital'] .orbital-activity-scan,
+body[data-theme='orbital'] .orbital-activity-orbit,
+body[data-theme='orbital'] .orbital-activity-core {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+body[data-theme='orbital'] .orbital-activity-field {
+  inset: 5px;
+  border-radius: 50%;
+  background:
+    linear-gradient(transparent calc(50% - 0.5px), rgba(89, 232, 255, 0.1) 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(90deg, transparent calc(50% - 0.5px), rgba(89, 232, 255, 0.1) 50%, transparent calc(50% + 0.5px)),
+    repeating-conic-gradient(from 3deg, rgba(89, 232, 255, 0.07) 0 1deg, transparent 1deg 12deg);
+  box-shadow: inset 0 0 12px rgba(58, 196, 227, 0.1);
+  animation: orbital-activity-breathe 3.4s ease-in-out infinite;
+}
+
+body[data-theme='orbital'] .orbital-activity-ring {
+  border-radius: 50%;
+  filter: drop-shadow(0 0 3px rgba(89, 232, 255, 0.48));
+}
+
+body[data-theme='orbital'] .orbital-activity-ring-outer {
+  inset: 3px;
+  background: repeating-conic-gradient(
+    from 1deg,
+    #9cf4ff 0 3deg,
+    transparent 3deg 9deg,
+    rgba(35, 151, 192, 0.7) 9deg 12deg,
+    transparent 12deg 20deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 87%, #000 89% 100%);
+  mask: radial-gradient(circle, transparent 0 87%, #000 89% 100%);
+  animation: orbital-activity-spin 9s linear infinite;
+}
+
+body[data-theme='orbital'] .orbital-activity-ring-middle {
+  inset: 12px;
+  background: repeating-conic-gradient(
+    from 4deg,
+    #4f9fff 0 7deg,
+    transparent 7deg 16deg,
+    rgba(89, 232, 255, 0.54) 16deg 20deg,
+    transparent 20deg 31deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 78%, #000 81% 100%);
+  mask: radial-gradient(circle, transparent 0 78%, #000 81% 100%);
+  animation: orbital-activity-spin 5.8s linear infinite reverse;
+}
+
+body[data-theme='orbital'] .orbital-activity-ring-inner {
+  inset: 22px;
+  border: 1px dashed rgba(255, 65, 100, 0.78);
+  box-shadow: 0 0 7px rgba(255, 65, 100, 0.28), inset 0 0 7px rgba(255, 65, 100, 0.12);
+  animation: orbital-activity-spin 4.1s linear infinite;
+}
+
+body[data-theme='orbital'] .orbital-activity-scan {
+  inset: 6px;
+  z-index: 2;
+  border-radius: 50%;
+  background: conic-gradient(
+    from -24deg,
+    transparent 0 72%,
+    rgba(89, 232, 255, 0.025) 77%,
+    rgba(89, 232, 255, 0.18) 92%,
+    rgba(211, 251, 255, 0.86) 98%,
+    transparent 100%
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 20%, #000 25% 100%);
+  mask: radial-gradient(circle, transparent 0 20%, #000 25% 100%);
+  filter: drop-shadow(0 0 4px rgba(89, 232, 255, 0.64));
+  animation: orbital-activity-spin 3.2s linear infinite;
+}
+
+body[data-theme='orbital'] .orbital-activity-orbit {
+  z-index: 4;
+  border: 1px solid rgba(89, 232, 255, 0.12);
+  border-radius: 50%;
+}
+
+body[data-theme='orbital'] .orbital-activity-orbit-a {
+  inset: 8px;
+  animation: orbital-activity-spin 4.6s linear infinite;
+}
+
+body[data-theme='orbital'] .orbital-activity-orbit-b {
+  inset: 17px;
+  transform: rotate(38deg);
+  animation: orbital-activity-spin-offset 2.9s linear infinite reverse;
+}
+
+body[data-theme='orbital'] .orbital-activity-orbit i {
+  position: absolute;
+  display: block;
+  width: 5px;
+  height: 5px;
+  border: 1px solid #d9fbff;
+  border-radius: 50%;
+  background: #59e8ff;
+  box-shadow: 0 0 5px #59e8ff, 0 0 10px rgba(89, 232, 255, 0.74);
+}
+
+body[data-theme='orbital'] .orbital-activity-orbit i:first-child {
+  top: -3px;
+  left: calc(50% - 3px);
+}
+
+body[data-theme='orbital'] .orbital-activity-orbit i:last-child {
+  right: -3px;
+  bottom: calc(50% - 3px);
+  width: 4px;
+  height: 4px;
+  background: #ff4164;
+  box-shadow: 0 0 5px #ff4164, 0 0 10px rgba(255, 65, 100, 0.65);
+}
+
+body[data-theme='orbital'] .orbital-activity-orbit-b i:first-child {
+  background: #4f9fff;
+  box-shadow: 0 0 5px #4f9fff, 0 0 10px rgba(79, 159, 255, 0.68);
+}
+
+body[data-theme='orbital'] .orbital-activity-core {
+  top: 50%;
+  left: 50%;
+  z-index: 5;
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(197, 248, 255, 0.88);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #effeff 0 9%, #67e7fb 10% 24%, #0e7299 25% 40%, rgba(1, 21, 39, 0.98) 42% 100%);
+  box-shadow:
+    0 0 0 3px rgba(1, 8, 22, 0.9),
+    0 0 0 4px rgba(89, 232, 255, 0.2),
+    0 0 13px rgba(89, 232, 255, 0.8),
+    inset 0 0 7px rgba(220, 252, 255, 0.32);
+  transform: translate(-50%, -50%);
+  animation: orbital-activity-core-pulse 1.8s ease-in-out infinite;
+}
+
+body[data-theme='orbital'] .orbital-activity-core::after {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border: 1px solid rgba(89, 232, 255, 0.24);
+  border-radius: 50%;
+  animation: orbital-activity-core-wave 1.8s ease-out infinite;
+}
+
+@keyframes orbital-activity-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes orbital-activity-spin-offset {
+  from {
+    transform: rotate(38deg);
+  }
+
+  to {
+    transform: rotate(398deg);
+  }
+}
+
+@keyframes orbital-activity-breathe {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+
+  50% {
+    opacity: 0.92;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes orbital-activity-core-pulse {
+  0%, 100% {
+    filter: brightness(0.88);
+    transform: translate(-50%, -50%) scale(0.86);
+  }
+
+  50% {
+    filter: brightness(1.26);
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+@keyframes orbital-activity-core-wave {
+  from {
+    opacity: 0.7;
+    transform: scale(0.68);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-theme='orbital'] .orbital-activity-dial {
+    width: 68px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme='orbital'] .orbital-activity-field,
+  body[data-theme='orbital'] .orbital-activity-ring,
+  body[data-theme='orbital'] .orbital-activity-scan,
+  body[data-theme='orbital'] .orbital-activity-orbit,
+  body[data-theme='orbital'] .orbital-activity-core,
+  body[data-theme='orbital'] .orbital-activity-core::after {
+    animation: none;
+  }
+}
+
+/* Live time instrument for the Orbital Command clock card. */
+.orbital-clock-dial {
+  display: none;
+}
+
+body[data-theme='orbital'] .clock-block::before,
+body[data-theme='orbital'] .clock-block::after {
+  display: none;
+}
+
+body[data-theme='orbital'] .orbital-clock-dial {
+  --clock-second-angle: 0deg;
+  --clock-minute-angle: 0deg;
+  --clock-hour-angle: 0deg;
+  position: absolute;
+  top: 50%;
+  left: 11px;
+  display: block;
+  width: 76px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid rgba(170, 244, 255, 0.82);
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle, transparent 0 7px, rgba(103, 231, 253, 0.17) 8px 9px, transparent 10px 14px),
+    radial-gradient(circle, rgba(40, 148, 207, 0.22), rgba(2, 16, 37, 0.9) 64%);
+  box-shadow:
+    0 0 0 4px rgba(1, 8, 22, 0.93),
+    0 0 0 6px rgba(57, 170, 213, 0.25),
+    0 0 15px rgba(104, 234, 255, 0.38),
+    inset 0 0 16px rgba(104, 234, 255, 0.14);
+  transform: translateY(-50%);
+}
+
+body[data-theme='orbital'] .orbital-clock-ticks,
+body[data-theme='orbital'] .orbital-clock-major-ticks,
+body[data-theme='orbital'] .orbital-clock-minute-arc,
+body[data-theme='orbital'] .orbital-clock-numerals,
+body[data-theme='orbital'] .orbital-clock-minute-hand,
+body[data-theme='orbital'] .orbital-clock-second-sweep,
+body[data-theme='orbital'] .orbital-clock-hour-marker,
+body[data-theme='orbital'] .orbital-clock-hub {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+body[data-theme='orbital'] .orbital-clock-ticks {
+  inset: 3px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from -1deg,
+    rgba(125, 231, 249, 0.9) 0 1.5deg,
+    transparent 1.5deg 6deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 72%, #000 73% 100%);
+  mask: radial-gradient(circle, transparent 0 72%, #000 73% 100%);
+  opacity: 0.88;
+}
+
+body[data-theme='orbital'] .orbital-clock-major-ticks {
+  inset: 2px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from -2deg,
+    #e1fcff 0 4deg,
+    transparent 4deg 30deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 82%, #000 83% 100%);
+  mask: radial-gradient(circle, transparent 0 82%, #000 83% 100%);
+  filter: drop-shadow(0 0 2px rgba(89, 232, 255, 0.72));
+}
+
+body[data-theme='orbital'] .orbital-clock-minute-arc {
+  inset: 11px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(89, 232, 255, 0.98) 0deg var(--clock-minute-angle),
+    rgba(23, 95, 131, 0.24) var(--clock-minute-angle) 360deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 77%, #000 79% 100%);
+  mask: radial-gradient(circle, transparent 0 77%, #000 79% 100%);
+  filter: drop-shadow(0 0 3px rgba(89, 232, 255, 0.7));
+}
+
+body[data-theme='orbital'] .orbital-clock-numerals {
+  inset: 0;
+  z-index: 4;
+  color: #dffbff;
+  font: 800 0.42rem/1 "Arial Narrow", "Segoe UI", sans-serif;
+  text-shadow: 0 0 4px rgba(89, 232, 255, 0.9), 0 1px 2px #00101d;
+}
+
+body[data-theme='orbital'] .orbital-clock-numerals i {
+  position: absolute;
+  display: block;
+  min-width: 8px;
+  text-align: center;
+  font-style: normal;
+}
+
+body[data-theme='orbital'] .orbital-clock-numeral-12 {
+  top: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+body[data-theme='orbital'] .orbital-clock-numeral-3 {
+  top: 50%;
+  right: 7px;
+  transform: translateY(-50%);
+}
+
+body[data-theme='orbital'] .orbital-clock-numeral-6 {
+  bottom: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+body[data-theme='orbital'] .orbital-clock-numeral-9 {
+  top: 50%;
+  left: 7px;
+  transform: translateY(-50%);
+}
+
+body[data-theme='orbital'] .orbital-clock-minute-hand {
+  inset: 8px;
+  z-index: 4;
+  border-radius: 50%;
+  transform: rotate(var(--clock-minute-angle));
+  transition: transform 240ms ease-out;
+}
+
+body[data-theme='orbital'] .orbital-clock-minute-hand::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: calc(50% - 8px);
+  background: linear-gradient(180deg, #baf7ff, #32b9dc 62%, #12688d);
+  box-shadow: 0 0 4px rgba(89, 232, 255, 0.76);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .orbital-clock-second-sweep {
+  inset: 6px;
+  z-index: 5;
+  border-radius: 50%;
+  transform: rotate(var(--clock-second-angle));
+  transition: transform 180ms ease-out;
+}
+
+body[data-theme='orbital'] .orbital-clock-second-sweep::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: calc(50% - 1px);
+  width: 1px;
+  height: 48%;
+  background: linear-gradient(180deg, #fff, #b8f8ff 44%, rgba(89, 232, 255, 0.08));
+  box-shadow: 0 0 4px rgba(192, 250, 255, 0.94);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .orbital-clock-hour-marker {
+  inset: 8px;
+  z-index: 4;
+  border-radius: 50%;
+  transform: rotate(var(--clock-hour-angle));
+}
+
+body[data-theme='orbital'] .orbital-clock-hour-marker::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: calc(50% - 3px);
+  width: 6px;
+  height: 6px;
+  border: 1px solid #ffd6df;
+  border-radius: 50%;
+  background: #ff4164;
+  box-shadow: 0 0 5px #ff4164, 0 0 11px rgba(255, 65, 100, 0.75);
+}
+
+body[data-theme='orbital'] .orbital-clock-hour-marker::after {
+  content: '';
+  position: absolute;
+  top: 13px;
+  left: calc(50% - 2px);
+  width: 4px;
+  height: calc(50% - 13px);
+  border-radius: 3px;
+  background: linear-gradient(180deg, #ff8ba0, #ff4164 58%, #891d3a);
+  box-shadow: 0 0 5px rgba(255, 65, 100, 0.72);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+body[data-theme='orbital'] .orbital-clock-hub {
+  top: 50%;
+  left: 50%;
+  z-index: 6;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #d9fbff;
+  border-radius: 50%;
+  background: #89eeff;
+  box-shadow: 0 0 6px #68eaff, 0 0 16px rgba(104, 234, 255, 0.8);
+  transform: translate(-50%, -50%);
+  animation: orbital-clock-tick 1s ease-out infinite;
+}
+
+@keyframes orbital-clock-tick {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(0.78);
+    opacity: 0.72;
+  }
+
+  16% {
+    transform: translate(-50%, -50%) scale(1.28);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 700px) {
+  body[data-theme='orbital'] .orbital-clock-dial {
+    width: 68px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme='orbital'] .orbital-clock-second-sweep,
+  body[data-theme='orbital'] .orbital-clock-minute-hand {
+    transition: none;
+  }
+
+  body[data-theme='orbital'] .orbital-clock-hub {
+    animation: none;
+  }
+}
+
+/* Make the compact sidebar control read unmistakably as a drawer handle. */
+@media (max-width: 1030px) {
+  .sidebar-drawer-toggle {
+    bottom: 68px;
+    min-width: 150px;
+    min-height: 46px;
+    gap: 9px;
+    padding: 6px 9px 6px 11px;
+    border-left-width: 3px;
+    border-radius: 0 5px 5px 0;
+    text-align: left;
+  }
+
+  .sidebar-drawer-toggle::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--cyan);
+    box-shadow: 0 0 6px rgba(80, 242, 255, 0.58);
+    opacity: 0.72;
+  }
+
+  .sidebar-drawer-toggle-icon {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 28px;
+    color: var(--cyan);
+    font-size: 1rem;
+  }
+
+  .sidebar-drawer-toggle-copy {
+    display: grid;
+    flex: 1 1 auto;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .sidebar-drawer-toggle-copy strong,
+  .sidebar-drawer-toggle-copy small {
+    display: block;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .sidebar-drawer-toggle-copy strong {
+    color: var(--text);
+    font-size: 0.67rem;
+    letter-spacing: 0.14em;
+  }
+
+  .sidebar-drawer-toggle-copy small {
+    color: var(--muted);
+    font-size: 0.48rem;
+    font-weight: 600;
+    letter-spacing: 0.11em;
+  }
+
+  .sidebar-drawer-toggle-arrow {
+    color: var(--cyan);
+    font-size: 1.35rem;
+    line-height: 1;
+    text-shadow: 0 0 7px rgba(80, 242, 255, 0.52);
+  }
+
+  .sidebar-drawer-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 78px;
+    height: 32px;
+    margin-bottom: -42px;
+    padding: 0 8px;
+    font-size: 1rem;
+  }
+
+  .sidebar-drawer-close strong {
+    font: 700 0.57rem/1 "Arial Narrow", "Segoe UI", sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+}
+
+@media (max-width: 320px) {
+  .sidebar-drawer-toggle {
+    bottom: 68px;
+    min-width: 126px;
+  }
+
+  .sidebar-drawer-toggle-copy small {
+    display: none;
+  }
+}
+
+/* Edge-mounted systems drawer rail. */
+@media (max-width: 1030px) {
+  .sidebar-drawer-toggle {
+    position: fixed;
+    top: 88px;
+    right: auto;
+    bottom: 66px;
+    left: 0;
+    z-index: 74;
+    display: block;
+    width: 12px;
+    min-width: 12px;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-right: 1px solid rgba(80, 242, 255, 0.58);
+    border-radius: 0;
+    background:
+      linear-gradient(180deg, rgba(80, 242, 255, 0.28), rgba(80, 242, 255, 0.04) 22%, rgba(80, 242, 255, 0.12) 78%, rgba(80, 242, 255, 0.28)),
+      rgba(1, 13, 25, 0.94);
+    box-shadow:
+      3px 0 12px rgba(0, 197, 255, 0.12),
+      inset -2px 0 rgba(80, 242, 255, 0.1);
+    clip-path: none;
+    cursor: pointer;
+  }
+
+  .sidebar-drawer-toggle::before {
+    content: '';
+    position: absolute;
+    top: 62px;
+    right: 3px;
+    bottom: 10px;
+    left: auto;
+    width: 3px;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(80, 242, 255, 0.7) 0 8px,
+      transparent 8px 18px
+    );
+    box-shadow: 0 0 7px rgba(80, 242, 255, 0.3);
+    opacity: 0.42;
+  }
+
+  .sidebar-drawer-toggle::after {
+    content: '';
+    position: absolute;
+    top: 54px;
+    right: 2px;
+    width: 5px;
+    height: 5px;
+    border: 1px solid var(--cyan);
+    border-radius: 50%;
+    background: var(--panel);
+    box-shadow: 0 0 8px rgba(80, 242, 255, 0.68);
+  }
+
+  .sidebar-drawer-toggle-arrow {
+    position: absolute;
+    top: 10px;
+    left: 8px;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 38px;
+    border: 1px solid rgba(80, 242, 255, 0.72);
+    border-left: 0;
+    background:
+      linear-gradient(90deg, rgba(4, 43, 66, 0.98), rgba(3, 21, 37, 0.96)),
+      var(--panel-2);
+    color: var(--cyan);
+    box-shadow:
+      5px 0 15px rgba(0, 0, 0, 0.42),
+      inset 0 0 14px rgba(80, 242, 255, 0.08),
+      0 0 9px rgba(80, 242, 255, 0.18);
+    clip-path: polygon(0 0, 24px 0, 100% 9px, 100% 29px, 24px 100%, 0 100%);
+    font: 400 1.55rem/1 "Arial Narrow", "Segoe UI", sans-serif;
+    text-shadow: 0 0 8px rgba(80, 242, 255, 0.72);
+    transition: transform 160ms ease, color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+  }
+
+  .sidebar-drawer-toggle:hover,
+  .sidebar-drawer-toggle:focus-visible {
+    border-right-color: var(--cyan);
+    outline: none;
+    background:
+      linear-gradient(180deg, rgba(80, 242, 255, 0.42), rgba(80, 242, 255, 0.08) 22%, rgba(80, 242, 255, 0.18) 78%, rgba(80, 242, 255, 0.42)),
+      rgba(1, 13, 25, 0.97);
+    box-shadow:
+      4px 0 18px rgba(0, 197, 255, 0.28),
+      inset -2px 0 rgba(80, 242, 255, 0.22);
+  }
+
+  .sidebar-drawer-toggle:hover .sidebar-drawer-toggle-arrow,
+  .sidebar-drawer-toggle:focus-visible .sidebar-drawer-toggle-arrow {
+    transform: translateX(3px);
+    background: linear-gradient(90deg, rgba(5, 70, 98, 0.99), rgba(3, 28, 48, 0.98));
+    color: #d9fcff;
+    box-shadow:
+      7px 0 18px rgba(0, 0, 0, 0.46),
+      inset 0 0 18px rgba(80, 242, 255, 0.16),
+      0 0 14px rgba(80, 242, 255, 0.38);
+  }
+
+  body[data-theme='orbital'] .sidebar-drawer-toggle {
+    border-right-color: rgba(45, 181, 210, 0.62);
+    background:
+      linear-gradient(180deg, rgba(45, 181, 210, 0.3), rgba(5, 45, 65, 0.12) 22%, rgba(45, 181, 210, 0.14) 78%, rgba(45, 181, 210, 0.3)),
+      rgba(0, 9, 18, 0.97);
+    clip-path: none;
+  }
+
+  body[data-theme='orbital'] .sidebar-drawer-toggle-arrow {
+    background:
+      linear-gradient(90deg, rgba(5, 60, 83, 0.99), rgba(1, 19, 32, 0.98)),
+      #000a14;
+  }
+}
+
+/* Orbital chronometer: concentric H/M/S telemetry instead of a conventional clock face. */
+body[data-theme='orbital'] .orbital-clock-dial {
+  --clock-second-progress-angle: 0deg;
+  background:
+    radial-gradient(circle at center, rgba(95, 224, 249, 0.2) 0 5%, transparent 6% 19%, rgba(30, 130, 174, 0.1) 20% 21%, transparent 22%),
+    repeating-conic-gradient(from 2deg, rgba(72, 191, 220, 0.08) 0 1deg, transparent 1deg 15deg),
+    radial-gradient(circle, rgba(4, 42, 70, 0.62), rgba(0, 8, 22, 0.96) 70%);
+}
+
+body[data-theme='orbital'] .orbital-clock-ticks,
+body[data-theme='orbital'] .orbital-clock-major-ticks,
+body[data-theme='orbital'] .orbital-clock-second-arc,
+body[data-theme='orbital'] .orbital-clock-minute-arc,
+body[data-theme='orbital'] .orbital-clock-hour-arc,
+body[data-theme='orbital'] .orbital-clock-legends {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+body[data-theme='orbital'] .orbital-clock-ticks {
+  inset: 2px;
+  background: repeating-conic-gradient(
+    from -1deg,
+    rgba(109, 226, 248, 0.68) 0 1.5deg,
+    transparent 1.5deg 6deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 88%, #000 89% 100%);
+  mask: radial-gradient(circle, transparent 0 88%, #000 89% 100%);
+  opacity: 0.76;
+  animation: orbital-chrono-ring-drift 24s linear infinite;
+}
+
+body[data-theme='orbital'] .orbital-clock-major-ticks {
+  inset: 5px;
+  background: repeating-conic-gradient(
+    from -2deg,
+    #bff8ff 0 3deg,
+    transparent 3deg 30deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 83%, #000 84% 100%);
+  mask: radial-gradient(circle, transparent 0 83%, #000 84% 100%);
+  opacity: 0.58;
+  animation: orbital-chrono-ring-drift 36s linear infinite reverse;
+}
+
+body[data-theme='orbital'] .orbital-clock-second-arc {
+  inset: 4px;
+  z-index: 2;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #c9fbff 0deg,
+    #59e8ff var(--clock-second-progress-angle),
+    rgba(16, 83, 118, 0.24) var(--clock-second-progress-angle) 360deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 88%, #000 90% 100%);
+  mask: radial-gradient(circle, transparent 0 88%, #000 90% 100%);
+  filter: drop-shadow(0 0 3px rgba(89, 232, 255, 0.74));
+}
+
+body[data-theme='orbital'] .orbital-clock-minute-arc {
+  inset: 11px;
+  z-index: 2;
+  background: conic-gradient(
+    from 0deg,
+    #599eff 0deg,
+    #307cc4 var(--clock-minute-angle),
+    rgba(28, 75, 117, 0.2) var(--clock-minute-angle) 360deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 80%, #000 82% 100%);
+  mask: radial-gradient(circle, transparent 0 80%, #000 82% 100%);
+  filter: drop-shadow(0 0 3px rgba(79, 159, 255, 0.62));
+}
+
+body[data-theme='orbital'] .orbital-clock-hour-arc {
+  inset: 18px;
+  z-index: 2;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #ff7891 0deg,
+    #ff4164 var(--clock-hour-angle),
+    rgba(119, 30, 55, 0.22) var(--clock-hour-angle) 360deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 71%, #000 74% 100%);
+  mask: radial-gradient(circle, transparent 0 71%, #000 74% 100%);
+  filter: drop-shadow(0 0 3px rgba(255, 65, 100, 0.58));
+}
+
+body[data-theme='orbital'] .orbital-clock-legends {
+  inset: 0;
+  z-index: 5;
+  font: 800 0.34rem/1 "Arial Narrow", "Segoe UI", sans-serif;
+  text-shadow: 0 0 4px currentColor, 0 1px 2px #000;
+}
+
+body[data-theme='orbital'] .orbital-clock-legends i {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 9px;
+  height: 9px;
+  border: 1px solid currentColor;
+  background: rgba(0, 10, 24, 0.84);
+  font-style: normal;
+  clip-path: polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px);
+}
+
+body[data-theme='orbital'] .orbital-clock-legend-hour {
+  top: 50%;
+  left: 18px;
+  color: #ff6681;
+  transform: translateY(-50%);
+}
+
+body[data-theme='orbital'] .orbital-clock-legend-minute {
+  bottom: 16px;
+  left: 50%;
+  color: #68aaff;
+  transform: translateX(-50%);
+}
+
+body[data-theme='orbital'] .orbital-clock-legend-second {
+  top: 50%;
+  right: 18px;
+  color: #73edff;
+  transform: translateY(-50%);
+}
+
+body[data-theme='orbital'] .orbital-clock-minute-hand {
+  inset: 6px;
+  z-index: 4;
+}
+
+body[data-theme='orbital'] .orbital-clock-minute-hand::before {
+  top: 2px;
+  left: calc(50% - 3px);
+  width: 0;
+  height: 0;
+  border-right: 3px solid transparent;
+  border-bottom: 7px solid #599eff;
+  border-left: 3px solid transparent;
+  background: none;
+  box-shadow: none;
+  clip-path: none;
+  filter: drop-shadow(0 0 3px rgba(89, 158, 255, 0.9));
+}
+
+body[data-theme='orbital'] .orbital-clock-second-sweep {
+  inset: 5px;
+  z-index: 3;
+  background: conic-gradient(
+    from -22deg,
+    transparent 0 78%,
+    rgba(89, 232, 255, 0.03) 82%,
+    rgba(89, 232, 255, 0.2) 94%,
+    rgba(205, 250, 255, 0.82) 99%,
+    transparent 100%
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 29%, #000 32% 100%);
+  mask: radial-gradient(circle, transparent 0 29%, #000 32% 100%);
+  filter: drop-shadow(0 0 3px rgba(89, 232, 255, 0.58));
+}
+
+body[data-theme='orbital'] .orbital-clock-second-sweep::before {
+  display: none;
+}
+
+body[data-theme='orbital'] .orbital-clock-hour-marker {
+  inset: 16px;
+  z-index: 4;
+}
+
+body[data-theme='orbital'] .orbital-clock-hour-marker::before {
+  top: -1px;
+  left: calc(50% - 3px);
+  width: 6px;
+  height: 6px;
+  border: 1px solid #ffccda;
+  background: #ff4164;
+}
+
+body[data-theme='orbital'] .orbital-clock-hour-marker::after {
+  display: none;
+}
+
+body[data-theme='orbital'] .orbital-clock-hub {
+  width: 18px;
+  height: 18px;
+  border-color: rgba(154, 240, 255, 0.7);
+  background:
+    radial-gradient(circle, #d9fbff 0 12%, #2ba6ca 13% 25%, rgba(2, 29, 50, 0.96) 27% 100%);
+  box-shadow:
+    0 0 0 2px rgba(1, 8, 22, 0.88),
+    0 0 0 3px rgba(62, 192, 221, 0.24),
+    0 0 12px rgba(89, 232, 255, 0.62);
+}
+
+body[data-theme='orbital'] .orbital-clock-hub::before {
+  content: 'LOC';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #bff9ff;
+  font: 800 0.24rem/1 "Arial Narrow", "Segoe UI", sans-serif;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 3px rgba(89, 232, 255, 0.9);
+}
+
+@keyframes orbital-chrono-ring-drift {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme='orbital'] .orbital-clock-ticks,
+  body[data-theme='orbital'] .orbital-clock-major-ticks {
+    animation: none;
+  }
+}
+
+/* Live service radar for the Orbital Command watch card. */
+.service-radar-grid,
+.service-radar-sweep,
+.service-radar-blip {
+  display: none;
+}
+
+body[data-theme='orbital'] .github-incident-count {
+  --radar-color: #59e8ff;
+  --radar-soft: rgba(89, 232, 255, 0.32);
+  --radar-faint: rgba(89, 232, 255, 0.12);
+  --radar-speed: 2.2s;
+  --radar-ping-speed: 1.8s;
+  isolation: isolate;
+  overflow: hidden;
+  transition: border-color 240ms ease, box-shadow 240ms ease, filter 240ms ease;
+}
+
+body[data-theme='orbital'] .github-incident-count .github-incident-days,
+body[data-theme='orbital'] .github-incident-count .github-incident-unit {
+  position: relative;
+  z-index: 4;
+}
+
+body[data-theme='orbital'] .service-radar-grid,
+body[data-theme='orbital'] .service-radar-sweep,
+body[data-theme='orbital'] .service-radar-blip {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+body[data-theme='orbital'] .service-radar-grid {
+  inset: 7px;
+  z-index: 1;
+  border: 1px solid color-mix(in srgb, var(--radar-color) 26%, transparent);
+  border-radius: 50%;
+  background:
+    linear-gradient(transparent calc(50% - 0.5px), var(--radar-faint) 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(90deg, transparent calc(50% - 0.5px), var(--radar-faint) 50%, transparent calc(50% + 0.5px));
+  box-shadow: inset 0 0 14px color-mix(in srgb, var(--radar-color) 8%, transparent);
+}
+
+body[data-theme='orbital'] .service-radar-sweep {
+  inset: 5px;
+  z-index: 2;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 69%,
+    color-mix(in srgb, var(--radar-color) 4%, transparent) 72%,
+    var(--radar-soft) 88%,
+    var(--radar-color) 92%,
+    transparent 92.8% 100%
+  );
+  -webkit-mask: radial-gradient(circle, transparent 0 20%, #000 23% 100%);
+  mask: radial-gradient(circle, transparent 0 20%, #000 23% 100%);
+  filter: drop-shadow(0 0 4px var(--radar-color));
+  transform-origin: center;
+  animation: service-radar-sweep var(--radar-speed) linear infinite;
+}
+
+body[data-theme='orbital'] .service-radar-blip {
+  z-index: 3;
+  width: 5px;
+  height: 5px;
+  border: 1px solid rgba(230, 254, 255, 0.86);
+  border-radius: 50%;
+  background: var(--radar-color);
+  box-shadow: 0 0 4px var(--radar-color), 0 0 10px var(--radar-color);
+  animation: service-radar-ping var(--radar-ping-speed) ease-in-out infinite;
+}
+
+body[data-theme='orbital'] .service-radar-blip-a {
+  top: 18px;
+  right: 18px;
+  animation-delay: -0.25s;
+}
+
+body[data-theme='orbital'] .service-radar-blip-b {
+  right: 14px;
+  bottom: 24px;
+  width: 4px;
+  height: 4px;
+  animation-delay: -0.9s;
+}
+
+body[data-theme='orbital'] .service-radar-blip-c {
+  bottom: 15px;
+  left: 24px;
+  width: 3px;
+  height: 3px;
+  animation-delay: -1.35s;
+}
+
+body[data-theme='orbital'] .github-incident-count[data-radar-state='ok'] {
+  --radar-color: #62f6cf;
+  --radar-soft: rgba(98, 246, 207, 0.3);
+  --radar-faint: rgba(98, 246, 207, 0.12);
+  --radar-speed: 5.4s;
+  --radar-ping-speed: 2.8s;
+  border-color: rgba(98, 246, 207, 0.72);
+  box-shadow: 0 0 0 3px rgba(1, 8, 22, 0.94), 0 0 0 5px rgba(98, 246, 207, 0.16), 0 0 14px rgba(98, 246, 207, 0.25), inset 0 0 16px rgba(98, 246, 207, 0.09);
+}
+
+body[data-theme='orbital'] .github-incident-count[data-radar-state='warn'] {
+  --radar-color: #ffd36b;
+  --radar-soft: rgba(255, 211, 107, 0.38);
+  --radar-faint: rgba(255, 211, 107, 0.14);
+  --radar-speed: 2.5s;
+  --radar-ping-speed: 1.2s;
+  border-color: rgba(255, 211, 107, 0.86);
+  box-shadow: 0 0 0 3px rgba(1, 8, 22, 0.94), 0 0 0 5px rgba(255, 211, 107, 0.18), 0 0 18px rgba(255, 211, 107, 0.34), inset 0 0 18px rgba(255, 211, 107, 0.11);
+}
+
+body[data-theme='orbital'] .github-incident-count[data-radar-state='down'] {
+  --radar-color: #ff4164;
+  --radar-soft: rgba(255, 65, 100, 0.46);
+  --radar-faint: rgba(255, 65, 100, 0.16);
+  --radar-speed: 1.15s;
+  --radar-ping-speed: 0.7s;
+  border-color: rgba(255, 65, 100, 0.94);
+  box-shadow: 0 0 0 3px rgba(1, 8, 22, 0.94), 0 0 0 5px rgba(255, 65, 100, 0.24), 0 0 22px rgba(255, 65, 100, 0.5), inset 0 0 20px rgba(255, 65, 100, 0.15);
+  animation: service-radar-alert 1.05s ease-in-out infinite;
+}
+
+body[data-theme='orbital'] .github-incident-count[data-radar-state='offline'] {
+  --radar-color: #ff6f83;
+  --radar-soft: rgba(255, 111, 131, 0.24);
+  --radar-faint: rgba(255, 111, 131, 0.1);
+  --radar-speed: 8s;
+  --radar-ping-speed: 1.4s;
+  border-style: dashed;
+  filter: saturate(0.72);
+}
+
+body[data-theme='orbital'] .github-incident-count[data-radar-state='offline'] .service-radar-blip-b,
+body[data-theme='orbital'] .github-incident-count[data-radar-state='offline'] .service-radar-blip-c,
+body[data-theme='orbital'] .github-incident-count[data-radar-state='idle'] .service-radar-blip {
+  display: none;
+}
+
+body[data-theme='orbital'] .github-incident-count[data-radar-state='sync'] {
+  --radar-speed: 1.65s;
+  --radar-ping-speed: 1.1s;
+}
+
+body[data-theme='orbital'] .github-incident-count[data-radar-state='idle'] {
+  --radar-color: #668b9c;
+  --radar-soft: rgba(102, 139, 156, 0.16);
+  --radar-faint: rgba(102, 139, 156, 0.08);
+  --radar-speed: 12s;
+  filter: saturate(0.4);
+}
+
+@keyframes service-radar-sweep {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes service-radar-ping {
+  0%, 100% {
+    opacity: 0.28;
+    transform: scale(0.72);
+  }
+
+  42% {
+    opacity: 1;
+    transform: scale(1.22);
+  }
+}
+
+@keyframes service-radar-alert {
+  0%, 100% {
+    filter: brightness(0.92);
+  }
+
+  50% {
+    filter: brightness(1.28);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-theme='orbital'] .service-radar-sweep,
+  body[data-theme='orbital'] .service-radar-blip,
+  body[data-theme='orbital'] .github-incident-count[data-radar-state='down'] {
+    animation: none;
+  }
+}
+
+/* Full-height themed drawer handle. */
+@media (max-width: 1030px) {
+  .sidebar-drawer-toggle {
+    --drawer-edge: rgba(80, 242, 255, 0.72);
+    --drawer-rail:
+      linear-gradient(180deg, rgba(255, 71, 216, 0.72), rgba(80, 242, 255, 0.5) 24%, rgba(157, 105, 255, 0.4) 72%, rgba(255, 71, 216, 0.64)),
+      #090316;
+    --drawer-tab-bg:
+      linear-gradient(100deg, rgba(37, 9, 63, 0.99), rgba(12, 8, 36, 0.99));
+    --drawer-tab-border: rgba(80, 242, 255, 0.88);
+    --drawer-tab-color: #bffcff;
+    --drawer-tab-shadow:
+      7px 0 20px rgba(0, 0, 0, 0.58),
+      inset 0 0 18px rgba(80, 242, 255, 0.14),
+      0 0 12px rgba(80, 242, 255, 0.36),
+      0 0 22px rgba(255, 71, 216, 0.15);
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    min-width: 12px;
+    border-right-color: var(--drawer-edge);
+    background: var(--drawer-rail);
+    box-shadow:
+      4px 0 15px rgba(80, 242, 255, 0.15),
+      inset -2px 0 rgba(255, 255, 255, 0.11);
+  }
+
+  .sidebar-drawer-toggle::before {
+    top: 8px;
+    right: 3px;
+    bottom: 8px;
+    width: 3px;
+    background: repeating-linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--drawer-edge) 88%, transparent) 0 9px,
+      transparent 9px 21px
+    );
+    box-shadow: 0 0 8px color-mix(in srgb, var(--drawer-edge) 48%, transparent);
+    opacity: 0.58;
+  }
+
+  .sidebar-drawer-toggle::after {
+    top: 164px;
+    right: 2px;
+    border-color: var(--drawer-edge);
+    box-shadow: 0 0 9px color-mix(in srgb, var(--drawer-edge) 72%, transparent);
+  }
+
+  .sidebar-drawer-toggle-arrow {
+    top: 92px;
+    left: 8px;
+    width: 40px;
+    height: 66px;
+    border-color: var(--drawer-tab-border);
+    background: var(--drawer-tab-bg);
+    color: var(--drawer-tab-color);
+    box-shadow: var(--drawer-tab-shadow);
+    clip-path: polygon(0 0, 27px 0, 100% 12px, 100% 54px, 27px 100%, 0 100%);
+    font-size: 2.25rem;
+    font-weight: 800;
+    text-indent: -1px;
+    text-shadow: 0 0 11px currentColor;
+  }
+
+  .sidebar-drawer-toggle:hover,
+  .sidebar-drawer-toggle:focus-visible {
+    border-right-color: var(--drawer-edge);
+    background: var(--drawer-rail);
+    box-shadow:
+      5px 0 22px color-mix(in srgb, var(--drawer-edge) 34%, transparent),
+      inset -3px 0 color-mix(in srgb, var(--drawer-edge) 28%, transparent);
+  }
+
+  .sidebar-drawer-toggle:hover .sidebar-drawer-toggle-arrow,
+  .sidebar-drawer-toggle:focus-visible .sidebar-drawer-toggle-arrow {
+    transform: translateX(4px) scale(1.04);
+    border-color: var(--drawer-tab-border);
+    background: var(--drawer-tab-bg);
+    color: #fff;
+    box-shadow:
+      var(--drawer-tab-shadow),
+      0 0 21px color-mix(in srgb, var(--drawer-edge) 50%, transparent);
+  }
+
+  /* Synthwave: neon magenta/cyan light rail and a glowing arcade capsule. */
+  body[data-theme='synthwave'] .sidebar-drawer-toggle {
+    --drawer-edge: #50f2ff;
+    --drawer-rail:
+      linear-gradient(180deg, #ff47d8 0 12%, #50f2ff 28% 67%, #9d69ff 84%, #ff47d8 100%),
+      #090316;
+    --drawer-tab-bg:
+      linear-gradient(105deg, rgba(52, 6, 76, 0.99), rgba(15, 5, 42, 0.99) 66%, rgba(45, 8, 64, 0.99));
+    --drawer-tab-border: #50f2ff;
+    --drawer-tab-color: #f2feff;
+  }
+
+  body[data-theme='synthwave'] .sidebar-drawer-toggle-arrow {
+    left: 8px;
+    width: 44px;
+    height: 72px;
+    border: 2px solid #50f2ff;
+    border-left: 0;
+    border-radius: 0 22px 22px 0;
+    background: linear-gradient(180deg, #ff47d8 0%, #a42fdc 52%, #511386 100%);
+    color: #fff;
+    clip-path: none;
+    box-shadow:
+      4px 0 0 #090013,
+      0 0 12px rgba(80, 242, 255, 0.72),
+      0 0 23px rgba(255, 71, 216, 0.58),
+      inset 0 0 14px rgba(255, 255, 255, 0.14);
+    font-size: 2.45rem;
+    font-weight: 900;
+    text-shadow: 0 0 8px #50f2ff;
+  }
+
+  body[data-theme='synthwave'] .sidebar-drawer-toggle-arrow::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    right: 7px;
+    bottom: 14px;
+    width: 3px;
+    border-radius: 3px;
+    background: #50f2ff;
+    box-shadow: 0 0 8px #50f2ff;
+  }
+
+  body[data-theme='synthwave'] .sidebar-drawer-toggle:hover .sidebar-drawer-toggle-arrow,
+  body[data-theme='synthwave'] .sidebar-drawer-toggle:focus-visible .sidebar-drawer-toggle-arrow {
+    border-color: #ff47d8;
+    background: linear-gradient(180deg, #50f2ff 0%, #598cff 48%, #9d69ff 100%);
+    color: #16031f;
+    box-shadow:
+      5px 0 0 #090013,
+      0 0 15px rgba(255, 71, 216, 0.82),
+      0 0 28px rgba(80, 242, 255, 0.7),
+      inset 0 0 14px rgba(255, 255, 255, 0.22);
+    text-shadow: 0 0 7px rgba(255, 255, 255, 0.72);
+  }
+
+  body[data-theme='synthwave'] .sidebar-drawer-toggle:hover .sidebar-drawer-toggle-arrow::after,
+  body[data-theme='synthwave'] .sidebar-drawer-toggle:focus-visible .sidebar-drawer-toggle-arrow::after {
+    background: #ff47d8;
+    box-shadow: 0 0 8px #ff47d8;
+  }
+
+  /* Dark: quiet slate hardware with a softly rounded grip. */
+  body[data-theme='dark'] .sidebar-drawer-toggle {
+    --drawer-edge: #6e8298;
+    --drawer-rail: linear-gradient(180deg, #313943, #20262d 45%, #151a20 100%);
+    --drawer-tab-bg: linear-gradient(90deg, #303943, #1a2026);
+    --drawer-tab-border: #71869b;
+    --drawer-tab-color: #d8e2ec;
+    --drawer-tab-shadow: 5px 0 14px rgba(0, 0, 0, 0.52), inset 0 0 0 1px rgba(255, 255, 255, 0.035);
+    box-shadow: 2px 0 7px rgba(0, 0, 0, 0.38);
+  }
+
+  body[data-theme='dark'] .sidebar-drawer-toggle-arrow {
+    border-radius: 0 8px 8px 0;
+    clip-path: none;
+    text-shadow: none;
+  }
+
+  /* LCARS: a warm color-block rail with the familiar rounded end cap. */
+  body[data-theme='lcars'] .sidebar-drawer-toggle {
+    --drawer-edge: #ffcc66;
+    --drawer-rail:
+      linear-gradient(180deg, #ff9f7c 0 24%, #000 24% 27%, #cc99cc 27% 54%, #000 54% 57%, #9c9cff 57% 78%, #000 78% 81%, #ffcc66 81% 100%);
+    --drawer-tab-bg: #9c9cff;
+    --drawer-tab-border: #000;
+    --drawer-tab-color: #050505;
+    --drawer-tab-shadow: 4px 0 0 #ffcc66, 8px 0 0 #000;
+    border-right: 0;
+    box-shadow: none;
+  }
+
+  body[data-theme='lcars'] .sidebar-drawer-toggle::before {
+    display: none;
+  }
+
+  body[data-theme='lcars'] .sidebar-drawer-toggle::after {
+    top: 169px;
+    right: -1px;
+    width: 7px;
+    height: 18px;
+    border: 0;
+    border-radius: 0 9px 9px 0;
+    background: #ffcc66;
+    box-shadow: none;
+  }
+
+  body[data-theme='lcars'] .sidebar-drawer-toggle-arrow {
+    top: 136px;
+    left: 7px;
+    width: 44px;
+    height: 84px;
+    border: 4px solid var(--drawer-tab-border);
+    border-left: 0;
+    border-radius: 0 42px 42px 0;
+    background: var(--drawer-tab-bg);
+    color: var(--drawer-tab-color);
+    clip-path: none;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    font-size: 2.6rem;
+    font-weight: 900;
+    box-shadow: var(--drawer-tab-shadow);
+    text-shadow: none;
+  }
+
+  body[data-theme='lcars'] .sidebar-drawer-toggle-arrow::after {
+    content: '';
+    position: absolute;
+    top: 16px;
+    right: 6px;
+    bottom: 16px;
+    width: 4px;
+    border-radius: 4px;
+    background: #ffcc66;
+  }
+
+  body[data-theme='lcars'] .sidebar-drawer-toggle:hover .sidebar-drawer-toggle-arrow,
+  body[data-theme='lcars'] .sidebar-drawer-toggle:focus-visible .sidebar-drawer-toggle-arrow {
+    background: #ffcc66;
+    color: #000;
+    box-shadow: 5px 0 0 #000, 9px 0 0 #cc99cc;
+  }
+
+  body[data-theme='lcars'] .sidebar-drawer-toggle:hover .sidebar-drawer-toggle-arrow::after,
+  body[data-theme='lcars'] .sidebar-drawer-toggle:focus-visible .sidebar-drawer-toggle-arrow::after {
+    background: #9c9cff;
+  }
+
+  /* Terminal UI: squared instrumentation, dashed signal rail, bright prompt. */
+  body[data-theme='terminal'] .sidebar-drawer-toggle {
+    --drawer-edge: #86ecff;
+    --drawer-rail: #050505;
+    --drawer-tab-bg: #070707;
+    --drawer-tab-border: #86ecff;
+    --drawer-tab-color: #86ecff;
+    --drawer-tab-shadow: 5px 0 0 #000, inset 0 0 0 1px #273238;
+    border-right-style: dashed;
+    box-shadow: none;
+  }
+
+  body[data-theme='terminal'] .sidebar-drawer-toggle::before {
+    right: 4px;
+    width: 2px;
+    background: repeating-linear-gradient(to bottom, #86ecff 0 6px, transparent 6px 14px);
+    box-shadow: none;
+    opacity: 0.6;
+  }
+
+  body[data-theme='terminal'] .sidebar-drawer-toggle-arrow {
+    width: 38px;
+    height: 64px;
+    border-radius: 0;
+    clip-path: none;
+    font-family: "Courier New", Consolas, monospace;
+    text-shadow: 0 0 7px rgba(134, 236, 255, 0.7);
+  }
+
+  /* Old PC: chunky, warm, beveled plastic with no modern glow. */
+  body[data-theme='old-pc'] .sidebar-drawer-toggle {
+    --drawer-edge: #09080a;
+    --drawer-rail: linear-gradient(90deg, #3a303a, #211b22 58%, #09080a 59% 100%);
+    --drawer-tab-bg: linear-gradient(135deg, #f1b66f, #b96e45);
+    --drawer-tab-border: #09080a;
+    --drawer-tab-color: #171016;
+    --drawer-tab-shadow: 4px 4px 0 #09080a, inset 2px 2px rgba(255, 232, 194, 0.46), inset -2px -2px rgba(70, 34, 30, 0.48);
+    border-right-width: 2px;
+    box-shadow: none;
+  }
+
+  body[data-theme='old-pc'] .sidebar-drawer-toggle::before {
+    right: 4px;
+    width: 2px;
+    background: repeating-linear-gradient(to bottom, #f1b66f 0 5px, #211b22 5px 13px);
+    box-shadow: none;
+  }
+
+  body[data-theme='old-pc'] .sidebar-drawer-toggle::after {
+    border-color: #09080a;
+    background: #f05b45;
+    box-shadow: 1px 1px 0 #09080a;
+  }
+
+  body[data-theme='old-pc'] .sidebar-drawer-toggle-arrow {
+    left: 9px;
+    border-width: 2px;
+    border-radius: 0 3px 3px 0;
+    clip-path: none;
+    font-family: Tahoma, "Trebuchet MS", Arial, sans-serif;
+    text-shadow: none;
+  }
+
+  /* Orbital Command: layered blue HUD plating and segmented telemetry marks. */
+  body[data-theme='orbital'] .sidebar-drawer-toggle {
+    --drawer-edge: #59e8ff;
+    --drawer-rail:
+      linear-gradient(180deg, rgba(89, 232, 255, 0.56), rgba(7, 68, 95, 0.78) 18%, rgba(2, 17, 32, 0.98) 52%, rgba(14, 104, 137, 0.76) 82%, rgba(89, 232, 255, 0.52)),
+      #000812;
+    --drawer-tab-bg:
+      repeating-linear-gradient(135deg, rgba(89, 232, 255, 0.08) 0 3px, transparent 3px 8px),
+      linear-gradient(100deg, rgba(4, 73, 98, 0.99), rgba(1, 18, 32, 0.99));
+    --drawer-tab-border: #59e8ff;
+    --drawer-tab-color: #dffcff;
+    --drawer-tab-shadow:
+      7px 0 20px rgba(0, 0, 0, 0.62),
+      inset 0 0 22px rgba(89, 232, 255, 0.15),
+      0 0 15px rgba(89, 232, 255, 0.42);
+    clip-path: none;
+  }
+
+  body[data-theme='orbital'] .sidebar-drawer-toggle-arrow {
+    border-top-width: 2px;
+    border-bottom-color: rgba(79, 159, 255, 0.78);
+    background: var(--drawer-tab-bg);
   }
 }

@@ -317,6 +317,9 @@ function openCommandPalette() {
   if (document.body.classList.contains('tour-active')) {
     return;
   }
+  if (typeof setSidebarDrawerOpen === 'function') {
+    setSidebarDrawerOpen(false, { restoreFocus: false, focusClose: false });
+  }
   commandPalettePreviousFocus = document.activeElement;
   commandPaletteIsOpen = true;
   commandPaletteActiveIndex = 0;

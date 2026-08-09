@@ -255,6 +255,10 @@ function showTourStep(index) {
   const step = TOUR_STEPS[tourIndex];
   setTourStackDemoMode(step.stackDemoMode || '');
   const target = getTourTarget();
+  const targetIsInDrawer = Boolean(target?.closest('#sidebarDrawer'));
+  if (typeof setSidebarDrawerOpen === 'function' && window.matchMedia('(max-width: 1030px)').matches) {
+    setSidebarDrawerOpen(targetIsInDrawer, { restoreFocus: false, focusClose: false });
+  }
   const targetShell = target?.closest('.monitor-shell');
 
   if (targetShell?.classList.contains('is-collapsed') && !target?.classList.contains('monitor-header')) {
@@ -270,6 +274,7 @@ function showTourStep(index) {
   target?.scrollIntoView({ block: 'center', inline: 'center', behavior: 'auto' });
   queueTourPosition();
   setTimeout(queueTourPosition, 80);
+  setTimeout(queueTourPosition, 260);
 }
 
 function startPageTour() {
@@ -302,6 +307,9 @@ function finishPageTour() {
   document.body.classList.remove('tour-active');
   tourLayer.classList.remove('has-target');
   tourLayer.hidden = true;
+  if (typeof setSidebarDrawerOpen === 'function') {
+    setSidebarDrawerOpen(false, { restoreFocus: false, focusClose: false });
+  }
 
   if (tourPreviousFocus instanceof HTMLElement && tourPreviousFocus !== document.body) {
     tourPreviousFocus.focus();

@@ -30,6 +30,38 @@ jobs:
         with:
           version: 3.x
 
+      - name: Set manifest version from release tag
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name || inputs.release_tag }}
+        run: |
+          $releaseTag = $env:RELEASE_TAG.Trim()
+          $version = $releaseTag -replace '^[vV]', ''
+          $versionParts = @($version.Split('.'))
+
+          $validVersion = $versionParts.Count -ge 1 -and $versionParts.Count -le 4
+          $numericParts = @()
+          foreach ($part in $versionParts) {
+            $value = 0
+            if ($part -notmatch '^(0|[1-9][0-9]*)$' -or
+                -not [int]::TryParse($part, [ref]$value) -or
+                $value -gt 65535) {
+              $validVersion = $false
+              break
+            }
+            $numericParts += $value
+          }
+
+          if (-not $validVersion -or ($numericParts | Where-Object { $_ -ne 0 }).Count -eq 0) {
+            throw "Release tag '$releaseTag' cannot be used as a Chrome extension version. Use 1 to 4 dot-separated numbers (optionally prefixed with v), such as v1.2.3."
+          }
+
+          $manifest = Get-Content -Raw -LiteralPath manifest.json | ConvertFrom-Json
+          $manifest.version = $version
+          $manifest | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath manifest.json -Encoding utf8NoBOM
+
+          Write-Host "Set manifest.json version to $version from release tag $releaseTag."
+
       - name: Build browser packages
         run: task package:force
 
@@ -51,9 +83,34 @@ jobs:
             Join-Path web-ext-artifacts "vaportab-3000-$version-firefox.zip"
           )
 
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
           foreach ($package in $packages) {
             if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
               throw "Expected release package was not generated: $package"
+            }
+
+            $archivePath = (Resolve-Path -LiteralPath $package).Path
+            $archive = [IO.Compression.ZipFile]::OpenRead($archivePath)
+            try {
+              $manifestEntry = $archive.GetEntry('manifest.json')
+              if ($null -eq $manifestEntry) {
+                throw "$package does not contain manifest.json."
+              }
+
+              $reader = [IO.StreamReader]::new($manifestEntry.Open())
+              try {
+                $packagedManifest = $reader.ReadToEnd() | ConvertFrom-Json
+              }
+              finally {
+                $reader.Dispose()
+              }
+
+              if ([string]$packagedManifest.version -ne $version) {
+                throw "$package contains manifest version '$($packagedManifest.version)' instead of '$version'."
+              }
+            }
+            finally {
+              $archive.Dispose()
             }
           }
 

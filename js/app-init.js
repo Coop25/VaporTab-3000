@@ -1,4 +1,64 @@
 // UI event listeners and application bootstrap
+const sidebarDrawer = document.getElementById('sidebarDrawer');
+const sidebarDrawerToggle = document.getElementById('sidebarDrawerToggle');
+const sidebarDrawerClose = document.getElementById('sidebarDrawerClose');
+const sidebarDrawerBackdrop = document.getElementById('sidebarDrawerBackdrop');
+const sidebarDrawerMedia = window.matchMedia('(max-width: 1030px)');
+
+function setSidebarDrawerOpen(
+  open,
+  { restoreFocus = true, focusClose = true } = {}
+) {
+  if (!sidebarDrawer || !sidebarDrawerToggle || !sidebarDrawerBackdrop) {
+    return;
+  }
+
+  const nextOpen = sidebarDrawerMedia.matches && Boolean(open);
+  if (!nextOpen && restoreFocus && sidebarDrawer.contains(document.activeElement)) {
+    sidebarDrawerToggle.focus();
+  }
+
+  document.body.classList.toggle('sidebar-drawer-open', nextOpen);
+  sidebarDrawerToggle.setAttribute('aria-expanded', String(nextOpen));
+  sidebarDrawerBackdrop.hidden = !nextOpen;
+  sidebarDrawer.setAttribute('aria-hidden', sidebarDrawerMedia.matches ? String(!nextOpen) : 'false');
+  sidebarDrawer.inert = sidebarDrawerMedia.matches && !nextOpen;
+
+  if (nextOpen) {
+    if (typeof closeCommandPalette === 'function') {
+      closeCommandPalette({ restoreFocus: false });
+    }
+    if (focusClose) {
+      requestAnimationFrame(() => sidebarDrawerClose?.focus());
+    }
+  }
+}
+
+function syncSidebarDrawerMode() {
+  if (!sidebarDrawerMedia.matches) {
+    document.body.classList.remove('sidebar-drawer-open');
+    sidebarDrawerToggle?.setAttribute('aria-expanded', 'false');
+    if (sidebarDrawerBackdrop) {
+      sidebarDrawerBackdrop.hidden = true;
+    }
+    if (sidebarDrawer) {
+      sidebarDrawer.setAttribute('aria-hidden', 'false');
+      sidebarDrawer.inert = false;
+    }
+    return;
+  }
+
+  setSidebarDrawerOpen(false, { restoreFocus: false, focusClose: false });
+}
+
+sidebarDrawerToggle?.addEventListener('click', () => {
+  setSidebarDrawerOpen(!document.body.classList.contains('sidebar-drawer-open'));
+});
+sidebarDrawerClose?.addEventListener('click', () => setSidebarDrawerOpen(false));
+sidebarDrawerBackdrop?.addEventListener('click', () => setSidebarDrawerOpen(false));
+sidebarDrawerMedia.addEventListener('change', syncSidebarDrawerMode);
+syncSidebarDrawerMode();
+
 searchInput.addEventListener('input', renderBookmarks);
 searchInput.addEventListener('keydown', handleSearchSubmit);
 
@@ -207,6 +267,10 @@ if (calcInput) {
   });
 }
 document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && document.body.classList.contains('sidebar-drawer-open')) {
+    setSidebarDrawerOpen(false);
+    return;
+  }
   if (event.key === 'Escape' && stackEditMenu && !stackEditMenu.hidden) {
     closeStackEditMenu();
     openStackEditMenuBtn.focus();
@@ -232,6 +296,8 @@ async function initializeApplication() {
   updateClock();
   setInterval(updateClock, 1000);
   applyTheme(state.theme);
+  updateOrbitalActivityOrb();
+  setInterval(updateOrbitalActivityOrb, 760);
   setupMonitorShells();
   setupBookmarkListeners();
   updateCalcUi();
