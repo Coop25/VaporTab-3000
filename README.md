@@ -15,7 +15,7 @@ A custom Chromium new-tab page with a retro terminal look, live bookmarks, cross
 - Includes a configurable incident Watch card driven by sources in the Net Ops sidebar
 - Includes a small utility panel for Base64, URL encode/decode, SHA-256, and Unix timestamp conversion
 - Includes a `Ctrl+K` command palette for bookmarks, tabs, themes, tools, and page actions
-- Supports theme switching between `LCARS`, `Synthwave`, `Dark Mode`, `Terminal UI`, `Old PC Dark`, and `Orbital Command`
+- Supports theme switching between `LCARS`, `Synthwave`, `Dark Mode`, `Terminal UI`, `Old PC Dark`, `Orbital Command`, and `Green Matrix`
 - Includes a first-run guided tour that can be replayed at any time
 
 ## Screenshots

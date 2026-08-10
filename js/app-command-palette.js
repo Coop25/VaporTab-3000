@@ -123,7 +123,9 @@ function commandPaletteStaticItems() {
     ['synthwave', 'Synthwave'],
     ['dark', 'Dark Mode'],
     ['terminal', 'Terminal UI'],
-    ['old-pc', 'Old PC Dark']
+    ['old-pc', 'Old PC Dark'],
+    ['orbital', 'Orbital Command'],
+    ['xbox', 'Green Matrix']
   ].map(([themeId, label]) => ({
     id: `theme-${themeId}`,
     kind: 'Theme',
