@@ -386,6 +386,18 @@ const THEME_COPY = {
     toolsChannel: 'FIELD SYSTEMS / 03',
     stackKicker: 'ORBITAL COMMAND // MISSION GROUP',
     footerNotice: 'COMMAND NOTICE // Live navigation data requires browser bookmark permission.'
+  },
+  xbox: {
+    mastheadEyebrow: 'GREEN MATRIX // PERSONAL DASHBOARD',
+    mastheadTitle: 'MEMORY CONTROL DECK',
+    systemId: 'CORE 01',
+    nodeLabel: 'SYSTEM MEMORY',
+    nodeModel: '48150 BLOCKS FREE',
+    bookmarksChannel: 'MEMORY / BOOKMARKS',
+    tabsChannel: 'NETWORK / ACTIVE TABS',
+    toolsChannel: 'SETTINGS / UTILITIES',
+    stackKicker: 'GREEN MATRIX // MEMORY GROUP',
+    footerNotice: 'SYSTEM NOTICE // Live memory access requires browser bookmark permission.'
   }
 };
 
@@ -401,7 +413,7 @@ function applyThemeCopy(themeName) {
 }
 
 function applyTheme(themeName) {
-  const allowed = new Set(['lcars', 'synthwave', 'dark', 'terminal', 'old-pc', 'orbital']);
+  const allowed = new Set(['lcars', 'synthwave', 'dark', 'terminal', 'old-pc', 'orbital', 'xbox']);
   const nextTheme = allowed.has(themeName) ? themeName : 'lcars';
   state.theme = nextTheme;
   document.documentElement.setAttribute('data-theme', nextTheme);
